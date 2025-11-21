@@ -12,7 +12,7 @@ sealed interface UiText {
      * Represents a dynamic string that can be displayed in the UI.
      * @property value The dynamic string value.
      */
-    data class DynamicString(val value: String): UiText
+    data class DynamicString(val value: String) : UiText
 
     /**
      * Represents a string resource that can be displayed in the UI.
@@ -22,7 +22,7 @@ sealed interface UiText {
     class StringResource(
         @StringRes val id: Int,
         val args: Array<Any> = emptyArray()
-    ): UiText
+    ) : UiText
 
     /**
      * Converts the [UiText] object to a string.

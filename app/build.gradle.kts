@@ -15,10 +15,10 @@ android {
 
     defaultConfig {
         applicationId = "com.jd.financeflow"
+        versionName = "1.0.0"
         minSdk = 33
         targetSdk = 36
         versionCode = 1
-        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -39,12 +39,14 @@ android {
     }
     kotlin {
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11) // Use the type-safe enum
+            jvmTarget.set(JvmTarget.JVM_17)
         }
     }
     buildFeatures {
         compose = true
     }
+    buildToolsVersion = "36.1.0"
+    ndkVersion = "29.0.14206865"
 }
 
 dependencies {

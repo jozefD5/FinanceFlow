@@ -21,6 +21,4 @@ data class Finance(
     val interval: FinanceInterval,
     val type: FinanceType,
     val category: FinanceCategory
-
-
 )

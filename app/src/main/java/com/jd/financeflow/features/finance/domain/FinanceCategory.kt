@@ -1,6 +1,6 @@
 package com.jd.financeflow.features.finance.domain
 
-enum class FinanceType{
+enum class FinanceType {
     INCOME,
     EXPENSE
 }

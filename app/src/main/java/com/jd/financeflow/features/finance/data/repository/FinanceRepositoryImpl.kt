@@ -10,7 +10,7 @@ import com.jd.financeflow.features.finance.domain.FinanceType
 
 class FinanceRepositoryImpl(
 
-): FinanceRepository {
+) : FinanceRepository {
     override suspend fun getFinances(): Result<List<Finance>, DataError.Local> {
         TODO("Not yet implemented")
     }
