@@ -10,7 +10,8 @@ sealed interface DataError: Error {
         SERIALIZATION,
         PARSING,
         REQUEST_TIMEOUT,
-        DISK_FULL,
+        STORAGE_FULL,
+        STORAGE_UNAVAILABLE,
         UNKNOWN
     }
 }

@@ -5,8 +5,9 @@
     <string name="data_error_invalid_request">Invalid request has been provided</string>
     <string name="data_error_serialization">Data serialization error has been encountered</string>
     <string name="data_error_parsing">Data parsing error has been encountered</string>
-    <string name="data_error_not_request_timeout">Maximum request timeout has been reached</string>
-    <string name="data_error_not_disk_full">Disk is full</string>
+    <string name="data_error_request_timeout">Maximum request timeout has been reached</string>
+    <string name="data_error_storage_full">Storage is full</string>
+    <string name="data_error_storage_unavailable">Storage is unavailable</string>
     <string name="data_error_not_unknown">Unknown error has</string>
 "
 
