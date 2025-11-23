@@ -9,7 +9,14 @@
     <string name="data_error_storage_full">Storage is full</string>
     <string name="data_error_storage_unavailable">Storage is unavailable</string>
     <string name="data_error_not_unknown">Unknown error has</string>
-"
 
+    <string name="finance_type_income">Income</string>
+    <string name="finance_type_expense">Expense</string>
+
+    <string name="add_transaction_title_label">Title/Name</string>
+    <string name="add_transaction_title_description">Description</string>
+    <string name="add_transaction_title_amount">Amount</string>
+    <string name="add_transaction_title_interval">Interval</string>
+    <string name="add_transaction_title_category">Category</string>
 
 </resources>
