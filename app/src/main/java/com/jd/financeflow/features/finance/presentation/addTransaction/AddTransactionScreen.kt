@@ -26,11 +26,12 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import com.jd.financeflow.R
 
-import com.jd.financeflow.features.finance.domain.FinanceType
-import com.jd.financeflow.features.finance.presentation.addTransaction.components.toUiText
-import com.jd.financeflow.ui.theme.FinanceFlowTheme
+import com.jd.financeflow.R
+import com.jd.financeflow.features.core.domain.finance.FinanceCategory
+import com.jd.financeflow.features.core.domain.finance.FinanceType
+import com.jd.financeflow.features.core.presentation.components.LargeDropdownMenu
+import com.jd.financeflow.features.core.presentation.components.toUiText
 
 
 @Composable
@@ -40,8 +41,8 @@ fun AddTransactionView(
     modifier: Modifier = Modifier,
     focusManager: FocusManager = LocalFocusManager.current,
     scrollState: ScrollState = rememberScrollState(),
-    
-) {
+
+    ) {
     Scaffold(
         modifier = modifier,
     ) { innerPadding ->
@@ -65,7 +66,7 @@ fun AddTransactionView(
                             count = FinanceType.entries.size
                         ),
                         selected = state.financeTypeIndex == index,
-                        onClick = { onAction(AddTransactionActions.UpdateFinanceType(index))},
+                        onClick = { onAction(AddTransactionActions.UpdateFinanceType(index)) },
                         label = { Text(value.toUiText().asString()) }
                     )
                 }
@@ -110,7 +111,28 @@ fun AddTransactionView(
                     .fillMaxWidth()
             )
 
-
+            LargeDropdownMenu(
+                label = stringResource(R.string.add_transaction_title_interval),
+                items = if (state.financeTypeIndex == FinanceType.INCOME.ordinal) {
+                    FinanceCategory.IncomeCategory.entries.map {
+                        FinanceCategory.Income(it)
+                    }
+                } else {
+                    FinanceCategory.ExpenseCategory.entries.map {
+                        FinanceCategory.Expense(it)
+                    }
+                }.map { it.toUiText().asString() },
+                onItemSelected = { index, _ ->
+                    onAction(
+                        AddTransactionActions.UpdateFinanceCategory(
+                            index
+                        )
+                    )
+                },
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth()
+            )
 
         }
     }

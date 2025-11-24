@@ -1,8 +1,8 @@
-package com.jd.financeflow.features.finance.presentation.addTransaction.components
+package com.jd.financeflow.features.core.presentation.components
 
 import com.jd.financeflow.R
 import com.jd.financeflow.features.core.presentation.UiText
-import com.jd.financeflow.features.finance.domain.FinanceType
+import com.jd.financeflow.features.core.domain.finance.FinanceType
 
 /**
  * Converts a [FinanceType] to a [UiText] object.

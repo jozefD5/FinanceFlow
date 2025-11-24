@@ -1,6 +1,5 @@
-package com.jd.financeflow.features.finance.presentation.addTransaction.components
+package com.jd.financeflow.features.core.presentation.components
 
-import android.view.Surface
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,8 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,8 +24,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Divider
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -40,8 +35,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+
 import com.jd.financeflow.ui.theme.FinanceFlowTheme
 
+/**
+ * Larg drop down menu for selecting an item from a list of items. Composable is using outlined
+ * text field to show selected content, and a dialog to show list of selectable items.
+ *
+ * @param label Label for the outlined text field.
+ * @param items List of items to select from.
+ * @param onItemSelected Callback to invoke when an item is selected.
+ * @param modifier Modifier for the composable.
+ * @param enabled Whether the composable is enabled or not.
+ * @param notSetLabel Label for the "not set" option.
+ * @param selectedIndex Index of the currently selected item.
+ * @param selectedItemToString Function to convert the selected item to a string.
+ * @param drawItem Composable to draw each item.
+ */
 @Composable
 fun <T> LargeDropdownMenu(
     label: String,
@@ -138,6 +148,14 @@ fun <T> LargeDropdownMenu(
     }
 }
 
+/**
+ * Composable for a single dropdown menu item.
+ *
+ * @param text Text to display in the item.
+ * @param selected Whether the item is selected.
+ * @param enabled Whether the item is enabled.
+ * @param onClick Callback to invoke when the item is clicked.
+ */
 @Composable
 private fun LargeDropdownMenuItem(
     text: String,
@@ -175,7 +193,7 @@ fun TextFieldDropDownMenuPreview() {
             LargeDropdownMenu(
                 label = "Label",
                 items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5"),
-                onItemSelected = { index, item ->
+                onItemSelected = { index, _ ->
                     selectedIndex = index
                 },
                 selectedIndex = selectedIndex,

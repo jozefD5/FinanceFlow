@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.finance.domain
+package com.jd.financeflow.features.core.domain.finance
 
 enum class FinanceType {
     INCOME,
@@ -19,7 +19,7 @@ sealed class FinanceCategory {
     data class Expense(val category: ExpenseCategory) : FinanceCategory()
 
     /**
-     * Defines the specific categories for [FinanceType.Income] transactions.
+     * Defines the specific categories for `FinanceType.Income` transactions.
      * These categories help in classifying different sources of income.
      */
     enum class IncomeCategory {
@@ -27,7 +27,7 @@ sealed class FinanceCategory {
     }
 
     /**
-     * Defines the specific categories for [FinanceType.Expenses] transactions.
+     * Defines the specific categories for `FinanceType.Expenses` transactions.
      * These categories help in classifying different types of expenditures.
      */
     enum class ExpenseCategory {

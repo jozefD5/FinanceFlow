@@ -13,6 +13,20 @@
     <string name="finance_type_income">Income</string>
     <string name="finance_type_expense">Expense</string>
 
+    <string name="finance_category_salary">Salary</string>
+    <string name="finance_category_bonus">Bonus</string>
+    <string name="finance_category_commissions">Commissions</string>
+    <string name="finance_category_benefits">Benefits</string>
+    <string name="finance_category_investments">Investments</string>
+    <string name="finance_category_utility">Utility</string>
+    <string name="finance_category_housing">Housing</string>
+    <string name="finance_category_transport">Transport</string>
+    <string name="finance_category_food">Food</string>
+    <string name="finance_category_entertainment">Entertainment</string>
+    <string name="finance_category_health">Health</string>
+    <string name="finance_category_education">Education</string>
+    <string name="finance_category_other">Other</string>
+
     <string name="add_transaction_title_label">Title/Name</string>
     <string name="add_transaction_title_description">Description</string>
     <string name="add_transaction_title_amount">Amount</string>
