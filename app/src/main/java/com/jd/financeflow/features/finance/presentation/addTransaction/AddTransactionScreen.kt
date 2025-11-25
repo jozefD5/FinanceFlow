@@ -3,12 +3,14 @@ package com.jd.financeflow.features.finance.presentation.addTransaction
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
@@ -33,24 +35,32 @@ import com.jd.financeflow.features.core.domain.finance.FinanceType
 import com.jd.financeflow.features.core.presentation.components.LargeDropdownMenu
 import com.jd.financeflow.features.core.presentation.components.toUiText
 
-
+/**
+ * View for adding or modifying finance transaction.
+ *
+ * @param state state to be displayed
+ * @param onAction action to be performed
+ * @param modifier modifier to be applied
+ * @param focusManager focus manager to be used
+ * @param scrollState scroll state to be used
+ */
 @Composable
 fun AddTransactionView(
     state: AddTransactionState,
     onAction: (AddTransactionActions) -> Unit,
     modifier: Modifier = Modifier,
     focusManager: FocusManager = LocalFocusManager.current,
-    scrollState: ScrollState = rememberScrollState(),
-
+    scrollState: ScrollState = rememberScrollState()
+) {
+    Column(
+        verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
     ) {
-    Scaffold(
-        modifier = modifier,
-    ) { innerPadding ->
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .padding(innerPadding)
                 .fillMaxWidth()
                 .verticalScroll(scrollState)
         ) {
@@ -133,8 +143,21 @@ fun AddTransactionView(
                     .padding(8.dp)
                     .fillMaxWidth()
             )
-
         }
+
+        Spacer(modifier = Modifier.weight(1f))
+        Button(
+            onClick = { onAction(AddTransactionActions.SaveTransaction) },
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = stringResource(R.string.save_button),
+                modifier = Modifier.padding(8.dp)
+            )
+        }
+        Spacer(modifier = Modifier.padding(24.dp))
     }
 }
 
@@ -142,9 +165,12 @@ fun AddTransactionView(
 @Composable
 fun AddTransactionViewPreview() {
     MaterialTheme {
-        AddTransactionView(
-            state = AddTransactionState(),
-            onAction = {}
-        )
+        Scaffold { innerPadding ->
+            AddTransactionView(
+                state = AddTransactionState(),
+                onAction = {},
+                modifier = Modifier.padding(innerPadding)
+            )
+        }
     }
 }

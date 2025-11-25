@@ -32,5 +32,6 @@
     <string name="add_transaction_title_amount">Amount</string>
     <string name="add_transaction_title_interval">Interval</string>
     <string name="add_transaction_title_category">Category</string>
+    <string name="save_button">Save</string>
 
 </resources>
