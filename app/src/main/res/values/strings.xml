@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">FinanceFlow</string>
 
+    <string name="save_button">Save</string>
+
     <string name="data_error_invalid_argument">Invalid argument has been provided</string>
     <string name="data_error_invalid_request">Invalid request has been provided</string>
     <string name="data_error_serialization">Data serialization error has been encountered</string>
@@ -32,6 +34,13 @@
     <string name="add_transaction_title_amount">Amount</string>
     <string name="add_transaction_title_interval">Interval</string>
     <string name="add_transaction_title_category">Category</string>
-    <string name="save_button">Save</string>
+
+    <string name="finance_interval_once">Once</string>
+    <string name="finance_interval_daily">Daily"</string>
+    <string name="finance_interval_weekly">Weekly</string>
+    <string name="finance_interval_monthly">Monthly</string>
+    <string name="finance_interval_quarterly">Quarterly</string>
+    <string name="finance_interval_half_yearly">Half Yearly</string>
+    <string name="finance_interval_yearly">Yearly</string>
 
 </resources>

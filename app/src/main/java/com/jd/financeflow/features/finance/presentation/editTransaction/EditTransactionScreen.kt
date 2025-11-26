@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.finance.presentation.addTransaction
+package com.jd.financeflow.features.finance.presentation.editTransaction
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
@@ -28,12 +28,35 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.koin.androidx.compose.koinViewModel
 
 import com.jd.financeflow.R
 import com.jd.financeflow.features.core.domain.finance.FinanceCategory
+import com.jd.financeflow.features.core.domain.finance.FinanceInterval
 import com.jd.financeflow.features.core.domain.finance.FinanceType
 import com.jd.financeflow.features.core.presentation.components.LargeDropdownMenu
 import com.jd.financeflow.features.core.presentation.components.toUiText
+
+/**
+ * Screen for adding or modifying finance transaction.
+ *
+ * @param modifier modifier to be applied
+ * @param viewModel view model to be used
+ */
+@Composable
+fun EditTransactionScreen(
+    modifier: Modifier = Modifier,
+    viewModel: EditTransactionViewModel = koinViewModel(),
+) {
+    val state = viewModel.state.collectAsStateWithLifecycle()
+
+    EditTransactionView(
+        state = state.value,
+        onAction = { viewModel.onAction(it) },
+        modifier = modifier
+    )
+}
 
 /**
  * View for adding or modifying finance transaction.
@@ -45,9 +68,9 @@ import com.jd.financeflow.features.core.presentation.components.toUiText
  * @param scrollState scroll state to be used
  */
 @Composable
-fun AddTransactionView(
-    state: AddTransactionState,
-    onAction: (AddTransactionActions) -> Unit,
+fun EditTransactionView(
+    state: EditTransactionState,
+    onAction: (EditTransactionActions) -> Unit,
     modifier: Modifier = Modifier,
     focusManager: FocusManager = LocalFocusManager.current,
     scrollState: ScrollState = rememberScrollState()
@@ -76,7 +99,7 @@ fun AddTransactionView(
                             count = FinanceType.entries.size
                         ),
                         selected = state.financeTypeIndex == index,
-                        onClick = { onAction(AddTransactionActions.UpdateFinanceType(index)) },
+                        onClick = { onAction(EditTransactionActions.UpdateFinanceType(index)) },
                         label = { Text(value.toUiText().asString()) }
                     )
                 }
@@ -84,8 +107,9 @@ fun AddTransactionView(
 
             TextField(
                 value = state.title,
-                onValueChange = { onAction(AddTransactionActions.UpdateTitle(it)) },
+                onValueChange = { onAction(EditTransactionActions.UpdateTitle(it)) },
                 label = { Text(stringResource(R.string.add_transaction_title_label)) },
+                isError = state.invalidTitle,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                 keyboardActions = KeyboardActions(
                     onNext = { focusManager.moveFocus(FocusDirection.Down) }
@@ -97,7 +121,7 @@ fun AddTransactionView(
 
             TextField(
                 value = state.description,
-                onValueChange = { onAction(AddTransactionActions.UpdateDescription(it)) },
+                onValueChange = { onAction(EditTransactionActions.UpdateDescription(it)) },
                 label = { Text(stringResource(R.string.add_transaction_title_description)) },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                 keyboardActions = KeyboardActions(
@@ -110,8 +134,9 @@ fun AddTransactionView(
 
             TextField(
                 value = state.amount,
-                onValueChange = { onAction(AddTransactionActions.UpdateAmount(it)) },
+                onValueChange = { onAction(EditTransactionActions.UpdateAmount(it)) },
                 label = { Text(stringResource(R.string.add_transaction_title_amount)) },
+                isError = state.invalidAmount,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                 keyboardActions = KeyboardActions(
                     onNext = { focusManager.moveFocus(FocusDirection.Down) }
@@ -123,6 +148,17 @@ fun AddTransactionView(
 
             LargeDropdownMenu(
                 label = stringResource(R.string.add_transaction_title_interval),
+                items = FinanceInterval.entries.map { it.toUiText().asString() },
+                onItemSelected = { index, _ ->
+                    onAction(EditTransactionActions.UpdateFinanceInterval(index))
+                },
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth()
+            )
+
+            LargeDropdownMenu(
+                label = stringResource(R.string.add_transaction_title_category),
                 items = if (state.financeTypeIndex == FinanceType.INCOME.ordinal) {
                     FinanceCategory.IncomeCategory.entries.map {
                         FinanceCategory.Income(it)
@@ -133,11 +169,7 @@ fun AddTransactionView(
                     }
                 }.map { it.toUiText().asString() },
                 onItemSelected = { index, _ ->
-                    onAction(
-                        AddTransactionActions.UpdateFinanceCategory(
-                            index
-                        )
-                    )
+                    onAction(EditTransactionActions.UpdateFinanceCategory(index))
                 },
                 modifier = Modifier
                     .padding(8.dp)
@@ -145,9 +177,9 @@ fun AddTransactionView(
             )
         }
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.padding(24.dp))
         Button(
-            onClick = { onAction(AddTransactionActions.SaveTransaction) },
+            onClick = { onAction(EditTransactionActions.SaveTransaction) },
             modifier = Modifier
                 .padding(8.dp)
                 .fillMaxWidth()
@@ -163,11 +195,11 @@ fun AddTransactionView(
 
 @Preview(showBackground = true)
 @Composable
-fun AddTransactionViewPreview() {
+fun EditTransactionViewPreview() {
     MaterialTheme {
         Scaffold { innerPadding ->
-            AddTransactionView(
-                state = AddTransactionState(),
+            EditTransactionView(
+                state = EditTransactionState(),
                 onAction = {},
                 modifier = Modifier.padding(innerPadding)
             )
