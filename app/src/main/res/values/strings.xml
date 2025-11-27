@@ -1,3 +1,46 @@
 <resources>
     <string name="app_name">FinanceFlow</string>
+
+    <string name="save_button">Save</string>
+
+    <string name="data_error_invalid_argument">Invalid argument has been provided</string>
+    <string name="data_error_invalid_request">Invalid request has been provided</string>
+    <string name="data_error_serialization">Data serialization error has been encountered</string>
+    <string name="data_error_parsing">Data parsing error has been encountered</string>
+    <string name="data_error_request_timeout">Maximum request timeout has been reached</string>
+    <string name="data_error_storage_full">Storage is full</string>
+    <string name="data_error_storage_unavailable">Storage is unavailable</string>
+    <string name="data_error_not_unknown">Unknown error has been encountered</string>
+
+    <string name="finance_type_income">Income</string>
+    <string name="finance_type_expense">Expense</string>
+
+    <string name="finance_category_salary">Salary</string>
+    <string name="finance_category_bonus">Bonus</string>
+    <string name="finance_category_commissions">Commissions</string>
+    <string name="finance_category_benefits">Benefits</string>
+    <string name="finance_category_investments">Investments</string>
+    <string name="finance_category_utility">Utility</string>
+    <string name="finance_category_housing">Housing</string>
+    <string name="finance_category_transport">Transport</string>
+    <string name="finance_category_food">Food</string>
+    <string name="finance_category_entertainment">Entertainment</string>
+    <string name="finance_category_health">Health</string>
+    <string name="finance_category_education">Education</string>
+    <string name="finance_category_other">Other</string>
+
+    <string name="add_transaction_title_label">Title/Name</string>
+    <string name="add_transaction_title_description">Description</string>
+    <string name="add_transaction_title_amount">Amount</string>
+    <string name="add_transaction_title_interval">Interval</string>
+    <string name="add_transaction_title_category">Category</string>
+
+    <string name="finance_interval_once">Once</string>
+    <string name="finance_interval_daily">Daily"</string>
+    <string name="finance_interval_weekly">Weekly</string>
+    <string name="finance_interval_monthly">Monthly</string>
+    <string name="finance_interval_quarterly">Quarterly</string>
+    <string name="finance_interval_half_yearly">Half Yearly</string>
+    <string name="finance_interval_yearly">Yearly</string>
+
 </resources>
