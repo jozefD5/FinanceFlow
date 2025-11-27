@@ -8,6 +8,7 @@ import org.koin.core.module.dsl.viewModel
 import com.jd.financeflow.features.finance.data.repository.FinanceRepositoryImpl
 import com.jd.financeflow.features.finance.domain.FinanceRepository
 import com.jd.financeflow.features.finance.presentation.editTransaction.EditTransactionViewModel
+import com.jd.financeflow.features.finance.presentation.home.HomeViewModel
 
 /**
  * Koin module for the FinanceFlow application.
@@ -22,4 +23,6 @@ val appModule = module {
             transactionId = id
         )
     }
+
+    viewModel { HomeViewModel(get()) }
 }
