@@ -1,14 +1,19 @@
 package com.jd.financeflow.features.finance.presentation.editTransaction
 
+import java.util.Locale
+
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
 import com.jd.financeflow.features.core.domain.DataError
+import com.jd.financeflow.features.core.domain.Result
 import com.jd.financeflow.features.core.domain.finance.Finance
 import com.jd.financeflow.features.core.domain.finance.FinanceCategory
 import com.jd.financeflow.features.core.domain.finance.FinanceInterval
@@ -17,6 +22,7 @@ import com.jd.financeflow.features.core.domain.onError
 import com.jd.financeflow.features.core.domain.onSuccess
 import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.finance.domain.FinanceRepository
+
 
 /**
  * View model for the edit transaction screen. Responsible for adding new transaction or modifying
@@ -30,7 +36,17 @@ class EditTransactionViewModel(
     private val transactionId: Int? = null
 ) : ViewModel() {
     private val _state = MutableStateFlow(EditTransactionState())
-    val state = _state.asStateFlow()
+    val state = _state
+        .onStart {
+            if (transactionId != null) {
+                loadData(transactionId)
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = EditTransactionState()
+        )
 
     /**
      * Handles actions for the add transaction screen.
@@ -82,7 +98,8 @@ class EditTransactionViewModel(
             is EditTransactionActions.UpdateFinanceType -> {
                 _state.update {
                     it.copy(
-                        financeTypeIndex = action.financeTypeIndex
+                        financeTypeIndex = action.financeTypeIndex,
+                        financeCategoryIndex = 0
                     )
                 }
             }
@@ -95,7 +112,63 @@ class EditTransactionViewModel(
                 }
             }
         }
+    }
 
+    /**
+     * Loads the transaction data if [transactionId] is provided.
+     */
+
+    private fun loadData(id: Int) = viewModelScope.launch {
+        _state.update { it.copy(isLoading = true) }
+
+        runCatching {
+            when (val result = financeRepository.getFinanceById(id)) {
+                is Result.Success -> {
+                    val categoryIndex = when (result.data.category) {
+                        is FinanceCategory.Income -> {
+                            FinanceCategory.IncomeCategory.entries.indexOf(result.data.category.category)
+                        }
+
+                        is FinanceCategory.Expense -> {
+                            FinanceCategory.ExpenseCategory.entries.indexOf(result.data.category.category)
+                        }
+                    }
+
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            error = null,
+                            title = result.data.title,
+                            description = result.data.description ?: "",
+                            amount = String.format(
+                                Locale.getDefault(),
+                                "%.2f",
+                                result.data.amount
+                            ),
+                            financeIntervalIndex = result.data.interval.ordinal,
+                            financeTypeIndex = result.data.type.ordinal,
+                            financeCategoryIndex = categoryIndex
+                        )
+                    }
+                }
+
+                is Result.Error -> {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            error = result.error.toUiText()
+                        )
+                    }
+                }
+            }
+        }.getOrElse {
+            _state.update {
+                it.copy(
+                    isLoading = false,
+                    error = DataError.Local.UNKNOWN.toUiText()
+                )
+            }
+        }
     }
 
     /**
@@ -196,11 +269,7 @@ class EditTransactionViewModel(
         var invalidTitle = false
         var invalidAmount = false
 
-        _state.update {
-            it.copy(
-                isLoading = true
-            )
-        }
+        _state.update { it.copy(isLoading = true) }
 
         // Verify values
         if (_state.value.title.isBlank()) {

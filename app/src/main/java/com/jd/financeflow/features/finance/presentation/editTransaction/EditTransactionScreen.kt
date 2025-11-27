@@ -27,16 +27,19 @@ import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 
 import com.jd.financeflow.R
+import com.jd.financeflow.features.core.domain.DataError
 import com.jd.financeflow.features.core.domain.finance.FinanceCategory
 import com.jd.financeflow.features.core.domain.finance.FinanceInterval
 import com.jd.financeflow.features.core.domain.finance.FinanceType
 import com.jd.financeflow.features.core.presentation.components.LargeDropdownMenu
 import com.jd.financeflow.features.core.presentation.components.toUiText
+import com.jd.financeflow.features.core.presentation.toUiText
 
 /**
  * Screen for adding or modifying finance transaction.
@@ -80,6 +83,15 @@ fun EditTransactionView(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
+        if (state.error != null) {
+            Text(
+                text = state.error.asString(),
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
+
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -137,7 +149,10 @@ fun EditTransactionView(
                 onValueChange = { onAction(EditTransactionActions.UpdateAmount(it)) },
                 label = { Text(stringResource(R.string.add_transaction_title_amount)) },
                 isError = state.invalidAmount,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next
+                ),
                 keyboardActions = KeyboardActions(
                     onNext = { focusManager.moveFocus(FocusDirection.Down) }
                 ),
@@ -148,6 +163,7 @@ fun EditTransactionView(
 
             LargeDropdownMenu(
                 label = stringResource(R.string.add_transaction_title_interval),
+                selectedIndex = state.financeIntervalIndex,
                 items = FinanceInterval.entries.map { it.toUiText().asString() },
                 onItemSelected = { index, _ ->
                     onAction(EditTransactionActions.UpdateFinanceInterval(index))
@@ -159,6 +175,7 @@ fun EditTransactionView(
 
             LargeDropdownMenu(
                 label = stringResource(R.string.add_transaction_title_category),
+                selectedIndex = state.financeCategoryIndex,
                 items = if (state.financeTypeIndex == FinanceType.INCOME.ordinal) {
                     FinanceCategory.IncomeCategory.entries.map {
                         FinanceCategory.Income(it)
@@ -189,7 +206,6 @@ fun EditTransactionView(
                 modifier = Modifier.padding(8.dp)
             )
         }
-        Spacer(modifier = Modifier.padding(24.dp))
     }
 }
 
@@ -199,7 +215,9 @@ fun EditTransactionViewPreview() {
     MaterialTheme {
         Scaffold { innerPadding ->
             EditTransactionView(
-                state = EditTransactionState(),
+                state = EditTransactionState(
+                    error = DataError.Local.UNKNOWN.toUiText(),
+                ),
                 onAction = {},
                 modifier = Modifier.padding(innerPadding)
             )

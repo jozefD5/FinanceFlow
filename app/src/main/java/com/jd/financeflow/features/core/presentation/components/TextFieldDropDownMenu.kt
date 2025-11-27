@@ -79,7 +79,8 @@ fun <T> LargeDropdownMenu(
             value = items.getOrNull(selectedIndex)?.let { selectedItemToString(it) } ?: "",
             enabled = enabled,
             modifier = Modifier.fillMaxWidth(),
-            trailingIcon = { if (expanded) {
+            trailingIcon = {
+                if (expanded) {
                     Icons.Filled.KeyboardArrowUp
                 } else {
                     Icons.Filled.KeyboardArrowDown
@@ -127,6 +128,11 @@ fun <T> LargeDropdownMenu(
                             }
                         }
                         itemsIndexed(items) { index, item ->
+                            // Add top space for first item
+                            if (index == 0) {
+                                Spacer(Modifier.padding(8.dp))
+                            }
+
                             val selectedItem = index == selectedIndex
                             drawItem(
                                 item,
@@ -137,8 +143,11 @@ fun <T> LargeDropdownMenu(
                                 expanded = false
                             }
 
-                            if (index < items.lastIndex) {
-                                HorizontalDivider(Modifier.padding(16.dp))
+                            // Add horizonal divider for all items except last
+                            if (index == items.lastIndex) {
+                                Spacer(Modifier.padding(8.dp))
+                            } else {
+                                HorizontalDivider(Modifier.padding(8.dp))
                             }
                         }
                     }

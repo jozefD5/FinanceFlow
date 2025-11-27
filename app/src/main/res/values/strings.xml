@@ -10,7 +10,7 @@
     <string name="data_error_request_timeout">Maximum request timeout has been reached</string>
     <string name="data_error_storage_full">Storage is full</string>
     <string name="data_error_storage_unavailable">Storage is unavailable</string>
-    <string name="data_error_not_unknown">Unknown error has</string>
+    <string name="data_error_not_unknown">Unknown error has been encountered</string>
 
     <string name="finance_type_income">Income</string>
     <string name="finance_type_expense">Expense</string>
