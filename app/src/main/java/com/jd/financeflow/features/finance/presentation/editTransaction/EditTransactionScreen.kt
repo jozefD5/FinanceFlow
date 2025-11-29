@@ -38,7 +38,7 @@ import com.jd.financeflow.features.core.domain.finance.FinanceCategory
 import com.jd.financeflow.features.core.domain.finance.FinanceInterval
 import com.jd.financeflow.features.core.domain.finance.FinanceType
 import com.jd.financeflow.features.core.presentation.components.LargeDropdownMenu
-import com.jd.financeflow.features.core.presentation.components.toUiText
+import com.jd.financeflow.features.core.presentation.components.finance.toUiText
 import com.jd.financeflow.features.core.presentation.toUiText
 
 /**
