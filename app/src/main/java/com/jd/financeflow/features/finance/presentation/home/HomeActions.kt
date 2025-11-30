@@ -5,4 +5,5 @@ package com.jd.financeflow.features.finance.presentation.home
  */
 sealed interface HomeActions {
     object ClearError : HomeActions
+    object AddTransaction : HomeActions
 }

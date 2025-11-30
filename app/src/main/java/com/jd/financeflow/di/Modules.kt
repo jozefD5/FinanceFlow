@@ -25,4 +25,7 @@ val appModule = module {
     }
 
     viewModel { HomeViewModel(get()) }
+    viewModel { (id: Int?) ->
+        EditTransactionViewModel(get(), id)
+    }
 }

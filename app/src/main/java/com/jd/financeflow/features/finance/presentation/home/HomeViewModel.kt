@@ -16,4 +16,14 @@ class HomeViewModel(
     private val _state = MutableStateFlow(HomeState())
     val state = _state.asStateFlow()
 
+    fun onAction(action: HomeActions) {
+        when (action) {
+            HomeActions.ClearError -> {
+                _state.value = _state.value.copy(error = null)
+            }
+
+            HomeActions.AddTransaction -> {}
+        }
+    }
+
 }
