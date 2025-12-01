@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.finance.presentation.editTransaction
+package com.jd.financeflow.features.finance.presentation.transactionDetails
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
@@ -48,13 +48,13 @@ import com.jd.financeflow.features.core.presentation.toUiText
  * @param viewModel view model to be used
  */
 @Composable
-fun EditTransactionScreen(
+fun TransactionDetailsScreen(
     modifier: Modifier = Modifier,
-    viewModel: EditTransactionViewModel = koinViewModel(),
+    viewModel: TransactionDetailsViewModel = koinViewModel(),
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
 
-    EditTransactionView(
+    TransactionDetailsView(
         state = state.value,
         onAction = { viewModel.onAction(it) },
         modifier = modifier
@@ -71,9 +71,9 @@ fun EditTransactionScreen(
  * @param scrollState scroll state to be used
  */
 @Composable
-fun EditTransactionView(
-    state: EditTransactionState,
-    onAction: (EditTransactionActions) -> Unit,
+fun TransactionDetailsView(
+    state: TransactionDetailsState,
+    onAction: (TransactionDetailsActions) -> Unit,
     modifier: Modifier = Modifier,
     focusManager: FocusManager = LocalFocusManager.current,
     scrollState: ScrollState = rememberScrollState()
@@ -88,7 +88,7 @@ fun EditTransactionView(
                 text = state.error.asString(),
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(4.dp)
             )
         }
 
@@ -111,7 +111,7 @@ fun EditTransactionView(
                             count = FinanceType.entries.size
                         ),
                         selected = state.financeTypeIndex == index,
-                        onClick = { onAction(EditTransactionActions.UpdateFinanceType(index)) },
+                        onClick = { onAction(TransactionDetailsActions.UpdateFinanceType(index)) },
                         label = { Text(value.toUiText().asString()) }
                     )
                 }
@@ -119,7 +119,7 @@ fun EditTransactionView(
 
             TextField(
                 value = state.title,
-                onValueChange = { onAction(EditTransactionActions.UpdateTitle(it)) },
+                onValueChange = { onAction(TransactionDetailsActions.UpdateTitle(it)) },
                 label = { Text(stringResource(R.string.add_transaction_title_label)) },
                 isError = state.invalidTitle,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -133,7 +133,7 @@ fun EditTransactionView(
 
             TextField(
                 value = state.description,
-                onValueChange = { onAction(EditTransactionActions.UpdateDescription(it)) },
+                onValueChange = { onAction(TransactionDetailsActions.UpdateDescription(it)) },
                 label = { Text(stringResource(R.string.add_transaction_title_description)) },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                 keyboardActions = KeyboardActions(
@@ -146,7 +146,7 @@ fun EditTransactionView(
 
             TextField(
                 value = state.amount,
-                onValueChange = { onAction(EditTransactionActions.UpdateAmount(it)) },
+                onValueChange = { onAction(TransactionDetailsActions.UpdateAmount(it)) },
                 label = { Text(stringResource(R.string.add_transaction_title_amount)) },
                 isError = state.invalidAmount,
                 keyboardOptions = KeyboardOptions(
@@ -166,7 +166,7 @@ fun EditTransactionView(
                 selectedIndex = state.financeIntervalIndex,
                 items = FinanceInterval.entries.map { it.toUiText().asString() },
                 onItemSelected = { index, _ ->
-                    onAction(EditTransactionActions.UpdateFinanceInterval(index))
+                    onAction(TransactionDetailsActions.UpdateFinanceInterval(index))
                 },
                 modifier = Modifier
                     .padding(8.dp)
@@ -186,7 +186,7 @@ fun EditTransactionView(
                     }
                 }.map { it.toUiText().asString() },
                 onItemSelected = { index, _ ->
-                    onAction(EditTransactionActions.UpdateFinanceCategory(index))
+                    onAction(TransactionDetailsActions.UpdateFinanceCategory(index))
                 },
                 modifier = Modifier
                     .padding(8.dp)
@@ -196,7 +196,7 @@ fun EditTransactionView(
 
         Spacer(modifier = Modifier.padding(24.dp))
         Button(
-            onClick = { onAction(EditTransactionActions.SaveTransaction) },
+            onClick = { onAction(TransactionDetailsActions.SaveTransaction) },
             modifier = Modifier
                 .padding(8.dp)
                 .fillMaxWidth()
@@ -211,11 +211,11 @@ fun EditTransactionView(
 
 @Preview(showBackground = true)
 @Composable
-fun EditTransactionViewPreview() {
+fun TransactionDetailsViewPreview() {
     MaterialTheme {
         Scaffold { innerPadding ->
-            EditTransactionView(
-                state = EditTransactionState(
+            TransactionDetailsView(
+                state = TransactionDetailsState(
                     error = DataError.Local.UNKNOWN.toUiText(),
                 ),
                 onAction = {},

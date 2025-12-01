@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.jd.financeflow.features.finance.domain.FinanceRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 /**
  * View model for the home screen.
@@ -19,10 +20,18 @@ class HomeViewModel(
     fun onAction(action: HomeActions) {
         when (action) {
             HomeActions.ClearError -> {
-                _state.value = _state.value.copy(error = null)
+                _state.update {
+                    it.copy(error = null)
+                }
             }
 
             HomeActions.AddTransaction -> {}
+
+            is HomeActions.ShowBottomSheet -> {
+                _state.update {
+                    it.copy(showBottomSheet = action.value)
+                }
+            }
         }
     }
 

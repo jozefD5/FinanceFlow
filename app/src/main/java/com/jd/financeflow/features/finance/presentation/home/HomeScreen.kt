@@ -14,10 +14,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,18 +39,22 @@ import com.jd.financeflow.ui.theme.FinanceFlowTheme
  *
  * @param modifier modifier to be applied
  * @param viewModel view model to be used
+ * @param addTransactionContent content for the add transaction screen
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = koinViewModel()
+    viewModel: HomeViewModel = koinViewModel(),
+    addTransactionContent: @Composable () -> Unit = {}
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
 
     HomeView(
         state = state.value,
         onAction = { viewModel.onAction(it) },
-        modifier = modifier
+        modifier = modifier,
+        addTransactionContent = addTransactionContent
     )
 }
 
@@ -56,13 +64,19 @@ fun HomeScreen(
  * @param state state to be displayed
  * @param onAction action to be performed
  * @param modifier modifier to be applied
+ * @param addTransactionContent content for the add transaction screen
+ * @param scrollState scroll state to be used
+ * @param sheetState sheet state to be used
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeView(
     state: HomeState,
     onAction: (HomeActions) -> Unit,
     modifier: Modifier = Modifier,
-    scrollState: ScrollState = rememberScrollState()
+    addTransactionContent: @Composable () -> Unit = {},
+    scrollState: ScrollState = rememberScrollState(),
+    sheetState: SheetState = rememberModalBottomSheetState()
 ) {
     Box(
         modifier = modifier.fillMaxSize()
@@ -107,10 +121,19 @@ fun HomeView(
 
                 }
             }
+
+            if (state.showBottomSheet) {
+                ModalBottomSheet(
+                    onDismissRequest = { onAction(HomeActions.ShowBottomSheet(false)) },
+                    sheetState = sheetState
+                ) {
+                    addTransactionContent()
+                }
+            }
         }
 
         FloatingActionButton(
-            onClick = {},
+            onClick = { onAction(HomeActions.ShowBottomSheet(true)) },
             modifier = Modifier
                 .padding(16.dp)
                 .align(Alignment.BottomEnd)
@@ -124,6 +147,7 @@ fun HomeView(
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 fun HomeViewPreview() {

@@ -7,7 +7,7 @@ import org.koin.core.module.dsl.viewModel
 
 import com.jd.financeflow.features.finance.data.repository.FinanceRepositoryImpl
 import com.jd.financeflow.features.finance.domain.FinanceRepository
-import com.jd.financeflow.features.finance.presentation.editTransaction.EditTransactionViewModel
+import com.jd.financeflow.features.finance.presentation.transactionDetails.TransactionDetailsViewModel
 import com.jd.financeflow.features.finance.presentation.home.HomeViewModel
 
 /**
@@ -17,15 +17,11 @@ import com.jd.financeflow.features.finance.presentation.home.HomeViewModel
 val appModule = module {
     singleOf(::FinanceRepositoryImpl).bind<FinanceRepository>()
 
-    viewModel { (id: Int?) ->
-        EditTransactionViewModel(
-            financeRepository = get(),
-            transactionId = id
-        )
-    }
-
     viewModel { HomeViewModel(get()) }
     viewModel { (id: Int?) ->
-        EditTransactionViewModel(get(), id)
+        TransactionDetailsViewModel(
+            get(),
+            id
+        )
     }
 }

@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.finance.presentation.editTransaction
+package com.jd.financeflow.features.finance.presentation.transactionDetails
 
 import java.util.Locale
 
@@ -25,17 +25,17 @@ import com.jd.financeflow.features.finance.domain.FinanceRepository
 
 
 /**
- * View model for the edit transaction screen. Responsible for adding new transaction or modifying
+ * View model for the transaction details screen. Responsible for adding new transaction or modifying
  * existing one if [transactionId] is provided.
  *
  * @param financeRepository repository for finance transactions
  * @param transactionId id of the transaction to be modified if not null
  */
-class EditTransactionViewModel(
+class TransactionDetailsViewModel(
     private val financeRepository: FinanceRepository,
     private val transactionId: Int? = null
 ) : ViewModel() {
-    private val _state = MutableStateFlow(EditTransactionState())
+    private val _state = MutableStateFlow(TransactionDetailsState())
     val state = _state
         .onStart {
             if (transactionId != null) {
@@ -45,7 +45,7 @@ class EditTransactionViewModel(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = EditTransactionState()
+            initialValue = TransactionDetailsState()
         )
 
     /**
@@ -53,9 +53,9 @@ class EditTransactionViewModel(
      *
      * @param action action to be handled
      */
-    fun onAction(action: EditTransactionActions) {
+    fun onAction(action: TransactionDetailsActions) {
         when (action) {
-            is EditTransactionActions.ClearError -> {
+            is TransactionDetailsActions.ClearError -> {
                 _state.update {
                     it.copy(
                         error = null
@@ -63,11 +63,11 @@ class EditTransactionViewModel(
                 }
             }
 
-            is EditTransactionActions.SaveTransaction -> {
+            is TransactionDetailsActions.SaveTransaction -> {
                 saveTransaction()
             }
 
-            is EditTransactionActions.UpdateTitle -> {
+            is TransactionDetailsActions.UpdateTitle -> {
                 _state.update {
                     it.copy(
                         title = action.title
@@ -75,7 +75,7 @@ class EditTransactionViewModel(
                 }
             }
 
-            is EditTransactionActions.UpdateDescription -> {
+            is TransactionDetailsActions.UpdateDescription -> {
                 _state.update {
                     it.copy(
                         description = action.description
@@ -83,11 +83,11 @@ class EditTransactionViewModel(
                 }
             }
 
-            is EditTransactionActions.UpdateAmount -> {
+            is TransactionDetailsActions.UpdateAmount -> {
                 validateAmount(action.amount)
             }
 
-            is EditTransactionActions.UpdateFinanceInterval -> {
+            is TransactionDetailsActions.UpdateFinanceInterval -> {
                 _state.update {
                     it.copy(
                         financeIntervalIndex = action.financeIntervalIndex
@@ -95,7 +95,7 @@ class EditTransactionViewModel(
                 }
             }
 
-            is EditTransactionActions.UpdateFinanceType -> {
+            is TransactionDetailsActions.UpdateFinanceType -> {
                 _state.update {
                     it.copy(
                         financeTypeIndex = action.financeTypeIndex,
@@ -104,7 +104,7 @@ class EditTransactionViewModel(
                 }
             }
 
-            is EditTransactionActions.UpdateFinanceCategory -> {
+            is TransactionDetailsActions.UpdateFinanceCategory -> {
                 _state.update {
                     it.copy(
                         financeCategoryIndex = action.financeCategoryIndex
