@@ -64,7 +64,7 @@ class TransactionDetailsViewModel(
             }
 
             is TransactionDetailsActions.SaveTransaction -> {
-                saveTransaction()
+                saveTransaction(action.action)
             }
 
             is TransactionDetailsActions.UpdateTitle -> {
@@ -264,8 +264,10 @@ class TransactionDetailsViewModel(
 
     /**
      * Saves the transaction to the repository.
+     *
+     * @param onSuccessAction action to be performed on success if not null
      */
-    private fun saveTransaction() = viewModelScope.launch {
+    private fun saveTransaction(onSuccessAction: (() -> Unit)? = null) = viewModelScope.launch {
         var invalidTitle = false
         var invalidAmount = false
 
@@ -322,9 +324,18 @@ class TransactionDetailsViewModel(
                     _state.update {
                         it.copy(
                             isLoading = false,
-                            error = null
+                            error = null,
+                            invalidTitle = false,
+                            invalidAmount = false,
+                            title = "",
+                            description = "",
+                            amount = "",
+                            financeIntervalIndex = 0,
+                            financeTypeIndex = 0,
+                            financeCategoryIndex = 0
                         )
                     }
+                    onSuccessAction?.invoke()
                 }
                 .onError { error ->
                     _state.update {

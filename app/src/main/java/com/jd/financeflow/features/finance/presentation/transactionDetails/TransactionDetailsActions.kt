@@ -5,7 +5,7 @@ package com.jd.financeflow.features.finance.presentation.transactionDetails
  */
 sealed interface TransactionDetailsActions {
     object ClearError : TransactionDetailsActions
-    object SaveTransaction : TransactionDetailsActions
+    data class SaveTransaction(val action: (() -> Unit)? = null) : TransactionDetailsActions
     data class UpdateTitle(val title: String) : TransactionDetailsActions
     data class UpdateDescription(val description: String) : TransactionDetailsActions
     data class UpdateAmount(val amount: String) : TransactionDetailsActions

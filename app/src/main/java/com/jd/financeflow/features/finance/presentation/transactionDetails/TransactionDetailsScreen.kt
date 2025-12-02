@@ -1,6 +1,7 @@
 package com.jd.financeflow.features.finance.presentation.transactionDetails
 
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +13,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -21,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalFocusManager
@@ -50,13 +51,23 @@ import com.jd.financeflow.features.core.presentation.toUiText
 @Composable
 fun TransactionDetailsScreen(
     modifier: Modifier = Modifier,
+    onSuccessfulAdd: () -> Unit = {},
     viewModel: TransactionDetailsViewModel = koinViewModel(),
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
 
     TransactionDetailsView(
         state = state.value,
-        onAction = { viewModel.onAction(it) },
+        onAction = { action ->
+            val actualAction = when (action) {
+                is TransactionDetailsActions.SaveTransaction -> action
+                    .copy(action = onSuccessfulAdd)
+
+                else -> action
+            }
+
+            viewModel.onAction(actualAction)
+        },
         modifier = modifier
     )
 }
@@ -88,7 +99,6 @@ fun TransactionDetailsView(
                 text = state.error.asString(),
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(4.dp)
             )
         }
 
@@ -117,7 +127,7 @@ fun TransactionDetailsView(
                 }
             }
 
-            TextField(
+            OutlinedTextField(
                 value = state.title,
                 onValueChange = { onAction(TransactionDetailsActions.UpdateTitle(it)) },
                 label = { Text(stringResource(R.string.add_transaction_title_label)) },
@@ -131,7 +141,7 @@ fun TransactionDetailsView(
                     .fillMaxWidth()
             )
 
-            TextField(
+            OutlinedTextField(
                 value = state.description,
                 onValueChange = { onAction(TransactionDetailsActions.UpdateDescription(it)) },
                 label = { Text(stringResource(R.string.add_transaction_title_description)) },
@@ -144,7 +154,7 @@ fun TransactionDetailsView(
                     .fillMaxWidth()
             )
 
-            TextField(
+            OutlinedTextField(
                 value = state.amount,
                 onValueChange = { onAction(TransactionDetailsActions.UpdateAmount(it)) },
                 label = { Text(stringResource(R.string.add_transaction_title_amount)) },
@@ -196,7 +206,7 @@ fun TransactionDetailsView(
 
         Spacer(modifier = Modifier.padding(24.dp))
         Button(
-            onClick = { onAction(TransactionDetailsActions.SaveTransaction) },
+            onClick = { onAction(TransactionDetailsActions.SaveTransaction()) },
             modifier = Modifier
                 .padding(8.dp)
                 .fillMaxWidth()
@@ -219,7 +229,9 @@ fun TransactionDetailsViewPreview() {
                     error = DataError.Local.UNKNOWN.toUiText(),
                 ),
                 onAction = {},
-                modifier = Modifier.padding(innerPadding)
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .background(MaterialTheme.colorScheme.surfaceDim)
             )
         }
     }

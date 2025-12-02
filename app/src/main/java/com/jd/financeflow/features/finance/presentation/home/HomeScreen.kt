@@ -19,6 +19,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -125,7 +126,7 @@ fun HomeView(
             if (state.showBottomSheet) {
                 ModalBottomSheet(
                     onDismissRequest = { onAction(HomeActions.ShowBottomSheet(false)) },
-                    sheetState = sheetState
+                    sheetState = sheetState,
                 ) {
                     addTransactionContent()
                 }
@@ -152,14 +153,19 @@ fun HomeView(
 @Composable
 fun HomeViewPreview() {
     FinanceFlowTheme {
-        HomeView(
-            state = HomeState(
-                balance = 100_000.0,
-                income = 150_000.0,
-                expense = 50_000.0,
-            ),
-            onAction = {},
-            modifier = Modifier.fillMaxWidth()
-        )
+        Scaffold { innerPadding ->
+            HomeView(
+                state = HomeState(
+                    showBottomSheet = false,
+                    balance = 100_000.0,
+                    income = 150_000.0,
+                    expense = 50_000.0,
+                ),
+                onAction = {},
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxWidth()
+            )
+        }
     }
 }

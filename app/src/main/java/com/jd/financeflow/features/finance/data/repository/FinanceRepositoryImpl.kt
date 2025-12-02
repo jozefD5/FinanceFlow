@@ -8,9 +8,7 @@ import com.jd.financeflow.features.core.domain.finance.FinanceCategory
 import com.jd.financeflow.features.finance.domain.FinanceRepository
 import com.jd.financeflow.features.core.domain.finance.FinanceType
 
-class FinanceRepositoryImpl(
-
-) : FinanceRepository {
+class FinanceRepositoryImpl() : FinanceRepository {
     override suspend fun getFinances(): Result<List<Finance>, DataError.Local> {
         TODO("Not yet implemented")
     }
@@ -36,6 +34,6 @@ class FinanceRepositoryImpl(
     }
 
     override suspend fun insertFinance(finance: Finance): EmptyResult<DataError.Local> {
-        TODO("Not yet implemented")
+        return Result.Success(Unit)
     }
 }
