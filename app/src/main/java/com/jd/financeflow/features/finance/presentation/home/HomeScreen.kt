@@ -24,6 +24,7 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,6 +35,8 @@ import org.koin.androidx.compose.koinViewModel
 
 import com.jd.financeflow.features.finance.presentation.home.components.BalanceCard
 import com.jd.financeflow.ui.theme.FinanceFlowTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 /**
  * Screen for the home screen.
@@ -66,6 +69,7 @@ fun HomeScreen(
  * @param onAction action to be performed
  * @param modifier modifier to be applied
  * @param addTransactionContent content for the add transaction screen
+ * @param scope scope to be used
  * @param scrollState scroll state to be used
  * @param sheetState sheet state to be used
  */
@@ -75,6 +79,7 @@ fun HomeView(
     state: HomeState,
     onAction: (HomeActions) -> Unit,
     modifier: Modifier = Modifier,
+    scope: CoroutineScope = rememberCoroutineScope(),
     addTransactionContent: @Composable () -> Unit = {},
     scrollState: ScrollState = rememberScrollState(),
     sheetState: SheetState = rememberModalBottomSheetState()
@@ -125,7 +130,13 @@ fun HomeView(
 
             if (state.showBottomSheet) {
                 ModalBottomSheet(
-                    onDismissRequest = { onAction(HomeActions.ShowBottomSheet(false)) },
+                    onDismissRequest = {
+                        scope.launch {
+                            sheetState.hide()
+                        }.invokeOnCompletion {
+                            onAction(HomeActions.ShowBottomSheet(false))
+                        }
+                    },
                     sheetState = sheetState,
                 ) {
                     addTransactionContent()
