@@ -27,11 +27,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -62,6 +64,7 @@ fun <T> LargeDropdownMenu(
     notSetLabel: String? = null,
     selectedIndex: Int = -1,
     selectedItemToString: (T) -> String = { it.toString() },
+    shape: Shape = OutlinedTextFieldDefaults.shape,
     drawItem: @Composable (T, Boolean, Boolean, () -> Unit) -> Unit = { item, selected, itemEnabled, onClick ->
         LargeDropdownMenuItem(
             text = item.toString(),
@@ -87,6 +90,7 @@ fun <T> LargeDropdownMenu(
                 }
             },
             onValueChange = { },
+            shape = shape,
             readOnly = true,
         )
 

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -103,7 +104,7 @@ fun TransactionDetailsView(
         }
 
         Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxWidth()
@@ -136,8 +137,8 @@ fun TransactionDetailsView(
                 keyboardActions = KeyboardActions(
                     onNext = { focusManager.moveFocus(FocusDirection.Down) }
                 ),
+                shape = RoundedCornerShape(24.dp),
                 modifier = Modifier
-                    .padding(8.dp)
                     .fillMaxWidth()
             )
 
@@ -149,8 +150,9 @@ fun TransactionDetailsView(
                 keyboardActions = KeyboardActions(
                     onNext = { focusManager.moveFocus(FocusDirection.Down) }
                 ),
+                shape = RoundedCornerShape(24.dp),
+                maxLines = 3,
                 modifier = Modifier
-                    .padding(8.dp)
                     .fillMaxWidth()
             )
 
@@ -166,8 +168,8 @@ fun TransactionDetailsView(
                 keyboardActions = KeyboardActions(
                     onNext = { focusManager.moveFocus(FocusDirection.Down) }
                 ),
+                shape = RoundedCornerShape(24.dp),
                 modifier = Modifier
-                    .padding(8.dp)
                     .fillMaxWidth()
             )
 
@@ -178,8 +180,8 @@ fun TransactionDetailsView(
                 onItemSelected = { index, _ ->
                     onAction(TransactionDetailsActions.UpdateFinanceInterval(index))
                 },
+                shape = RoundedCornerShape(24.dp),
                 modifier = Modifier
-                    .padding(8.dp)
                     .fillMaxWidth()
             )
 
@@ -198,8 +200,8 @@ fun TransactionDetailsView(
                 onItemSelected = { index, _ ->
                     onAction(TransactionDetailsActions.UpdateFinanceCategory(index))
                 },
+                shape = RoundedCornerShape(24.dp),
                 modifier = Modifier
-                    .padding(8.dp)
                     .fillMaxWidth()
             )
         }

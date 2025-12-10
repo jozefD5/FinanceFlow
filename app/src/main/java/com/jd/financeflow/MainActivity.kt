@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
                                 },
                                 modifier = Modifier
                                     .background(MaterialTheme.colorScheme.surfaceContainerLow)
-                                    .padding(vertical = 8.dp)
+                                    .padding(vertical = 16.dp)
                                     .fillMaxSize()
                             )
                         },
