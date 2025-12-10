@@ -41,6 +41,9 @@ class MainActivity : ComponentActivity() {
                                 viewModel = editTransactionViewModel,
                                 onSuccessfulAdd = {
                                     homeViewModel.onAction(
+                                        HomeActions.RefreshBalance()
+                                    )
+                                    homeViewModel.onAction(
                                         HomeActions.ShowBottomSheet(false)
                                     )
                                 },

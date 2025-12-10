@@ -1,19 +1,20 @@
 package com.jd.financeflow.features.finance.presentation.home
 
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+
 import com.jd.financeflow.features.core.domain.DataError
 import com.jd.financeflow.features.core.domain.Result
 import com.jd.financeflow.features.core.domain.finance.FinanceType
 import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.finance.domain.FinanceRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 /**
  * View model for the home screen.
@@ -34,15 +35,24 @@ class HomeViewModel(
             initialValue = HomeState()
         )
 
+    /**
+     * Handles actions for the home screen.
+     *
+     * @param action action to be handled
+     */
     fun onAction(action: HomeActions) {
         when (action) {
-            HomeActions.ClearError -> {
+            is HomeActions.RefreshBalance -> {
+                refreshBalance()
+            }
+
+            is HomeActions.ClearError -> {
                 _state.update {
                     it.copy(error = null)
                 }
             }
 
-            HomeActions.AddTransaction -> {}
+            is HomeActions.AddTransaction -> {}
 
             is HomeActions.ShowBottomSheet -> {
                 _state.update {
@@ -60,17 +70,13 @@ class HomeViewModel(
         runCatching {
             when (val result = repository.getFinances()) {
                 is Result.Success -> {
-                    val income = result.data.filter { it.type == FinanceType.INCOME }
-                    val expenses = result.data.filter { it.type == FinanceType.EXPENSE }
-
-                    val totalIncome = income.sumOf { it.amount }
-                    val totalExpenses = expenses.sumOf { it.amount }
-                    val balance = totalIncome - totalExpenses
+                    val totalIncome = repository.getTotal(FinanceType.INCOME)
+                    val totalExpenses = repository.getTotal(FinanceType.EXPENSE)
 
                     _state.update {
                         it.copy(
                             isLoading = false,
-                            balance = balance,
+                            balance = totalIncome - totalExpenses,
                             income = totalIncome,
                             expense = totalExpenses
                         )

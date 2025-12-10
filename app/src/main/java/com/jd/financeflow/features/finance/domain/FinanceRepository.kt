@@ -66,4 +66,12 @@ interface FinanceRepository {
      * @return [EmptyResult] on success or [DataError.Local] on failure.
      */
     suspend fun insertFinance(finance: Finance): EmptyResult<DataError.Local>
+
+    /**
+     * Retrieves the total income for a specific type of financial transactions.
+     *
+     * @param type The type of the transactions to retrieve the total income for.
+     * @return The total income as a [Double] value.
+     */
+    suspend fun getTotal(type: FinanceType): Double
 }
