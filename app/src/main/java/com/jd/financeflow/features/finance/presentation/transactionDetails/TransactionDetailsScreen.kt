@@ -1,6 +1,7 @@
-package com.jd.financeflow.features.finance.presentation.editTransaction
+package com.jd.financeflow.features.finance.presentation.transactionDetails
 
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +13,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -21,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalFocusManager
@@ -38,7 +39,7 @@ import com.jd.financeflow.features.core.domain.finance.FinanceCategory
 import com.jd.financeflow.features.core.domain.finance.FinanceInterval
 import com.jd.financeflow.features.core.domain.finance.FinanceType
 import com.jd.financeflow.features.core.presentation.components.LargeDropdownMenu
-import com.jd.financeflow.features.core.presentation.components.toUiText
+import com.jd.financeflow.features.core.presentation.components.finance.toUiText
 import com.jd.financeflow.features.core.presentation.toUiText
 
 /**
@@ -48,15 +49,25 @@ import com.jd.financeflow.features.core.presentation.toUiText
  * @param viewModel view model to be used
  */
 @Composable
-fun EditTransactionScreen(
+fun TransactionDetailsScreen(
     modifier: Modifier = Modifier,
-    viewModel: EditTransactionViewModel = koinViewModel(),
+    onSuccessfulAdd: () -> Unit = {},
+    viewModel: TransactionDetailsViewModel = koinViewModel(),
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
 
-    EditTransactionView(
+    TransactionDetailsView(
         state = state.value,
-        onAction = { viewModel.onAction(it) },
+        onAction = { action ->
+            val actualAction = when (action) {
+                is TransactionDetailsActions.SaveTransaction -> action
+                    .copy(action = onSuccessfulAdd)
+
+                else -> action
+            }
+
+            viewModel.onAction(actualAction)
+        },
         modifier = modifier
     )
 }
@@ -71,9 +82,9 @@ fun EditTransactionScreen(
  * @param scrollState scroll state to be used
  */
 @Composable
-fun EditTransactionView(
-    state: EditTransactionState,
-    onAction: (EditTransactionActions) -> Unit,
+fun TransactionDetailsView(
+    state: TransactionDetailsState,
+    onAction: (TransactionDetailsActions) -> Unit,
     modifier: Modifier = Modifier,
     focusManager: FocusManager = LocalFocusManager.current,
     scrollState: ScrollState = rememberScrollState()
@@ -88,7 +99,6 @@ fun EditTransactionView(
                 text = state.error.asString(),
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(16.dp)
             )
         }
 
@@ -111,15 +121,15 @@ fun EditTransactionView(
                             count = FinanceType.entries.size
                         ),
                         selected = state.financeTypeIndex == index,
-                        onClick = { onAction(EditTransactionActions.UpdateFinanceType(index)) },
+                        onClick = { onAction(TransactionDetailsActions.UpdateFinanceType(index)) },
                         label = { Text(value.toUiText().asString()) }
                     )
                 }
             }
 
-            TextField(
+            OutlinedTextField(
                 value = state.title,
-                onValueChange = { onAction(EditTransactionActions.UpdateTitle(it)) },
+                onValueChange = { onAction(TransactionDetailsActions.UpdateTitle(it)) },
                 label = { Text(stringResource(R.string.add_transaction_title_label)) },
                 isError = state.invalidTitle,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -131,9 +141,9 @@ fun EditTransactionView(
                     .fillMaxWidth()
             )
 
-            TextField(
+            OutlinedTextField(
                 value = state.description,
-                onValueChange = { onAction(EditTransactionActions.UpdateDescription(it)) },
+                onValueChange = { onAction(TransactionDetailsActions.UpdateDescription(it)) },
                 label = { Text(stringResource(R.string.add_transaction_title_description)) },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                 keyboardActions = KeyboardActions(
@@ -144,9 +154,9 @@ fun EditTransactionView(
                     .fillMaxWidth()
             )
 
-            TextField(
+            OutlinedTextField(
                 value = state.amount,
-                onValueChange = { onAction(EditTransactionActions.UpdateAmount(it)) },
+                onValueChange = { onAction(TransactionDetailsActions.UpdateAmount(it)) },
                 label = { Text(stringResource(R.string.add_transaction_title_amount)) },
                 isError = state.invalidAmount,
                 keyboardOptions = KeyboardOptions(
@@ -166,7 +176,7 @@ fun EditTransactionView(
                 selectedIndex = state.financeIntervalIndex,
                 items = FinanceInterval.entries.map { it.toUiText().asString() },
                 onItemSelected = { index, _ ->
-                    onAction(EditTransactionActions.UpdateFinanceInterval(index))
+                    onAction(TransactionDetailsActions.UpdateFinanceInterval(index))
                 },
                 modifier = Modifier
                     .padding(8.dp)
@@ -186,7 +196,7 @@ fun EditTransactionView(
                     }
                 }.map { it.toUiText().asString() },
                 onItemSelected = { index, _ ->
-                    onAction(EditTransactionActions.UpdateFinanceCategory(index))
+                    onAction(TransactionDetailsActions.UpdateFinanceCategory(index))
                 },
                 modifier = Modifier
                     .padding(8.dp)
@@ -196,7 +206,7 @@ fun EditTransactionView(
 
         Spacer(modifier = Modifier.padding(24.dp))
         Button(
-            onClick = { onAction(EditTransactionActions.SaveTransaction) },
+            onClick = { onAction(TransactionDetailsActions.SaveTransaction()) },
             modifier = Modifier
                 .padding(8.dp)
                 .fillMaxWidth()
@@ -211,15 +221,17 @@ fun EditTransactionView(
 
 @Preview(showBackground = true)
 @Composable
-fun EditTransactionViewPreview() {
+fun TransactionDetailsViewPreview() {
     MaterialTheme {
         Scaffold { innerPadding ->
-            EditTransactionView(
-                state = EditTransactionState(
+            TransactionDetailsView(
+                state = TransactionDetailsState(
                     error = DataError.Local.UNKNOWN.toUiText(),
                 ),
                 onAction = {},
-                modifier = Modifier.padding(innerPadding)
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .background(MaterialTheme.colorScheme.surfaceDim)
             )
         }
     }

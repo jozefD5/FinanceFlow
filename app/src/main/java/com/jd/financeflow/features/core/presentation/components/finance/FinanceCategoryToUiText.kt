@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.core.presentation.components
+package com.jd.financeflow.features.core.presentation.components.finance
 
 import com.jd.financeflow.R
 import com.jd.financeflow.features.core.domain.finance.FinanceCategory

@@ -3,6 +3,10 @@
 
     <string name="save_button">Save</string>
 
+    <string name="balance_card_label_your_balance">Your annual balance</string>
+    <string name="balance_card_label_income">Income</string>
+    <string name="balance_card_label_expense">Expense</string>
+
     <string name="data_error_invalid_argument">Invalid argument has been provided</string>
     <string name="data_error_invalid_request">Invalid request has been provided</string>
     <string name="data_error_serialization">Data serialization error has been encountered</string>
@@ -42,5 +46,6 @@
     <string name="finance_interval_quarterly">Quarterly</string>
     <string name="finance_interval_half_yearly">Half Yearly</string>
     <string name="finance_interval_yearly">Yearly</string>
+
 
 </resources>
