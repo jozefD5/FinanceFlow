@@ -1,5 +1,6 @@
 package com.jd.financeflow.features.finance.presentation.home
 
+import com.jd.financeflow.features.core.domain.finance.FinanceCategory
 import com.jd.financeflow.features.core.presentation.UiText
 
 /**
@@ -15,5 +16,9 @@ data class HomeState(
     // Balance card
     val balance: Double = 0.0,
     val income: Double = 0.0,
-    val expense: Double = 0.0
+    val expense: Double = 0.0,
+
+    // Income category preview
+    val incomeCategoriesPreview: List<Pair<FinanceCategory, Double>> = emptyList(),
+    val expenseCategoriesPreview: List<Pair<FinanceCategory, Double>> = emptyList()
 )

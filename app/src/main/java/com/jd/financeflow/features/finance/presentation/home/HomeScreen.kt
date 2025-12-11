@@ -85,9 +85,10 @@ fun HomeView(
     sheetState: SheetState = rememberModalBottomSheetState()
 ) {
     Box(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
     ) {
         Column(
+            verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
@@ -102,7 +103,7 @@ fun HomeView(
                 color = Color.Transparent,
                 textColor = Color.White,
                 modifier = Modifier
-                    .padding(24.dp)
+                    .padding(16.dp)
                     .fillMaxWidth()
             )
 
