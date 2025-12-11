@@ -1,5 +1,6 @@
 package com.jd.financeflow.features.finance.presentation.home
 
+import android.util.Log
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
@@ -15,6 +16,7 @@ import com.jd.financeflow.features.core.domain.EmptyResult
 import com.jd.financeflow.features.core.domain.Result
 import com.jd.financeflow.features.core.domain.finance.FinanceCategory
 import com.jd.financeflow.features.core.domain.finance.FinanceType
+import com.jd.financeflow.features.core.presentation.components.finance.toUiText
 import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.finance.domain.FinanceRepository
 
@@ -180,7 +182,7 @@ class HomeViewModel(
 
             val sortedCategories = categoryList
                 .sortedByDescending { it.second }
-                .take(3)
+                .take(4)
 
             // Update categor state
             if (type == FinanceType.INCOME) {

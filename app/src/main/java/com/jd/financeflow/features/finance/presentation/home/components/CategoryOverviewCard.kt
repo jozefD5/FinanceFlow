@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
@@ -36,7 +37,7 @@ import com.jd.financeflow.features.core.presentation.components.formatCurrency
  * @param textColor the text color of the card
  */
 @Composable
-fun CategoryOverview(
+fun CategoryOverviewCard(
     category: FinanceCategory,
     value: Double,
     currencyCode: String,
@@ -51,14 +52,16 @@ fun CategoryOverview(
         ),
         modifier = modifier.combinedClickable(
             onClick = onClicked,
-            onLongClick = onClicked
         )
     ) {
         Row(
-            modifier = Modifier.padding(8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(16.dp),
         ) {
             Column(
                 verticalArrangement = Arrangement.Center,
+                modifier = Modifier.weight(1f)
             ) {
                 Text(
                     text = category.toUiText().asString(),
@@ -86,10 +89,10 @@ fun CategoryOverview(
 
 @Preview(showBackground = true)
 @Composable
-fun CategoryOverviewPreview() {
+fun CategoryOverviewCardPreview() {
     MaterialTheme {
         Scaffold { innerPadding ->
-            CategoryOverview(
+            CategoryOverviewCard(
                 category = FinanceCategory.Income(FinanceCategory.IncomeCategory.Salary),
                 value = 100_000.0,
                 currencyCode = "EUR",

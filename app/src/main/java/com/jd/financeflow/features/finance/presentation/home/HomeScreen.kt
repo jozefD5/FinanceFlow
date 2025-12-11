@@ -1,17 +1,18 @@
 package com.jd.financeflow.features.finance.presentation.home
 
-import androidx.compose.foundation.ScrollState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,21 +23,25 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 
+import com.jd.financeflow.R
+import com.jd.financeflow.features.core.domain.finance.FinanceCategory
 import com.jd.financeflow.features.finance.presentation.home.components.BalanceCard
+import com.jd.financeflow.features.finance.presentation.home.components.CategoryOverviewList
 import com.jd.financeflow.ui.theme.FinanceFlowTheme
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 /**
  * Screen for the home screen.
@@ -70,7 +75,6 @@ fun HomeScreen(
  * @param modifier modifier to be applied
  * @param addTransactionContent content for the add transaction screen
  * @param scope scope to be used
- * @param scrollState scroll state to be used
  * @param sheetState sheet state to be used
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -81,11 +85,10 @@ fun HomeView(
     modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
     addTransactionContent: @Composable () -> Unit = {},
-    scrollState: ScrollState = rememberScrollState(),
     sheetState: SheetState = rememberModalBottomSheetState()
 ) {
     Box(
-        modifier = modifier
+        modifier = modifier.fillMaxSize()
     ) {
         Column(
             verticalArrangement = Arrangement.Top,
@@ -117,16 +120,53 @@ fun HomeView(
                     .weight(1f)
                     .fillMaxWidth()
             ) {
-                Column(
-                    verticalArrangement = Arrangement.Top,
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier
+                        .padding(8.dp)
                         .fillMaxSize()
-                        .padding(16.dp)
-                        .verticalScroll(scrollState)
                 ) {
+                    // Income
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.finance_type_income),
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
 
+                        CategoryOverviewList(
+                            categories = state.incomeCategoriesPreview,
+                            currencyCode = state.currencyCode,
+                            onClicked = {}
+                        )
+                    }
+
+                    // Expense
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.finance_type_expense),
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+
+                        CategoryOverviewList(
+                            categories = state.expenseCategoriesPreview,
+                            currencyCode = state.currencyCode,
+                            onClicked = {}
+                        )
+                    }
                 }
+
             }
 
             if (state.showBottomSheet) {
@@ -164,6 +204,36 @@ fun HomeView(
 @Preview(showBackground = true)
 @Composable
 fun HomeViewPreview() {
+    val incomePreviewCategories = listOf(
+        Pair(
+            FinanceCategory.Income(FinanceCategory.IncomeCategory.Salary),
+            100_000.0
+        ),
+        Pair(
+            FinanceCategory.Income(FinanceCategory.IncomeCategory.Bonus),
+            50_000.0
+        ),
+        Pair(
+            FinanceCategory.Income(FinanceCategory.IncomeCategory.Investments),
+            40_000.0
+        )
+    )
+
+    val expensePreviewCategories = listOf(
+        Pair(
+            FinanceCategory.Expense(FinanceCategory.ExpenseCategory.Housing),
+            10_000.0
+        ),
+        Pair(
+            FinanceCategory.Expense(FinanceCategory.ExpenseCategory.Utility),
+            5_000.0
+        ),
+        Pair(
+            FinanceCategory.Expense(FinanceCategory.ExpenseCategory.Transport),
+            2_000.0
+        )
+    )
+
     FinanceFlowTheme {
         Scaffold { innerPadding ->
             HomeView(
@@ -172,6 +242,8 @@ fun HomeViewPreview() {
                     balance = 100_000.0,
                     income = 150_000.0,
                     expense = 50_000.0,
+                    incomeCategoriesPreview = incomePreviewCategories,
+                    expenseCategoriesPreview = expensePreviewCategories
                 ),
                 onAction = {},
                 modifier = Modifier
