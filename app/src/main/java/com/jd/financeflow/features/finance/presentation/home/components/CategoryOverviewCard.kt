@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -57,7 +58,7 @@ fun CategoryOverviewCard(
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(16.dp)
         ) {
             Column(
                 verticalArrangement = Arrangement.Center,
@@ -74,6 +75,7 @@ fun CategoryOverviewCard(
                 Text(
                     text = formatCurrency(value, currencyCode),
                     style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.Bold,
                         color = textColor,
                     )
                 )
@@ -96,6 +98,7 @@ fun CategoryOverviewCardPreview() {
                 category = FinanceCategory.Income(FinanceCategory.IncomeCategory.Salary),
                 value = 100_000.0,
                 currencyCode = "EUR",
+                color = Color(0xFF3C9B48),
                 onClicked = {},
                 modifier = Modifier.padding(innerPadding)
             )

@@ -11,6 +11,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -22,6 +23,7 @@ fun CategoryOverviewList(
     currencyCode: String,
     onClicked: (FinanceCategory) -> Unit,
     modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.surfaceContainer,
     scrollState: LazyListState = rememberLazyListState()
 ) {
     LazyColumn(
@@ -39,6 +41,7 @@ fun CategoryOverviewList(
                 value = it.second,
                 currencyCode = currencyCode,
                 onClicked = { onClicked(it.first) },
+                color = color,
                 modifier = Modifier.padding(8.dp)
             )
         }

@@ -142,6 +142,7 @@ fun HomeView(
                         CategoryOverviewList(
                             categories = state.incomeCategoriesPreview,
                             currencyCode = state.currencyCode,
+                            color = Color(0xB33C9B48),
                             onClicked = {}
                         )
                     }
@@ -162,6 +163,7 @@ fun HomeView(
                         CategoryOverviewList(
                             categories = state.expenseCategoriesPreview,
                             currencyCode = state.currencyCode,
+                            color = Color(0xB3C7351C),
                             onClicked = {}
                         )
                     }
@@ -179,6 +181,9 @@ fun HomeView(
                         }
                     },
                     sheetState = sheetState,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth()
                 ) {
                     addTransactionContent()
                 }
@@ -216,6 +221,10 @@ fun HomeViewPreview() {
         Pair(
             FinanceCategory.Income(FinanceCategory.IncomeCategory.Investments),
             40_000.0
+        ),
+        Pair(
+            FinanceCategory.Income(FinanceCategory.IncomeCategory.Commissions),
+            30_000.0
         )
     )
 
@@ -231,6 +240,10 @@ fun HomeViewPreview() {
         Pair(
             FinanceCategory.Expense(FinanceCategory.ExpenseCategory.Transport),
             2_000.0
+        ),
+        Pair(
+            FinanceCategory.Expense(FinanceCategory.ExpenseCategory.Entertainment),
+            200.0
         )
     )
 
