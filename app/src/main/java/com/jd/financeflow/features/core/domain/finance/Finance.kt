@@ -12,6 +12,7 @@ import java.util.UUID
  * @property interval The frequency or interval at which the transaction occurs.
  * @property type The type of the transaction (e.g., income, expense).
  * @property category The category or type of the transaction.
+ * @property createdAt The timestamp indicating when the transaction was created or updated at last.
  */
 data class Finance(
     val id: Int = UUID.randomUUID().hashCode(),
@@ -20,5 +21,6 @@ data class Finance(
     val amount: Double,
     val interval: FinanceInterval,
     val type: FinanceType,
-    val category: FinanceCategory
+    val category: FinanceCategory,
+    val createdAt: Long = System.currentTimeMillis()
 )

@@ -1,15 +1,12 @@
 package com.jd.financeflow.features.finance.presentation.home.components
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -17,19 +14,27 @@ import androidx.compose.ui.unit.dp
 
 import com.jd.financeflow.features.core.domain.finance.FinanceCategory
 
+/**
+ * Displays a grid of category overview cards.
+ *
+ * @param categories the list of categories to display
+ * @param currencyCode the currency code to use e.g. EUR for Euro or USD for US Dollar
+ * @param onClicked the action to perform when a category is clicked
+ * @param modifier the modifier to apply to the grid
+ * @param color the background color of the cards
+ * @param textColor the text color of the cards
+ */
 @Composable
-fun CategoryOverviewList(
+fun CategoryOverviewGrid(
     categories: List<Pair<FinanceCategory, Double>>,
     currencyCode: String,
     onClicked: (FinanceCategory) -> Unit,
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.surfaceContainer,
-    scrollState: LazyListState = rememberLazyListState()
+    textColor: Color = MaterialTheme.colorScheme.onSurface
 ) {
-    LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        state = scrollState,
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
         modifier = modifier
     ) {
         items(
@@ -42,7 +47,8 @@ fun CategoryOverviewList(
                 currencyCode = currencyCode,
                 onClicked = { onClicked(it.first) },
                 color = color,
-                modifier = Modifier.padding(8.dp)
+                textColor = textColor,
+                modifier = Modifier.padding(4.dp)
             )
         }
     }
@@ -50,7 +56,7 @@ fun CategoryOverviewList(
 
 @Preview(showBackground = true)
 @Composable
-fun CategoryOverviewListPreview() {
+fun CategoryOverviewGridPreview() {
     val categories = listOf(
         Pair(
             FinanceCategory.Income(FinanceCategory.IncomeCategory.Salary),
@@ -61,18 +67,23 @@ fun CategoryOverviewListPreview() {
             50_000.0
         ),
         Pair(
-            FinanceCategory.Income(FinanceCategory.IncomeCategory.Investments),
+            FinanceCategory.Income(FinanceCategory.IncomeCategory.Commissions),
             40_000.0
+        ),
+        Pair(
+            FinanceCategory.Income(FinanceCategory.IncomeCategory.Investments),
+            30_000.0
         )
     )
 
     MaterialTheme {
         Scaffold { innerPadding ->
-            CategoryOverviewList(
+            CategoryOverviewGrid(
                 categories = categories,
                 currencyCode = "EUR",
                 onClicked = {},
-                modifier = Modifier.padding(innerPadding)
+                modifier = Modifier
+                    .padding(innerPadding)
             )
         }
     }

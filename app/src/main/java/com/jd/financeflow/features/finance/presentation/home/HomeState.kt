@@ -18,6 +18,10 @@ data class HomeState(
     val income: Double = 0.0,
     val expense: Double = 0.0,
 
+
+    // Recent transactions
+
+
     // Income category preview
     val incomeCategoriesPreview: List<Pair<FinanceCategory, Double>> = emptyList(),
     val expenseCategoriesPreview: List<Pair<FinanceCategory, Double>> = emptyList()
