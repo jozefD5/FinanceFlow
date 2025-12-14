@@ -1,5 +1,6 @@
 package com.jd.financeflow.features.finance.presentation.home
 
+import androidx.compose.foundation.ScrollState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -10,7 +11,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.NorthEast
@@ -82,8 +85,8 @@ fun HomeView(
     state: HomeState,
     onAction: (HomeActions) -> Unit,
     modifier: Modifier = Modifier,
-    scope: CoroutineScope = rememberCoroutineScope(),
     addTransactionContent: @Composable () -> Unit = {},
+    scope: CoroutineScope = rememberCoroutineScope(),
     sheetState: SheetState = rememberModalBottomSheetState()
 ) {
     Column(
@@ -178,9 +181,24 @@ fun HomeView(
                 .fillMaxWidth()
         )
 
+        Text(
+            text = "Expense overview",
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontWeight = FontWeight.Bold
+            ),
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .fillMaxWidth()
+        )
 
-
-
+        CategoryOverviewGrid(
+            categories = state.expenseCategoriesPreview,
+            currencyCode = state.currencyCode,
+            onClicked = { },
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .fillMaxWidth()
+        )
 
         if (state.showBottomSheet) {
             ModalBottomSheet(
@@ -200,21 +218,6 @@ fun HomeView(
             }
         }
     }
-
-
-//
-//        FloatingActionButton(
-//            onClick = { onAction(HomeActions.ShowBottomSheet(true)) },
-//            modifier = Modifier
-//                .padding(16.dp)
-//                .align(Alignment.BottomEnd)
-//        ) {
-//            Icon(
-//                imageVector = Icons.Default.Add,
-//                contentDescription = null
-//            )
-//        }
-
 }
 
 

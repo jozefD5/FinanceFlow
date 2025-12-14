@@ -34,7 +34,7 @@ fun CategoryOverviewGrid(
     textColor: Color = MaterialTheme.colorScheme.onSurface
 ) {
     LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
+        columns = GridCells.Adaptive(minSize = 144.dp),
         modifier = modifier
     ) {
         items(

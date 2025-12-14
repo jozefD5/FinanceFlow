@@ -206,7 +206,7 @@ fun TransactionDetailsView(
             )
         }
 
-        Spacer(modifier = Modifier.padding(8.dp))
+        Spacer(modifier = Modifier.padding(32.dp))
 
         Button(
             onClick = { onAction(TransactionDetailsActions.SaveTransaction()) },
@@ -219,6 +219,8 @@ fun TransactionDetailsView(
                 modifier = Modifier.padding(8.dp)
             )
         }
+
+        Spacer(modifier = Modifier.padding(16.dp))
     }
 }
 
