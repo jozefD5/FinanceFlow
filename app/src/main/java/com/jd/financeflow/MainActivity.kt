@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -48,7 +49,10 @@ class MainActivity : ComponentActivity() {
                                     )
                                 },
                                 modifier = Modifier
-                                    .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                                    .background(
+                                        MaterialTheme.colorScheme.surfaceContainerLow
+                                    )
+                                    .padding(horizontal = 8.dp)
                             )
                         },
                         modifier = Modifier

@@ -23,6 +23,8 @@ import com.jd.financeflow.features.core.domain.finance.FinanceCategory
  * @param modifier the modifier to apply to the grid
  * @param color the background color of the cards
  * @param textColor the text color of the cards
+ * @param lineGraphColor the color of the line graph
+ * @param lineGraphMaxValue the maximum value of the line graph set to null to disable the line graph
  */
 @Composable
 fun CategoryOverviewGrid(
@@ -31,7 +33,9 @@ fun CategoryOverviewGrid(
     onClicked: (FinanceCategory) -> Unit,
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.surfaceContainer,
-    textColor: Color = MaterialTheme.colorScheme.onSurface
+    textColor: Color = MaterialTheme.colorScheme.onSurface,
+    lineGraphColor: Color = MaterialTheme.colorScheme.primary,
+    lineGraphMaxValue: Double? = null
 ) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 144.dp),
@@ -48,6 +52,8 @@ fun CategoryOverviewGrid(
                 onClicked = { onClicked(it.first) },
                 color = color,
                 textColor = textColor,
+                lineGraphColor = lineGraphColor,
+                lineGraphMaxValue = lineGraphMaxValue,
                 modifier = Modifier.padding(4.dp)
             )
         }
@@ -72,7 +78,7 @@ fun CategoryOverviewGridPreview() {
         ),
         Pair(
             FinanceCategory.Income(FinanceCategory.IncomeCategory.Investments),
-            30_000.0
+            10_000.0
         )
     )
 
@@ -82,6 +88,8 @@ fun CategoryOverviewGridPreview() {
                 categories = categories,
                 currencyCode = "EUR",
                 onClicked = {},
+                lineGraphColor = Color.Green,
+                lineGraphMaxValue = 200_000.0,
                 modifier = Modifier
                     .padding(innerPadding)
             )

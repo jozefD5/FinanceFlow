@@ -36,9 +36,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.jd.financeflow.R
 import org.koin.androidx.compose.koinViewModel
 
+import com.jd.financeflow.R
 import com.jd.financeflow.features.core.domain.finance.FinanceCategory
 import com.jd.financeflow.features.finance.presentation.home.components.BalanceCard
 import com.jd.financeflow.features.finance.presentation.home.components.CategoryOverviewGrid
@@ -173,7 +173,9 @@ fun HomeView(
 
         CategoryOverviewGrid(
             categories = state.incomeCategoriesPreview,
+            lineGraphMaxValue = state.income,
             currencyCode = state.currencyCode,
+            lineGraphColor = Color.Green,
             onClicked = { },
             modifier = Modifier
                 .padding(horizontal = 8.dp)
@@ -192,7 +194,9 @@ fun HomeView(
 
         CategoryOverviewGrid(
             categories = state.expenseCategoriesPreview,
+            lineGraphMaxValue = state.expense,
             currencyCode = state.currencyCode,
+            lineGraphColor = Color.Red,
             onClicked = { },
             modifier = Modifier
                 .padding(horizontal = 8.dp)
@@ -239,7 +243,7 @@ fun HomeViewPreview() {
         ),
         Pair(
             FinanceCategory.Income(FinanceCategory.IncomeCategory.Commissions),
-            30_000.0
+            10_000.0
         )
     )
 
@@ -250,15 +254,15 @@ fun HomeViewPreview() {
         ),
         Pair(
             FinanceCategory.Expense(FinanceCategory.ExpenseCategory.Utility),
-            5_000.0
+            10_000.0
         ),
         Pair(
             FinanceCategory.Expense(FinanceCategory.ExpenseCategory.Transport),
-            2_000.0
+            5_000.0
         ),
         Pair(
             FinanceCategory.Expense(FinanceCategory.ExpenseCategory.Entertainment),
-            200.0
+            5_000.0
         )
     )
 
@@ -268,8 +272,8 @@ fun HomeViewPreview() {
                 state = HomeState(
                     showBottomSheet = false,
                     balance = 100_000.0,
-                    income = 150_000.0,
-                    expense = 50_000.0,
+                    income = 200_000.0,
+                    expense = 30_000.0,
                     incomeCategoriesPreview = incomePreviewCategories,
                     expenseCategoriesPreview = expensePreviewCategories
                 ),

@@ -1,9 +1,12 @@
 package com.jd.financeflow.features.finance.presentation.home.components
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
@@ -17,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,6 +40,8 @@ import com.jd.financeflow.features.core.presentation.components.formatCurrency
  * @param modifier the modifier to apply to the card
  * @param color the background color of the card
  * @param textColor the text color of the card
+ * @param lineGraphColor the color of the line graph
+ * @param lineGraphMaxValue the maximum value of the line graph, set to null to disable the line graph
  */
 @Composable
 fun CategoryOverviewCard(
@@ -45,7 +51,9 @@ fun CategoryOverviewCard(
     onClicked: () -> Unit,
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.surfaceContainer,
-    textColor: Color = MaterialTheme.colorScheme.onSurface
+    textColor: Color = MaterialTheme.colorScheme.onSurface,
+    lineGraphColor: Color = MaterialTheme.colorScheme.primary,
+    lineGraphMaxValue: Double? = null
 ) {
     Card(
         colors = CardDefaults.cardColors(
@@ -79,6 +87,38 @@ fun CategoryOverviewCard(
                         color = textColor,
                     )
                 )
+
+                Spacer(modifier = Modifier.padding(4.dp))
+
+                if (lineGraphMaxValue != null) {
+                    Canvas(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        // Calculate the canvas width and height based on the line graph max value
+                        val canvasWidth = try {
+                            val displayPercentage = value / lineGraphMaxValue
+
+                            if (displayPercentage <= 0) {
+                                0.0f
+                            } else if (displayPercentage > lineGraphMaxValue) {
+                                size.width
+                            } else {
+                                size.width * displayPercentage.toFloat()
+                            }
+                        } catch (_: ArithmeticException) {
+                            0.0f
+                        }
+
+                        val canvasHeight = size.height
+
+                        drawLine(
+                            start = Offset(x = canvasWidth, y = 0f),
+                            end = Offset(x = 0f, y = canvasHeight),
+                            strokeWidth = 2.dp.toPx(),
+                            color = lineGraphColor
+                        )
+                    }
+                }
             }
 
             Icon(
@@ -96,10 +136,11 @@ fun CategoryOverviewCardPreview() {
         Scaffold { innerPadding ->
             CategoryOverviewCard(
                 category = FinanceCategory.Income(FinanceCategory.IncomeCategory.Salary),
-                value = 100_000.0,
+                value = 80_000.0,
                 currencyCode = "EUR",
-                color = Color(0xFF3C9B48),
                 onClicked = {},
+                lineGraphColor = Color.Green,
+                lineGraphMaxValue = 100_000.0,
                 modifier = Modifier.padding(innerPadding)
             )
         }
