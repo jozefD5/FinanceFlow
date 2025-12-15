@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">FinanceFlow</string>
 
+    <string name="income_overview_title">Income overview</string>
+    <string name="expense_overview_title">Expense overview</string>
+    <string name="add_transaction_button_label">Add transaction</string>
     <string name="save_button">Save</string>
 
     <string name="balance_card_label_your_balance">Your annual balance</string>
@@ -46,6 +49,5 @@
     <string name="finance_interval_quarterly">Quarterly</string>
     <string name="finance_interval_half_yearly">Half Yearly</string>
     <string name="finance_interval_yearly">Yearly</string>
-
 
 </resources>
