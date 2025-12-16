@@ -40,7 +40,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 
 import com.jd.financeflow.R
+import com.jd.financeflow.features.core.domain.DataError
 import com.jd.financeflow.features.core.domain.finance.FinanceCategory
+import com.jd.financeflow.features.core.presentation.components.ErrorDialog
+import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.finance.presentation.home.components.BalanceCard
 import com.jd.financeflow.features.finance.presentation.home.components.CategoryOverviewGrid
 import com.jd.financeflow.ui.theme.FinanceFlowTheme
@@ -223,6 +226,14 @@ fun HomeView(
                 addTransactionContent()
             }
         }
+
+        if (state.error != null) {
+            ErrorDialog(
+                content = state.error.asString(),
+                onConfirmation = { onAction(HomeActions.ClearError()) },
+                onDismiss = { onAction(HomeActions.ClearError()) }
+            )
+        }
     }
 }
 
@@ -273,6 +284,7 @@ fun HomeViewPreview() {
         Scaffold { innerPadding ->
             HomeView(
                 state = HomeState(
+                    error = DataError.Local.INVALID_ARGUMENT.toUiText(),
                     showBottomSheet = false,
                     balance = 100_000.0,
                     income = 200_000.0,

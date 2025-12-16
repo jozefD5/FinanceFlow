@@ -125,8 +125,27 @@ class HomeViewModel(
         return runCatching {
             when (val result = repository.getFinances()) {
                 is Result.Success -> {
-                    val totalIncome = repository.getTotal(FinanceType.INCOME)
-                    val totalExpenses = repository.getTotal(FinanceType.EXPENSE)
+                    val totalIncome =
+                        when (val totalResult = repository.getTotal(FinanceType.INCOME)) {
+                            is Result.Success -> {
+                                totalResult.data
+                            }
+
+                            is Result.Error -> {
+                                return totalResult
+                            }
+                        }
+
+                    val totalExpenses =
+                        when (val totalResult = repository.getTotal(FinanceType.EXPENSE)) {
+                            is Result.Success -> {
+                                totalResult.data
+                            }
+
+                            is Result.Error -> {
+                                return totalResult
+                            }
+                        }
 
                     _state.update {
                         it.copy(
@@ -160,21 +179,44 @@ class HomeViewModel(
             // Get total for each category, for the selected type, and sort by value
             if (type == FinanceType.INCOME) {
                 FinanceCategory.IncomeCategory.entries.forEach { category ->
-                    val total = repository.getTotal(
-                        FinanceType.INCOME,
-                        FinanceCategory.Income(category)
-                    )
+                    when (val result = repository.getTotal(
+                        type = FinanceType.INCOME,
+                        category = FinanceCategory.Income(category)
+                    )) {
+                        is Result.Success -> {
+                            categoryList.add(
+                                Pair(
+                                    first = FinanceCategory.Income(category),
+                                    second = result.data
+                                )
+                            )
+                        }
 
-                    categoryList.add(Pair(FinanceCategory.Income(category), total))
+                        is Result.Error -> {
+                            return result
+                        }
+                    }
                 }
+
             } else {
                 FinanceCategory.ExpenseCategory.entries.forEach { category ->
-                    val total = repository.getTotal(
-                        FinanceType.EXPENSE,
-                        FinanceCategory.Expense(category)
-                    )
+                    when (val result = repository.getTotal(
+                        type = FinanceType.EXPENSE,
+                        category = FinanceCategory.Expense(category)
+                    )) {
+                        is Result.Success -> {
+                            categoryList.add(
+                                Pair(
+                                    first = FinanceCategory.Expense(category),
+                                    second = result.data
+                                )
+                            )
+                        }
 
-                    categoryList.add(Pair(FinanceCategory.Expense(category), total))
+                        is Result.Error -> {
+                            return result
+                        }
+                    }
                 }
             }
 
