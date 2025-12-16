@@ -73,7 +73,10 @@ interface FinanceRepository {
      * @param type The type of the transactions to retrieve the total income for.
      * @param category The category of the transactions to retrieve the total income for. If not
      * provided, the total income for all categories will be calculated.
-     * @return The total income as a [Double] value.
+     * @return The total income as a [Double] value on success or [DataError.Local] on failure.
      */
-    suspend fun getTotal(type: FinanceType, category: FinanceCategory? = null): Double
+    suspend fun getTotal(
+        type: FinanceType,
+        category: FinanceCategory? = null
+    ): Result<Double, DataError.Local>
 }

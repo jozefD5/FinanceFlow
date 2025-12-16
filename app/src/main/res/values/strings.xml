@@ -5,6 +5,9 @@
     <string name="expense_overview_title">Expense overview</string>
     <string name="add_transaction_button_label">Add transaction</string>
     <string name="save_button">Save</string>
+    <string name="error_title">Error</string>
+    <string name="dismiss_title">Dismiss</string>
+    <string name="confirm_title">Confirm</string>
 
     <string name="balance_card_label_your_balance">Your annual balance</string>
     <string name="balance_card_label_income">Income</string>
