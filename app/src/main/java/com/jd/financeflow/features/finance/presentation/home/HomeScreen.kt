@@ -3,6 +3,7 @@ package com.jd.financeflow.features.finance.presentation.home
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -203,7 +204,9 @@ fun HomeView(
                 .fillMaxWidth()
         )
 
-        if (state.showBottomSheet) {
+        AnimatedVisibility(
+            visible = state.showBottomSheet
+        ) {
             ModalBottomSheet(
                 onDismissRequest = {
                     scope.launch {
