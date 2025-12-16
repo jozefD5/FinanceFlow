@@ -46,10 +46,10 @@ fun BalanceCard(
     textColor: Color = MaterialTheme.colorScheme.onPrimary
 ) {
     Card(
-        modifier = modifier,
         colors = CardDefaults.cardColors(
             containerColor = color
-        )
+        ),
+        modifier = modifier,
     ) {
         Column(
             verticalArrangement = Arrangement.Top,

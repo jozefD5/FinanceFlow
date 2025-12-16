@@ -26,14 +26,15 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
+            val homeViewModel: HomeViewModel = koinViewModel()
+            val editTransactionViewModel: TransactionDetailsViewModel = koinViewModel(
+                parameters = { parametersOf(null) }
+            )
+
             FinanceFlowTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    val homeViewModel: HomeViewModel = koinViewModel()
-                    val editTransactionViewModel: TransactionDetailsViewModel = koinViewModel(
-                        parameters = { parametersOf(null) }
-                    )
-
                     HomeScreen(
                         viewModel = homeViewModel,
                         addTransactionContent = {
@@ -48,9 +49,10 @@ class MainActivity : ComponentActivity() {
                                     )
                                 },
                                 modifier = Modifier
-                                    .background(MaterialTheme.colorScheme.surfaceContainerLow)
-                                    .padding(vertical = 8.dp)
-                                    .fillMaxSize()
+                                    .background(
+                                        MaterialTheme.colorScheme.surfaceContainerLow
+                                    )
+                                    .padding(horizontal = 8.dp)
                             )
                         },
                         modifier = Modifier

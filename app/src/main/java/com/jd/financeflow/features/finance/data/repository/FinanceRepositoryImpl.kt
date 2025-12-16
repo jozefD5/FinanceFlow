@@ -69,33 +69,40 @@ class FinanceRepositoryImpl() : FinanceRepository {
         }
     }
 
-    override suspend fun getTotal(type: FinanceType): Double {
-        val totalYear = finances.filter {
-            it.type == type && it.interval == FinanceInterval.Yearly
+    override suspend fun getTotal(
+        type: FinanceType,
+        category: FinanceCategory?,
+    ): Double {
+        val filteredFinances = finances.filter {
+            it.type == type && (category == null || it.category == category)
+        }
+
+        val totalYear = filteredFinances.filter {
+            it.interval == FinanceInterval.Yearly
         }.sumOf { it.amount }
 
-        val totalMonth = finances.filter {
-            it.type == type && it.interval == FinanceInterval.HalfYearly
+        val totalMonth = filteredFinances.filter {
+            it.interval == FinanceInterval.HalfYearly
         }.sumOf { it.amount } * 2
 
-        val totalQuarterly = finances.filter {
-            it.type == type && it.interval == FinanceInterval.Quarterly
+        val totalQuarterly = filteredFinances.filter {
+            it.interval == FinanceInterval.Quarterly
         }.sumOf { it.amount } * 4
 
-        val totalMonthly = finances.filter {
-            it.type == type && it.interval == FinanceInterval.Monthly
+        val totalMonthly = filteredFinances.filter {
+            it.interval == FinanceInterval.Monthly
         }.sumOf { it.amount } * 12
 
-        val totalWeekly = finances.filter {
-            it.type == type && it.interval == FinanceInterval.Weekly
+        val totalWeekly = filteredFinances.filter {
+            it.interval == FinanceInterval.Weekly
         }.sumOf { it.amount } * 52
 
-        val totalDaily = finances.filter {
-            it.type == type && it.interval == FinanceInterval.Daily
+        val totalDaily = filteredFinances.filter {
+            it.interval == FinanceInterval.Daily
         }.sumOf { it.amount } * 365
 
-        val totalOnce = finances.filter {
-            it.type == type && it.interval == FinanceInterval.Once
+        val totalOnce = filteredFinances.filter {
+            it.interval == FinanceInterval.Once
         }.sumOf { it.amount }
 
         return totalYear + totalMonth + totalQuarterly + totalMonthly + totalWeekly + totalDaily + totalOnce
