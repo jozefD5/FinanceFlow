@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-import com.jd.financeflow.features.core.domain.finance.FinanceCategory
+import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 
 /**
  * Displays a grid of category overview cards.

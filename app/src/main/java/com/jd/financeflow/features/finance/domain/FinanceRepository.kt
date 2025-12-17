@@ -3,9 +3,9 @@ package com.jd.financeflow.features.finance.domain
 import com.jd.financeflow.features.core.domain.DataError
 import com.jd.financeflow.features.core.domain.EmptyResult
 import com.jd.financeflow.features.core.domain.Result
-import com.jd.financeflow.features.core.domain.finance.Finance
-import com.jd.financeflow.features.core.domain.finance.FinanceCategory
-import com.jd.financeflow.features.core.domain.finance.FinanceType
+import com.jd.financeflow.features.finance.domain.models.Finance
+import com.jd.financeflow.features.finance.domain.models.FinanceCategory
+import com.jd.financeflow.features.finance.domain.models.FinanceType
 
 /**
  * Finance transaction repository interface, defining the methods for interacting with
@@ -15,7 +15,7 @@ interface FinanceRepository {
     /**
      * Retrieves a list of all financial transactions.
      *
-     * @return List of [com.jd.financeflow.features.core.domain.finance.Finance] objects on success or [DataError.Local] on failure.
+     * @return List of [com.jd.financeflow.features.finance.domain.models.Finance] objects on success or [DataError.Local] on failure.
      */
     suspend fun getFinances(): Result<List<Finance>, DataError.Local>
 

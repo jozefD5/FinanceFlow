@@ -1,7 +1,7 @@
-package com.jd.financeflow.features.core.presentation.components.finance
+package com.jd.financeflow.features.finance.presentation.components
 
 import com.jd.financeflow.R
-import com.jd.financeflow.features.core.domain.finance.FinanceCategory
+import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.core.presentation.UiText
 
 /**

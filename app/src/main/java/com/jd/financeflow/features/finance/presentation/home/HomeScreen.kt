@@ -41,7 +41,7 @@ import org.koin.androidx.compose.koinViewModel
 
 import com.jd.financeflow.R
 import com.jd.financeflow.features.core.domain.DataError
-import com.jd.financeflow.features.core.domain.finance.FinanceCategory
+import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.core.presentation.components.ErrorDialog
 import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.finance.presentation.home.components.BalanceCard
