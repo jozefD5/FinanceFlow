@@ -1,8 +1,8 @@
 package com.jd.financeflow.features.finance.domain.models
 
-enum class FinanceType {
-    INCOME,
-    EXPENSE
+enum class FinanceType(val value: Int) {
+    INCOME(0),
+    EXPENSE(1)
 }
 
 /**
@@ -22,15 +22,27 @@ sealed class FinanceCategory {
      * Defines the specific categories for `FinanceType.Income` transactions.
      * These categories help in classifying different sources of income.
      */
-    enum class IncomeCategory {
-        Salary, Bonus, Commissions, Benefits, Investments, Other
+    enum class IncomeCategory(val value: Int) {
+        Salary(0),
+        Bonus(1),
+        Commissions(2),
+        Benefits(3),
+        Investments(4),
+        Other(5)
     }
 
     /**
      * Defines the specific categories for `FinanceType.Expenses` transactions.
      * These categories help in classifying different types of expenditures.
      */
-    enum class ExpenseCategory {
-        Utility, Housing, Transport, Food, Entertainment, Health, Education, Other
+    enum class ExpenseCategory(val value: Int) {
+        Housing(0),
+        Utility(1),
+        Food(2),
+        Transport(3),
+        Health(4),
+        Education(5),
+        Entertainment(6),
+        Other(7)
     }
 }
