@@ -10,5 +10,5 @@ enum class FinanceInterval(val value: Int) {
     Monthly(3),
     Quarterly(4),
     HalfYearly(5),
-    Yearly(5)
+    Yearly(6)
 }

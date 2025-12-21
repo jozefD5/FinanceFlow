@@ -5,7 +5,6 @@ import com.jd.financeflow.features.core.domain.EmptyResult
 import com.jd.financeflow.features.core.domain.Result
 import com.jd.financeflow.features.finance.domain.models.Finance
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
-import com.jd.financeflow.features.finance.domain.models.FinanceType
 
 /**
  * Finance transaction repository interface, defining the methods for interacting with
@@ -26,22 +25,6 @@ interface FinanceRepository {
      * @return The [Finance] object with the specified ID on success or [DataError.Local] on failure.
      */
     suspend fun getFinanceById(id: Int): Result<Finance, DataError.Local>
-
-    /**
-     * Retrieves a list of financial transactions based on their type.
-     *
-     * @param type The type of the transactions to retrieve.
-     * @return List of [Finance] objects on success or [DataError.Local] on failure.
-     */
-    suspend fun getFinancesByType(type: FinanceType): Result<List<Finance>, DataError.Local>
-
-    /**
-     * Retrieves a list of financial transactions based on their category.
-     *
-     * @param category The category of the transactions to retrieve.
-     * @return List of [Finance] objects on success or [DataError.Local] on failure.
-     */
-    suspend fun getFinancesByCategory(category: FinanceCategory): Result<List<Finance>, DataError.Local>
 
     /**
      * Updates an existing financial transaction.
@@ -70,13 +53,11 @@ interface FinanceRepository {
     /**
      * Retrieves the total income for a specific type of financial transactions.
      *
-     * @param type The type of the transactions to retrieve the total income for.
      * @param category The category of the transactions to retrieve the total income for. If not
      * provided, the total income for all categories will be calculated.
      * @return The total income as a [Double] value on success or [DataError.Local] on failure.
      */
     suspend fun getTotal(
-        type: FinanceType,
         category: FinanceCategory? = null
     ): Result<Double, DataError.Local>
 }

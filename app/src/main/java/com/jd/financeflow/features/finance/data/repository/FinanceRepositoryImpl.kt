@@ -7,7 +7,6 @@ import com.jd.financeflow.features.finance.domain.models.Finance
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceInterval
 import com.jd.financeflow.features.finance.domain.FinanceRepository
-import com.jd.financeflow.features.finance.domain.models.FinanceType
 
 class FinanceRepositoryImpl() : FinanceRepository {
     private val finances = mutableListOf<Finance>()
@@ -21,19 +20,6 @@ class FinanceRepositoryImpl() : FinanceRepository {
     }
 
     override suspend fun getFinanceById(id: Int): Result<Finance, DataError.Local> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun getFinancesByType(type: FinanceType): Result<List<Finance>, DataError.Local> {
-        return try {
-            val filteredFinances = finances.filter { it.type == type }
-            Result.Success(filteredFinances)
-        } catch (_: Exception) {
-            Result.Error(DataError.Local.UNKNOWN)
-        }
-    }
-
-    override suspend fun getFinancesByCategory(category: FinanceCategory): Result<List<Finance>, DataError.Local> {
         TODO("Not yet implemented")
     }
 
@@ -70,12 +56,13 @@ class FinanceRepositoryImpl() : FinanceRepository {
     }
 
     override suspend fun getTotal(
-        type: FinanceType,
         category: FinanceCategory?,
     ): Result<Double, DataError.Local> {
         try {
-            val filteredFinances = finances.filter {
-                it.type == type && (category == null || it.category == category)
+            val filteredFinances = if (category == null) {
+                finances
+            } else {
+                finances.filter { it.category == category }
             }
 
             val totalYear = filteredFinances.filter {
@@ -106,7 +93,8 @@ class FinanceRepositoryImpl() : FinanceRepository {
                 it.interval == FinanceInterval.Once
             }.sumOf { it.amount }
 
-            val total = totalYear + totalMonth + totalQuarterly + totalMonthly + totalWeekly + totalDaily + totalOnce
+            val total =
+                totalYear + totalMonth + totalQuarterly + totalMonthly + totalWeekly + totalDaily + totalOnce
             return Result.Success(total)
         } catch (_: Exception) {
             return Result.Error(DataError.Local.UNKNOWN)

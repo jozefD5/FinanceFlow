@@ -20,7 +20,7 @@ data class Finance(
     val description: String?,
     val amount: Double,
     val interval: FinanceInterval,
-    val type: FinanceType,
+    //val type: FinanceType,
     val category: FinanceCategory,
     val createdAt: Long = System.currentTimeMillis()
 )
