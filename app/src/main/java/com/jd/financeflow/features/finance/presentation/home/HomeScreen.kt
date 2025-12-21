@@ -44,6 +44,8 @@ import com.jd.financeflow.features.core.domain.DataError
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.core.presentation.components.ErrorDialog
 import com.jd.financeflow.features.core.presentation.toUiText
+import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
+import com.jd.financeflow.features.finance.domain.models.IncomeCategory
 import com.jd.financeflow.features.finance.presentation.home.components.BalanceCard
 import com.jd.financeflow.features.finance.presentation.home.components.CategoryOverviewGrid
 import com.jd.financeflow.ui.theme.FinanceFlowTheme
@@ -244,38 +246,38 @@ fun HomeView(
 fun HomeViewPreview() {
     val incomePreviewCategories = listOf(
         Pair(
-            FinanceCategory.Income(FinanceCategory.IncomeCategory.Salary),
+            FinanceCategory.Income(IncomeCategory.Salary),
             100_000.0
         ),
         Pair(
-            FinanceCategory.Income(FinanceCategory.IncomeCategory.Bonus),
+            FinanceCategory.Income(IncomeCategory.Bonus),
             50_000.0
         ),
         Pair(
-            FinanceCategory.Income(FinanceCategory.IncomeCategory.Investments),
+            FinanceCategory.Income(IncomeCategory.Investments),
             40_000.0
         ),
         Pair(
-            FinanceCategory.Income(FinanceCategory.IncomeCategory.Commissions),
+            FinanceCategory.Income(IncomeCategory.Commissions),
             10_000.0
         )
     )
 
     val expensePreviewCategories = listOf(
         Pair(
-            FinanceCategory.Expense(FinanceCategory.ExpenseCategory.Housing),
+            FinanceCategory.Expense(ExpenseCategory.Housing),
             10_000.0
         ),
         Pair(
-            FinanceCategory.Expense(FinanceCategory.ExpenseCategory.Utility),
+            FinanceCategory.Expense(ExpenseCategory.Utility),
             10_000.0
         ),
         Pair(
-            FinanceCategory.Expense(FinanceCategory.ExpenseCategory.Transport),
+            FinanceCategory.Expense(ExpenseCategory.Transport),
             5_000.0
         ),
         Pair(
-            FinanceCategory.Expense(FinanceCategory.ExpenseCategory.Entertainment),
+            FinanceCategory.Expense(ExpenseCategory.Entertainment),
             5_000.0
         )
     )

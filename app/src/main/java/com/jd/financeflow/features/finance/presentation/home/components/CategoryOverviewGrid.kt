@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
+import com.jd.financeflow.features.finance.domain.models.IncomeCategory
 
 /**
  * Displays a grid of category overview cards.
@@ -65,19 +66,19 @@ fun CategoryOverviewGrid(
 fun CategoryOverviewGridPreview() {
     val categories = listOf(
         Pair(
-            FinanceCategory.Income(FinanceCategory.IncomeCategory.Salary),
+            FinanceCategory.Income(IncomeCategory.Salary),
             100_000.0
         ),
         Pair(
-            FinanceCategory.Income(FinanceCategory.IncomeCategory.Bonus),
+            FinanceCategory.Income(IncomeCategory.Bonus),
             50_000.0
         ),
         Pair(
-            FinanceCategory.Income(FinanceCategory.IncomeCategory.Commissions),
+            FinanceCategory.Income(IncomeCategory.Commissions),
             40_000.0
         ),
         Pair(
-            FinanceCategory.Income(FinanceCategory.IncomeCategory.Investments),
+            FinanceCategory.Income(IncomeCategory.Investments),
             10_000.0
         )
     )

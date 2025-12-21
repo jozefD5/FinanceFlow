@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.finance.presentation.components.toUiText
 import com.jd.financeflow.features.core.presentation.components.formatCurrency
+import com.jd.financeflow.features.finance.domain.models.IncomeCategory
 
 /**
  * Displays a category overview with the given value and currency code.
@@ -135,7 +136,7 @@ fun CategoryOverviewCardPreview() {
     MaterialTheme {
         Scaffold { innerPadding ->
             CategoryOverviewCard(
-                category = FinanceCategory.Income(FinanceCategory.IncomeCategory.Salary),
+                category = FinanceCategory.Income(IncomeCategory.Salary),
                 value = 80_000.0,
                 currencyCode = "EUR",
                 onClicked = {},

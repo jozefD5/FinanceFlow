@@ -16,6 +16,9 @@ import com.jd.financeflow.features.core.domain.Result
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.finance.domain.FinanceRepository
+import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
+import com.jd.financeflow.features.finance.domain.models.IncomeCategory
+import com.jd.financeflow.features.finance.domain.models.FinanceType
 
 /**
  * View model for the home screen.
@@ -87,10 +90,7 @@ class HomeViewModel(
                     is Result.Success -> {}
                     is Result.Error -> {
                         _state.update {
-                            it.copy(
-                                isLoading = false,
-                                error = result.error.toUiText()
-                            )
+                            it.copy(error = result.error.toUiText())
                         }
                     }
                 }
@@ -98,17 +98,11 @@ class HomeViewModel(
             }
 
             _state.update {
-                it.copy(
-                    isLoading = false,
-                    error = null
-                )
+                it.copy(error = null)
             }
         }.getOrElse {
             _state.update {
-                it.copy(
-                    isLoading = false,
-                    error = DataError.Local.UNKNOWN.toUiText()
-                )
+                it.copy(error = DataError.Local.UNKNOWN.toUiText())
             }
         }
     }
@@ -169,13 +163,13 @@ class HomeViewModel(
      * @param type type of the category preview to be refreshed
      * @return [EmptyResult] indicating the success or failure of the operation
      */
-    private suspend fun refreshCategoryPreview(type: FinanceCategory.FinanceType): EmptyResult<DataError.Local> {
+    private suspend fun refreshCategoryPreview(type: FinanceType): EmptyResult<DataError.Local> {
         return runCatching {
             val categoryList = mutableListOf<Pair<FinanceCategory, Double>>()
 
             // Get total for each category, for the selected type, and sort by value
             if (type == FinanceType.INCOME) {
-                FinanceCategory.IncomeCategory.entries.forEach { category ->
+                IncomeCategory.entries.forEach { category ->
                     when (val result = repository.getTotal(
                         type = FinanceType.INCOME,
                         category = FinanceCategory.Income(category)
@@ -196,7 +190,7 @@ class HomeViewModel(
                 }
 
             } else {
-                FinanceCategory.ExpenseCategory.entries.forEach { category ->
+                ExpenseCategory.entries.forEach { category ->
                     when (val result = repository.getTotal(
                         type = FinanceType.EXPENSE,
                         category = FinanceCategory.Expense(category)
