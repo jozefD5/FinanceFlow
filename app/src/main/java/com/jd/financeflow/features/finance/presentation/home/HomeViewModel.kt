@@ -14,7 +14,6 @@ import com.jd.financeflow.features.core.domain.DataError
 import com.jd.financeflow.features.core.domain.EmptyResult
 import com.jd.financeflow.features.core.domain.Result
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
-import com.jd.financeflow.features.finance.domain.models.FinanceType
 import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.finance.domain.FinanceRepository
 
@@ -68,7 +67,6 @@ class HomeViewModel(
      * Refreshes the balance of the user and updates the state accordingly.
      */
     private fun refresh() = viewModelScope.launch {
-        _state.update { it.copy(isLoading = true) }
         runCatching {
             // Refresh balance
             when (val result = refreshBalance()) {
@@ -76,7 +74,6 @@ class HomeViewModel(
                 is Result.Error -> {
                     _state.update {
                         it.copy(
-                            isLoading = false,
                             error = result.error.toUiText()
                         )
                     }
@@ -172,7 +169,7 @@ class HomeViewModel(
      * @param type type of the category preview to be refreshed
      * @return [EmptyResult] indicating the success or failure of the operation
      */
-    private suspend fun refreshCategoryPreview(type: FinanceType): EmptyResult<DataError.Local> {
+    private suspend fun refreshCategoryPreview(type: FinanceCategory.FinanceType): EmptyResult<DataError.Local> {
         return runCatching {
             val categoryList = mutableListOf<Pair<FinanceCategory, Double>>()
 

@@ -5,6 +5,7 @@ import com.jd.financeflow.features.core.domain.EmptyResult
 import com.jd.financeflow.features.core.domain.Result
 import com.jd.financeflow.features.finance.domain.models.Finance
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
+import com.jd.financeflow.features.finance.domain.models.TransactionType
 
 /**
  * Finance transaction repository interface, defining the methods for interacting with
@@ -14,7 +15,7 @@ interface FinanceRepository {
     /**
      * Retrieves a list of all financial transactions.
      *
-     * @return List of [com.jd.financeflow.features.finance.domain.models.Finance] objects on success or [DataError.Local] on failure.
+     * @return List of [Finance] objects on success or [DataError.Local] on failure.
      */
     suspend fun getFinances(): Result<List<Finance>, DataError.Local>
 
@@ -51,13 +52,16 @@ interface FinanceRepository {
     suspend fun insertFinance(finance: Finance): EmptyResult<DataError.Local>
 
     /**
-     * Retrieves the total income for a specific type of financial transactions.
+     * Retrieves the total income or expense for a specific type of financial transactions.
      *
-     * @param category The category of the transactions to retrieve the total income for. If not
-     * provided, the total income for all categories will be calculated.
-     * @return The total income as a [Double] value on success or [DataError.Local] on failure.
+     * @param type The type of transactions to retrieve the total for. If not provided, the total
+     * for all types will be calculated.
+     * @param category The category of the transactions to retrieve the total for. If not provided,
+     * the total for all categories will be calculated.
+     * @return The total as a [Double] value on success or [DataError.Local] on failure.
      */
     suspend fun getTotal(
+        type: TransactionType? = null,
         category: FinanceCategory? = null
     ): Result<Double, DataError.Local>
 }

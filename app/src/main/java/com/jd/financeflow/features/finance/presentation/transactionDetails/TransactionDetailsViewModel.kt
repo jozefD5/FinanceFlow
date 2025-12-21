@@ -17,11 +17,13 @@ import com.jd.financeflow.features.core.domain.Result
 import com.jd.financeflow.features.finance.domain.models.Finance
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceInterval
-import com.jd.financeflow.features.finance.domain.models.FinanceType
 import com.jd.financeflow.features.core.domain.onError
 import com.jd.financeflow.features.core.domain.onSuccess
 import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.finance.domain.FinanceRepository
+import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
+import com.jd.financeflow.features.finance.domain.models.IncomeCategory
+import com.jd.financeflow.features.finance.domain.models.TransactionType
 
 
 /**
@@ -124,13 +126,25 @@ class TransactionDetailsViewModel(
         runCatching {
             when (val result = financeRepository.getFinanceById(id)) {
                 is Result.Success -> {
-                    val categoryIndex = when (result.data.category) {
+
+                    // Get index of the selected type and category
+                    val typeIndex = when (result.data.category) {
                         is FinanceCategory.Income -> {
-                            FinanceCategory.IncomeCategory.entries.indexOf(result.data.category.category)
+                            TransactionType.INCOME.ordinal
                         }
 
                         is FinanceCategory.Expense -> {
-                            FinanceCategory.ExpenseCategory.entries.indexOf(result.data.category.category)
+                            TransactionType.EXPENSE.ordinal
+                        }
+                    }
+
+                    val categoryIndex = when (result.data.category) {
+                        is FinanceCategory.Income -> {
+                            IncomeCategory.entries.indexOf(result.data.category.category)
+                        }
+
+                        is FinanceCategory.Expense -> {
+                            ExpenseCategory.entries.indexOf(result.data.category.category)
                         }
                     }
 
@@ -146,7 +160,7 @@ class TransactionDetailsViewModel(
                                 result.data.amount
                             ),
                             financeIntervalIndex = result.data.interval.ordinal,
-                            financeTypeIndex = result.data.type.ordinal,
+                            financeTypeIndex = typeIndex,
                             financeCategoryIndex = categoryIndex
                         )
                     }
@@ -294,13 +308,13 @@ class TransactionDetailsViewModel(
         }
 
         runCatching {
-            val category = if (_state.value.financeTypeIndex == FinanceType.INCOME.ordinal) {
+            val category = if (_state.value.financeTypeIndex == TransactionType.INCOME.ordinal) {
                 FinanceCategory.Income(
-                    FinanceCategory.IncomeCategory.entries[_state.value.financeCategoryIndex]
+                    IncomeCategory.entries[_state.value.financeCategoryIndex]
                 )
             } else {
                 FinanceCategory.Expense(
-                    FinanceCategory.ExpenseCategory.entries[_state.value.financeCategoryIndex]
+                    ExpenseCategory.entries[_state.value.financeCategoryIndex]
                 )
             }
 
@@ -309,7 +323,6 @@ class TransactionDetailsViewModel(
                 description = _state.value.description,
                 amount = _state.value.amount.toDouble(),
                 interval = FinanceInterval.entries[_state.value.financeIntervalIndex],
-                type = FinanceType.entries[_state.value.financeTypeIndex],
                 category = category
             )
 

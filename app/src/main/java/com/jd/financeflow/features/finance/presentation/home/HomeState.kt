@@ -8,7 +8,6 @@ import com.jd.financeflow.features.core.presentation.UiText
  */
 data class HomeState(
     // General
-    val isLoading: Boolean = false,
     val error: UiText? = null,
     val currencyCode: String = "EUR",
     val showBottomSheet: Boolean = false,
@@ -17,10 +16,6 @@ data class HomeState(
     val balance: Double = 0.0,
     val income: Double = 0.0,
     val expense: Double = 0.0,
-
-
-    // Recent transactions
-
 
     // Income category preview
     val incomeCategoriesPreview: List<Pair<FinanceCategory, Double>> = emptyList(),

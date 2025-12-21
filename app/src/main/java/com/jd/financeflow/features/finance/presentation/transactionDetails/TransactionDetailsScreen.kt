@@ -38,10 +38,12 @@ import com.jd.financeflow.R
 import com.jd.financeflow.features.core.domain.DataError
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceInterval
-import com.jd.financeflow.features.finance.domain.models.FinanceType
 import com.jd.financeflow.features.core.presentation.components.LargeDropdownMenu
 import com.jd.financeflow.features.finance.presentation.components.toUiText
 import com.jd.financeflow.features.core.presentation.toUiText
+import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
+import com.jd.financeflow.features.finance.domain.models.IncomeCategory
+import com.jd.financeflow.features.finance.domain.models.TransactionType
 
 /**
  * Screen for adding or modifying finance transaction.
@@ -115,11 +117,11 @@ fun TransactionDetailsView(
                     .padding(8.dp)
                     .fillMaxWidth()
             ) {
-                FinanceType.entries.forEachIndexed { index, value ->
+                TransactionType.entries.forEachIndexed { index, value ->
                     SegmentedButton(
                         shape = SegmentedButtonDefaults.itemShape(
                             index = index,
-                            count = FinanceType.entries.size
+                            count = TransactionType.entries.size
                         ),
                         selected = state.financeTypeIndex == index,
                         onClick = { onAction(TransactionDetailsActions.UpdateFinanceType(index)) },
@@ -188,12 +190,12 @@ fun TransactionDetailsView(
             LargeDropdownMenu(
                 label = stringResource(R.string.add_transaction_title_category),
                 selectedIndex = state.financeCategoryIndex,
-                items = if (state.financeTypeIndex == FinanceType.INCOME.ordinal) {
-                    FinanceCategory.IncomeCategory.entries.map {
+                items = if (state.financeTypeIndex == TransactionType.INCOME.ordinal) {
+                    IncomeCategory.entries.map {
                         FinanceCategory.Income(it)
                     }
                 } else {
-                    FinanceCategory.ExpenseCategory.entries.map {
+                    ExpenseCategory.entries.map {
                         FinanceCategory.Expense(it)
                     }
                 }.map { it.toUiText().asString() },
