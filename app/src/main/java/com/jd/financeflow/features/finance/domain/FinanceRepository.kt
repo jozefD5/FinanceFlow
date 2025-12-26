@@ -5,7 +5,7 @@ import com.jd.financeflow.features.core.domain.EmptyResult
 import com.jd.financeflow.features.core.domain.Result
 import com.jd.financeflow.features.finance.domain.models.Finance
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
-import com.jd.financeflow.features.finance.domain.models.TransactionType
+import com.jd.financeflow.features.finance.domain.models.FinanceType
 
 /**
  * Finance transaction repository interface, defining the methods for interacting with
@@ -61,7 +61,7 @@ interface FinanceRepository {
      * @return The total as a [Double] value on success or [DataError.Local] on failure.
      */
     suspend fun getTotal(
-        type: TransactionType? = null,
+        type: FinanceType? = null,
         category: FinanceCategory? = null
     ): Result<Double, DataError.Local>
 }

@@ -23,7 +23,7 @@ import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.finance.domain.FinanceRepository
 import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
-import com.jd.financeflow.features.finance.domain.models.TransactionType
+import com.jd.financeflow.features.finance.domain.models.FinanceType
 
 
 /**
@@ -130,11 +130,11 @@ class TransactionDetailsViewModel(
                     // Get index of the selected type and category
                     val typeIndex = when (result.data.category) {
                         is FinanceCategory.Income -> {
-                            TransactionType.INCOME.ordinal
+                            FinanceType.INCOME.ordinal
                         }
 
                         is FinanceCategory.Expense -> {
-                            TransactionType.EXPENSE.ordinal
+                            FinanceType.EXPENSE.ordinal
                         }
                     }
 
@@ -308,7 +308,7 @@ class TransactionDetailsViewModel(
         }
 
         runCatching {
-            val category = if (_state.value.financeTypeIndex == TransactionType.INCOME.ordinal) {
+            val category = if (_state.value.financeTypeIndex == FinanceType.INCOME.ordinal) {
                 FinanceCategory.Income(
                     IncomeCategory.entries[_state.value.financeCategoryIndex]
                 )

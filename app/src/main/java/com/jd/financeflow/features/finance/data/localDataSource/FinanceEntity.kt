@@ -2,6 +2,7 @@ package com.jd.financeflow.features.finance.data.localDataSource
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceInterval
 
@@ -13,7 +14,6 @@ import com.jd.financeflow.features.finance.domain.models.FinanceInterval
  * @property description Additional details or notes about the transaction.
  * @property amount The monetary value of the transaction.
  * @property interval The frequency or interval at which the transaction occurs.
- * @property type The type of the transaction (e.g., income, expense).
  * @property category The category or type of the transaction
  * @property createdAt The timestamp indicating when the transaction was created or updated at last.
  */

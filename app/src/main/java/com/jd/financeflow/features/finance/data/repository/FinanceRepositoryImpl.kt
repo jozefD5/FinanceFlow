@@ -7,7 +7,7 @@ import com.jd.financeflow.features.finance.domain.models.Finance
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceInterval
 import com.jd.financeflow.features.finance.domain.FinanceRepository
-import com.jd.financeflow.features.finance.domain.models.TransactionType
+import com.jd.financeflow.features.finance.domain.models.FinanceType
 
 class FinanceRepositoryImpl() : FinanceRepository {
     private val finances = mutableListOf<Finance>()
@@ -57,7 +57,7 @@ class FinanceRepositoryImpl() : FinanceRepository {
     }
 
     override suspend fun getTotal(
-        type: TransactionType?,
+        type: FinanceType?,
         category: FinanceCategory?
     ): Result<Double, DataError.Local> {
         try {
@@ -66,8 +66,8 @@ class FinanceRepositoryImpl() : FinanceRepository {
                     true
                 } else {
                     when (item.category) {
-                        is FinanceCategory.Income -> type == TransactionType.INCOME
-                        is FinanceCategory.Expense -> type == TransactionType.EXPENSE
+                        is FinanceCategory.Income -> type == FinanceType.INCOME
+                        is FinanceCategory.Expense -> type == FinanceType.EXPENSE
                     }
                 }
 

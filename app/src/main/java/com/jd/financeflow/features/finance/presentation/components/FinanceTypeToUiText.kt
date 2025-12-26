@@ -2,28 +2,28 @@ package com.jd.financeflow.features.finance.presentation.components
 
 import com.jd.financeflow.R
 import com.jd.financeflow.features.core.presentation.UiText
-import com.jd.financeflow.features.finance.domain.models.TransactionType
+import com.jd.financeflow.features.finance.domain.models.FinanceType
 
 /**
- * Converts a [TransactionType] to a [UiText] object.
+ * Converts a [FinanceType] to a [UiText] object.
  *
- * @return The [UiText] object corresponding to the [TransactionType] value.
+ * @return The [UiText] object corresponding to the [FinanceType] value.
  */
-fun TransactionType.toUiText(): UiText {
+fun FinanceType.toUiText(): UiText {
     return UiText.StringResource(
         id = this.toStringResourceID()
     )
 }
 
 /**
- * Converts a [TransactionType] to a string resource ID.
+ * Converts a [FinanceType] to a string resource ID.
  *
- * @return The string resource ID corresponding to the [TransactionType] value.
+ * @return The string resource ID corresponding to the [FinanceType] value.
  */
-fun TransactionType.toStringResourceID(): Int {
+fun FinanceType.toStringResourceID(): Int {
     return when (this) {
-        TransactionType.INCOME -> R.string.finance_type_income
-        TransactionType.EXPENSE -> R.string.finance_type_expense
+        FinanceType.INCOME -> R.string.finance_type_income
+        FinanceType.EXPENSE -> R.string.finance_type_expense
     }
 }
 

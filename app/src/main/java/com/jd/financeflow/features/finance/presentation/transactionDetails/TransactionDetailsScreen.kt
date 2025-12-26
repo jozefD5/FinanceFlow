@@ -43,7 +43,7 @@ import com.jd.financeflow.features.finance.presentation.components.toUiText
 import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
-import com.jd.financeflow.features.finance.domain.models.TransactionType
+import com.jd.financeflow.features.finance.domain.models.FinanceType
 
 /**
  * Screen for adding or modifying finance transaction.
@@ -117,11 +117,11 @@ fun TransactionDetailsView(
                     .padding(8.dp)
                     .fillMaxWidth()
             ) {
-                TransactionType.entries.forEachIndexed { index, value ->
+                FinanceType.entries.forEachIndexed { index, value ->
                     SegmentedButton(
                         shape = SegmentedButtonDefaults.itemShape(
                             index = index,
-                            count = TransactionType.entries.size
+                            count = FinanceType.entries.size
                         ),
                         selected = state.financeTypeIndex == index,
                         onClick = { onAction(TransactionDetailsActions.UpdateFinanceType(index)) },
@@ -190,7 +190,7 @@ fun TransactionDetailsView(
             LargeDropdownMenu(
                 label = stringResource(R.string.add_transaction_title_category),
                 selectedIndex = state.financeCategoryIndex,
-                items = if (state.financeTypeIndex == TransactionType.INCOME.ordinal) {
+                items = if (state.financeTypeIndex == FinanceType.INCOME.ordinal) {
                     IncomeCategory.entries.map {
                         FinanceCategory.Income(it)
                     }
