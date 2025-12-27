@@ -89,6 +89,7 @@ dependencies {
     implementation(libs.androidx.room.guava)
     implementation(libs.androidx.room.testing)
     implementation(libs.androidx.room.paging)
+    ksp(libs.androidx.room.compiler)
 
     // Koin
     implementation(libs.koin.androidx.compose)

@@ -8,7 +8,7 @@ import androidx.room.TypeConverters
  * Room database for storing finance transactions.
  */
 @Database(
-    entities = [FinanceDao::class],
+    entities = [FinanceEntity::class],
     version = 1,
 )
 @TypeConverters(

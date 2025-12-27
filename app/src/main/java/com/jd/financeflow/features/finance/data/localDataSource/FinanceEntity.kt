@@ -19,7 +19,8 @@ import com.jd.financeflow.features.finance.domain.models.FinanceInterval
  */
 @Entity
 data class FinanceEntity(
-    @PrimaryKey(autoGenerate = true) val id: Int,
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
     val title: String,
     val description: String?,
     val amount: Double,

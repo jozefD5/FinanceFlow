@@ -36,20 +36,20 @@ interface FinanceRepository {
     suspend fun updateFinance(finance: Finance): EmptyResult<DataError.Local>
 
     /**
-     * Deletes a financial transaction by its unique identifier.
-     *
-     * @param id The unique identifier of the transaction to delete.
-     * @return [EmptyResult] on success or [DataError.Local] on failure.
-     */
-    suspend fun deleteFinance(id: Int): EmptyResult<DataError.Local>
-
-    /**
      * Inserts a new financial transaction.
      *
      * @param finance The [Finance] object to insert.
      * @return [EmptyResult] on success or [DataError.Local] on failure.
      */
     suspend fun insertFinance(finance: Finance): EmptyResult<DataError.Local>
+
+    /**
+     * Deletes a financial transaction by its unique identifier.
+     *
+     * @param finance The [Finance] object to delete.
+     * @return [EmptyResult] on success or [DataError.Local] on failure.
+     */
+    suspend fun deleteFinance(finance: Finance): EmptyResult<DataError.Local>
 
     /**
      * Retrieves the total income or expense for a specific type of financial transactions.

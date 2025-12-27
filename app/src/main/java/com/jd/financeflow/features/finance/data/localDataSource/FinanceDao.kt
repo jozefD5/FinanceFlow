@@ -1,11 +1,16 @@
 package com.jd.financeflow.features.finance.data.localDataSource
 
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 
 /**
  * Data Access Object (DAO) for the [FinanceEntity] entity. Allows to access and manipulate
  * data in the database.
  */
+@Dao
 interface FinanceDao {
     /**
      * Retrieves all [FinanceEntity] objects from the database.
@@ -29,6 +34,7 @@ interface FinanceDao {
      *
      * @param item The [FinanceEntity] object to insert.
      */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(item: FinanceEntity)
 
     /**
@@ -36,6 +42,7 @@ interface FinanceDao {
      *
      * @param item The [FinanceEntity] object to update.
      */
+    @Update
     suspend fun update(item: FinanceEntity)
 
     /**
@@ -43,5 +50,6 @@ interface FinanceDao {
      *
      * @param item The [FinanceEntity] object to delete.
      */
+    @Update
     suspend fun delete(item: FinanceEntity)
 }

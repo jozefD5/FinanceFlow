@@ -14,7 +14,7 @@ material-icons = "1.7.8"
 material-icons-extended = "1.7.8"
 kotlinx-datetime = "0.7.1-0.6.x-compat"
 kotlinx-serialization-json = "1.9.0"
-kotlin-serialization = "2.2.21"
+kotlin-serialization = "2.3.0"
 koin = "4.1.1"
 nav3Core = "1.0.0"
 lifecycleViewmodelNav3 = "2.10.0"
@@ -57,6 +57,7 @@ kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 androidx-material3-adaptive-navigation3 = { group = "androidx.compose.material3.adaptive", name = "adaptive-navigation3", version.ref = "material3AdaptiveNav3" }
 
 # Room database
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomDatabase" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomDatabase" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomDatabase" }
 androidx-room-rxjava2 = { module = "androidx.room:room-rxjava2", version.ref = "roomDatabase" }
