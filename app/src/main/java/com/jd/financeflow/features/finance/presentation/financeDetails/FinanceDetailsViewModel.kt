@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.finance.presentation.transactionDetails
+package com.jd.financeflow.features.finance.presentation.financeDetails
 
 import java.util.Locale
 
@@ -27,27 +27,27 @@ import com.jd.financeflow.features.finance.domain.models.FinanceType
 
 
 /**
- * View model for the transaction details screen. Responsible for adding new transaction or modifying
- * existing one if [transactionId] is provided.
+ * View model for the finance transaction details screen. Responsible for adding new transaction or modifying
+ * existing one if [financeId] is provided.
  *
  * @param financeRepository repository for finance transactions
- * @param transactionId id of the transaction to be modified if not null
+ * @param financeId id of the finance transaction to be modified if not null
  */
-class TransactionDetailsViewModel(
+class FinanceDetailsViewModel(
     private val financeRepository: FinanceRepository,
-    private val transactionId: Int? = null
+    private val financeId: Int? = null
 ) : ViewModel() {
-    private val _state = MutableStateFlow(TransactionDetailsState())
+    private val _state = MutableStateFlow(FinanceDetailsState())
     val state = _state
         .onStart {
-            if (transactionId != null) {
-                loadData(transactionId)
+            if (financeId != null) {
+                loadData(financeId)
             }
         }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = TransactionDetailsState()
+            initialValue = FinanceDetailsState()
         )
 
     /**
@@ -55,9 +55,9 @@ class TransactionDetailsViewModel(
      *
      * @param action action to be handled
      */
-    fun onAction(action: TransactionDetailsActions) {
+    fun onAction(action: FinanceDetailsActions) {
         when (action) {
-            is TransactionDetailsActions.ClearError -> {
+            is FinanceDetailsActions.ClearError -> {
                 _state.update {
                     it.copy(
                         error = null
@@ -65,11 +65,11 @@ class TransactionDetailsViewModel(
                 }
             }
 
-            is TransactionDetailsActions.SaveTransaction -> {
+            is FinanceDetailsActions.SaveTransaction -> {
                 saveTransaction(action.action)
             }
 
-            is TransactionDetailsActions.UpdateTitle -> {
+            is FinanceDetailsActions.UpdateTitle -> {
                 _state.update {
                     it.copy(
                         title = action.title
@@ -77,7 +77,7 @@ class TransactionDetailsViewModel(
                 }
             }
 
-            is TransactionDetailsActions.UpdateDescription -> {
+            is FinanceDetailsActions.UpdateDescription -> {
                 _state.update {
                     it.copy(
                         description = action.description
@@ -85,11 +85,11 @@ class TransactionDetailsViewModel(
                 }
             }
 
-            is TransactionDetailsActions.UpdateAmount -> {
+            is FinanceDetailsActions.UpdateAmount -> {
                 validateAmount(action.amount)
             }
 
-            is TransactionDetailsActions.UpdateFinanceInterval -> {
+            is FinanceDetailsActions.UpdateFinanceInterval -> {
                 _state.update {
                     it.copy(
                         financeIntervalIndex = action.financeIntervalIndex
@@ -97,7 +97,7 @@ class TransactionDetailsViewModel(
                 }
             }
 
-            is TransactionDetailsActions.UpdateFinanceType -> {
+            is FinanceDetailsActions.UpdateFinanceType -> {
                 _state.update {
                     it.copy(
                         financeTypeIndex = action.financeTypeIndex,
@@ -106,7 +106,7 @@ class TransactionDetailsViewModel(
                 }
             }
 
-            is TransactionDetailsActions.UpdateFinanceCategory -> {
+            is FinanceDetailsActions.UpdateFinanceCategory -> {
                 _state.update {
                     it.copy(
                         financeCategoryIndex = action.financeCategoryIndex
@@ -117,7 +117,7 @@ class TransactionDetailsViewModel(
     }
 
     /**
-     * Loads the transaction data if [transactionId] is provided.
+     * Loads the transaction data if [financeId] is provided.
      */
 
     private fun loadData(id: Int) = viewModelScope.launch {
@@ -326,7 +326,7 @@ class TransactionDetailsViewModel(
                 category = category
             )
 
-            val result = if (transactionId == null) {
+            val result = if (financeId == null) {
                 financeRepository.insertFinance(finance)
             } else {
                 financeRepository.updateFinance(finance)

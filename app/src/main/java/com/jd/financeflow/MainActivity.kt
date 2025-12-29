@@ -19,8 +19,8 @@ import com.jd.financeflow.ui.theme.FinanceFlowTheme
 import com.jd.financeflow.features.finance.presentation.home.HomeScreen
 import com.jd.financeflow.features.finance.presentation.home.HomeViewModel
 import com.jd.financeflow.features.finance.presentation.home.HomeActions
-import com.jd.financeflow.features.finance.presentation.transactionDetails.TransactionDetailsScreen
-import com.jd.financeflow.features.finance.presentation.transactionDetails.TransactionDetailsViewModel
+import com.jd.financeflow.features.finance.presentation.financeDetails.FinanceDetailsScreen
+import com.jd.financeflow.features.finance.presentation.financeDetails.FinanceDetailsViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val homeViewModel: HomeViewModel = koinViewModel()
-            val editTransactionViewModel: TransactionDetailsViewModel = koinViewModel(
+            val editTransactionViewModel: FinanceDetailsViewModel = koinViewModel(
                 parameters = { parametersOf(null) }
             )
 
@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
                     HomeScreen(
                         viewModel = homeViewModel,
                         addTransactionContent = {
-                            TransactionDetailsScreen(
+                            FinanceDetailsScreen(
                                 viewModel = editTransactionViewModel,
                                 onSuccessfulAdd = {
                                     homeViewModel.onAction(

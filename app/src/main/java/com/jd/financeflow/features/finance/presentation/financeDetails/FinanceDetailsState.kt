@@ -1,11 +1,11 @@
-package com.jd.financeflow.features.finance.presentation.transactionDetails
+package com.jd.financeflow.features.finance.presentation.financeDetails
 
 import com.jd.financeflow.features.core.presentation.UiText
 
 /**
- * Represents the state of the transaction details screen.
+ * Represents the state of the finance transaction details screen.
  */
-data class TransactionDetailsState(
+data class FinanceDetailsState(
     val isLoading: Boolean = false,
     val error: UiText? = null,
 

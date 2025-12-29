@@ -10,7 +10,7 @@ import com.jd.financeflow.features.finance.data.localDataSource.FinanceDatabase
 import com.jd.financeflow.features.finance.data.localDataSource.FinanceFactory
 import com.jd.financeflow.features.finance.data.repository.FinanceRepositoryImpl
 import com.jd.financeflow.features.finance.domain.FinanceRepository
-import com.jd.financeflow.features.finance.presentation.transactionDetails.TransactionDetailsViewModel
+import com.jd.financeflow.features.finance.presentation.financeDetails.FinanceDetailsViewModel
 import com.jd.financeflow.features.finance.presentation.home.HomeViewModel
 
 /**
@@ -31,7 +31,7 @@ val appModule = module {
 
     viewModel { HomeViewModel(get()) }
     viewModel { (id: Int?) ->
-        TransactionDetailsViewModel(
+        FinanceDetailsViewModel(
             get(),
             id
         )
