@@ -4,7 +4,7 @@ package com.jd.financeflow.features.finance.presentation.transactionDetails
  * Represents actions that can be performed on the transaction details screen.
  */
 sealed interface TransactionDetailsActions {
-    object ClearError : TransactionDetailsActions
+    class ClearError : TransactionDetailsActions
     data class SaveTransaction(val action: (() -> Unit)? = null) : TransactionDetailsActions
     data class UpdateTitle(val title: String) : TransactionDetailsActions
     data class UpdateDescription(val description: String) : TransactionDetailsActions
