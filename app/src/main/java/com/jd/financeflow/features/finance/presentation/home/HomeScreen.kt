@@ -239,7 +239,6 @@ fun HomeView(
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
