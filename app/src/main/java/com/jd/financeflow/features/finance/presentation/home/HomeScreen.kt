@@ -7,9 +7,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -40,15 +38,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 
 import com.jd.financeflow.R
-import com.jd.financeflow.features.core.domain.DataError
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.core.presentation.components.ErrorDialog
-import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
 import com.jd.financeflow.features.finance.presentation.home.components.BalanceCard
 import com.jd.financeflow.features.finance.presentation.home.components.CategoryOverviewGrid
 import com.jd.financeflow.ui.theme.FinanceFlowTheme
+import com.jd.financeflow.ui.theme.primaryLightMediumContrast
 
 /**
  * Screen for the home screen.
@@ -99,7 +96,7 @@ fun HomeView(
         modifier = modifier
     ) {
         Surface(
-            color = Color(0xFF1C2781),
+            color = primaryLightMediumContrast,
             shape = RoundedCornerShape(
                 bottomStart = 32.dp,
                 bottomEnd = 32.dp
@@ -109,6 +106,7 @@ fun HomeView(
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
@@ -122,8 +120,6 @@ fun HomeView(
                     modifier = Modifier
                         .fillMaxWidth()
                 )
-
-                Spacer(modifier = Modifier.height(8.dp))
 
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -162,8 +158,6 @@ fun HomeView(
                         )
                     }
                 }
-
-                Spacer(modifier = Modifier.height(8.dp))
             }
         }
 
@@ -285,7 +279,7 @@ fun HomeViewPreview() {
         Scaffold { innerPadding ->
             HomeView(
                 state = HomeState(
-                    error = DataError.Local.INVALID_ARGUMENT.toUiText(),
+                    error = null, //DataError.Local.INVALID_ARGUMENT.toUiText(),
                     showBottomSheet = false,
                     balance = 100_000.0,
                     income = 200_000.0,

@@ -28,6 +28,12 @@ class FinanceListViewModel(
                 _state.update { it.copy(error = null) }
             }
 
+            is FinanceListActions.UpdateSearchQuery -> {
+                _state.update { it.copy(searchQuery = action.value) }
+            }
+
+            is FinanceListActions.OnSearch -> {}
+
             is FinanceListActions.RefreshList -> {}
             is FinanceListActions.UpdateFinanceTypeFilter -> {}
             is FinanceListActions.UpdateFinanceCategoryFilter -> {}

@@ -11,6 +11,9 @@ import com.jd.financeflow.features.finance.domain.models.FinanceType
 data class FinanceListState(
     val isLoading: Boolean = false,
     val error: UiText? = null,
+
+    val searchQuery: String = "",
+
     val type: FinanceType? = null,
     val category: FinanceCategory? = null,
     val finances: List<Finance> = emptyList(),
