@@ -95,7 +95,7 @@ fun FinanceListView(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    top = 8.dp,
+                    top = 16.dp,
                     bottom = 16.dp,
                     start = 8.dp,
                     end = 8.dp
