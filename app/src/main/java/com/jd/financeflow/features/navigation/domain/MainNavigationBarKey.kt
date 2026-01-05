@@ -20,14 +20,14 @@ sealed interface MainNavigationBarKey : NavKey {
     val label: String
 
     @Serializable
-    data object MainScreen : MainNavigationBarKey {
+    data object MainTab : MainNavigationBarKey {
         override val icon: ImageVector = Icons.Outlined.Home
         override val selectedIcon: ImageVector = Icons.Filled.Home
         override val label = "Home"
     }
 
     @Serializable
-    data object FinanceListScreen : MainNavigationBarKey {
+    data object FinanceListTab : MainNavigationBarKey {
         override val icon: ImageVector = Icons.AutoMirrored.Outlined.ViewList
         override val selectedIcon: ImageVector = Icons.AutoMirrored.Filled.ViewList
         override val label = "Finances"
@@ -35,16 +35,24 @@ sealed interface MainNavigationBarKey : NavKey {
 
     companion object {
         val items = listOf(
-            MainScreen,
-            FinanceListScreen
+            MainTab,
+            FinanceListTab
         )
 
         val stateSaver = Saver<MainNavigationBarKey, String>(
             save = { it::class.qualifiedName },
             restore = { qualifiedName ->
-                items.firstOrNull { it::class.qualifiedName == qualifiedName } ?: MainScreen
+                items.firstOrNull { it::class.qualifiedName == qualifiedName } ?: MainTab
             }
         )
     }
 }
 
+sealed interface MainNavigationRootKey : NavKey {
+    @Serializable
+    data object HomeScreen : MainNavigationRootKey
+
+    @Serializable
+    data object FinanceListScreen : MainNavigationRootKey
+
+}

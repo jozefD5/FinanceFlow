@@ -22,7 +22,7 @@ fun MainNavigation(
     //val backStack = rememberNavBackStack(MainNavigationKey.MainScreen)
 
     var currentBarKey by rememberSaveable(stateSaver = MainNavigationBarKey.stateSaver) {
-        mutableStateOf(MainNavigationBarKey.MainScreen)
+        mutableStateOf(MainNavigationBarKey.MainTab)
     }
 
     Scaffold(
@@ -58,11 +58,11 @@ fun MainNavigation(
         }
     ) {
         when (currentBarKey) {
-            is MainNavigationBarKey.MainScreen -> {
+            is MainNavigationBarKey.MainTab -> {
                 Text("Home")
             }
 
-            is MainNavigationBarKey.FinanceListScreen -> {
+            is MainNavigationBarKey.FinanceListTab -> {
                 Text("Finances")
             }
         }
