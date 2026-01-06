@@ -11,6 +11,7 @@ import com.jd.financeflow.features.finance.data.localDataSource.FinanceFactory
 import com.jd.financeflow.features.finance.data.repository.FinanceRepositoryImpl
 import com.jd.financeflow.features.finance.domain.FinanceRepository
 import com.jd.financeflow.features.finance.presentation.financeDetails.FinanceDetailsViewModel
+import com.jd.financeflow.features.finance.presentation.financeList.FinanceListViewModel
 import com.jd.financeflow.features.finance.presentation.home.HomeViewModel
 
 /**
@@ -36,4 +37,5 @@ val appModule = module {
             id
         )
     }
+    viewModel { FinanceListViewModel(get()) }
 }

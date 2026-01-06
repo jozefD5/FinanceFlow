@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -26,34 +24,14 @@ import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 
 import com.jd.financeflow.features.core.presentation.components.ErrorDialog
 import com.jd.financeflow.ui.theme.primaryLightMediumContrast
-
-
-//SearchBar(
-//modifier = Modifier
-//.align(Alignment.TopCenter)
-//.semantics { traversalIndex = 0f },
-//inputField = {
-//    SearchBarDefaults.InputField(
-//        query = textFieldState.text.toString(),
-//        onQueryChange = { textFieldState.edit { replace(0, length, it) } },
-//        onSearch = {
-//            onSearch(textFieldState.text.toString())
-//            expanded = false
-//        },
-//        expanded = expanded,
-//        onExpandedChange = { expanded = it },
-//        placeholder = { Text("Search") }
-//    )
-//},
-//expanded = expanded,
-//onExpandedChange = { expanded = it },
-//)
 
 /**
  * Screen for displaying a list of finance transactions.
@@ -62,12 +40,25 @@ import com.jd.financeflow.ui.theme.primaryLightMediumContrast
  * @param onClicked callback for when an item is clicked
  * @param viewModel view model to be used
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FinanceListScreen(
     modifier: Modifier = Modifier,
     onClicked: (id: Int) -> Unit = {},
     viewModel: FinanceListViewModel = koinViewModel()
 ) {
+    val state = viewModel.state.collectAsStateWithLifecycle()
+
+    FinanceListView(
+        state = state.value,
+        onAction = { action ->
+            when (action) {
+                is FinanceListActions.FinanceClicked -> onClicked(action.id)
+                else -> viewModel.onAction(action)
+            }
+        },
+        modifier = modifier
+    )
 }
 
 /**
@@ -123,12 +114,12 @@ fun FinanceListView(
 
             IconButton(
                 onClick = { },
-                modifier = Modifier.weight(0.1f)
+                modifier = Modifier.weight(0.15f)
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Tune,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimary
+                    tint = Color(0xFFFFFFFF)
                 )
             }
         }

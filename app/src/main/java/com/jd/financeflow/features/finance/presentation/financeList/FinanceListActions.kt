@@ -8,6 +8,7 @@ import com.jd.financeflow.features.finance.domain.models.FinanceType
  */
 sealed interface FinanceListActions {
     class ClearError : FinanceListActions
+    data class FinanceClicked(val id: Int) : FinanceListActions
     data class UpdateSearchQuery(val value: String) : FinanceListActions
     class OnSearch : FinanceListActions
     class RefreshList : FinanceListActions

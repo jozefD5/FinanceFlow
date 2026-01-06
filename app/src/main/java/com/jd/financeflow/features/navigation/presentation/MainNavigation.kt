@@ -37,6 +37,8 @@ import com.jd.financeflow.features.navigation.domain.HomeRootKey
 import com.jd.financeflow.features.navigation.domain.MainNavigationBarKey
 import com.jd.financeflow.features.finance.presentation.financeDetails.FinanceDetailsScreen
 import com.jd.financeflow.features.finance.presentation.financeDetails.FinanceDetailsViewModel
+import com.jd.financeflow.features.finance.presentation.financeList.FinanceListScreen
+import com.jd.financeflow.features.finance.presentation.financeList.FinanceListViewModel
 import com.jd.financeflow.features.finance.presentation.home.HomeActions
 import com.jd.financeflow.features.finance.presentation.home.HomeScreen
 
@@ -140,7 +142,13 @@ fun MainNavigation(
 
                 is FinanceRootKey.FinanceListScreen -> {
                     NavEntry(key = key) {
-                        Text("Finances")
+                        val financeListViewModel: FinanceListViewModel = koinViewModel()
+
+                        FinanceListScreen(
+                            viewModel = financeListViewModel,
+                            onClicked = {},
+                            modifier = Modifier.fillMaxSize()
+                        )
                     }
                 }
 

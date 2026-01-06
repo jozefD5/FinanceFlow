@@ -28,6 +28,8 @@ class FinanceListViewModel(
                 _state.update { it.copy(error = null) }
             }
 
+            is FinanceListActions.FinanceClicked -> {}
+
             is FinanceListActions.UpdateSearchQuery -> {
                 _state.update { it.copy(searchQuery = action.value) }
             }
