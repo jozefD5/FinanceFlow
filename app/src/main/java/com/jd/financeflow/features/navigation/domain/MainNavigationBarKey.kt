@@ -11,26 +11,28 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation3.runtime.NavKey
 
+import com.jd.financeflow.R
+
 /**
  * Sealed interface representing the navigation bar keys for the main navigation bar.
  */
 sealed interface MainNavigationBarKey : NavKey {
     val icon: ImageVector
     val selectedIcon: ImageVector
-    val label: String
+    val labelResourceId: Int
 
     @Serializable
     data object MainTab : MainNavigationBarKey {
         override val icon: ImageVector = Icons.Outlined.Home
         override val selectedIcon: ImageVector = Icons.Filled.Home
-        override val label = "Home"
+        override val labelResourceId = R.string.home_tab_label
     }
 
     @Serializable
     data object FinanceListTab : MainNavigationBarKey {
         override val icon: ImageVector = Icons.AutoMirrored.Outlined.ViewList
         override val selectedIcon: ImageVector = Icons.AutoMirrored.Filled.ViewList
-        override val label = "Finances"
+        override val labelResourceId = R.string.finances_tab_label
     }
 
     companion object {
@@ -48,11 +50,18 @@ sealed interface MainNavigationBarKey : NavKey {
     }
 }
 
-sealed interface MainNavigationRootKey : NavKey {
+/**
+ * Sealed interface representing the navigation keys for the home screen.
+ */
+sealed interface HomeRootKey : NavKey {
     @Serializable
-    data object HomeScreen : MainNavigationRootKey
+    data object HomeScreen : HomeRootKey
+}
 
+/**
+ * Sealed interface representing the navigation keys for the finance list screen.
+ */
+sealed interface FinanceRootKey : NavKey {
     @Serializable
-    data object FinanceListScreen : MainNavigationRootKey
-
+    data object FinanceListScreen : FinanceRootKey
 }

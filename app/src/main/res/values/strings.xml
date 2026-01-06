@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">FinanceFlow</string>
 
+    <string name="home_tab_label">Home</string>
+    <string name="finances_tab_label">Finances</string>
+
     <string name="income_overview_title">Income overview</string>
     <string name="expense_overview_title">Expense overview</string>
     <string name="add_transaction_button_label">Add transaction</string>
