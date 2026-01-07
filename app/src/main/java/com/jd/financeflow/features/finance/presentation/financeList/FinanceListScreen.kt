@@ -31,7 +31,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 
 import com.jd.financeflow.features.core.presentation.components.ErrorDialog
+import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
+import com.jd.financeflow.features.finance.domain.models.Finance
+import com.jd.financeflow.features.finance.domain.models.FinanceCategory
+import com.jd.financeflow.features.finance.domain.models.FinanceInterval
+import com.jd.financeflow.features.finance.domain.models.IncomeCategory
+import com.jd.financeflow.features.finance.presentation.financeList.components.FinanceList
 import com.jd.financeflow.ui.theme.primaryLightMediumContrast
+
 
 /**
  * Screen for displaying a list of finance transactions.
@@ -132,7 +139,14 @@ fun FinanceListView(
             ),
             modifier = Modifier
                 .fillMaxSize()
-        ) {}
+        ) {
+            FinanceList(
+                finances = state.finances,
+                currencyCode = state.currencyCode,
+                onItemClick = {},
+                modifier = Modifier.padding(16.dp)
+            )
+        }
     }
 
     if (state.error != null) {
@@ -148,10 +162,43 @@ fun FinanceListView(
 @Preview(showBackground = true)
 @Composable
 fun FinanceListViewPreview() {
+    val finances = listOf(
+        Finance(
+            title = "Salary",
+            description = "Monthly salary",
+            amount = 10_000.0,
+            interval = FinanceInterval.Monthly,
+            category = FinanceCategory.Income(IncomeCategory.Salary),
+        ),
+        Finance(
+            title = "Bonus",
+            description = "Work bonus",
+            amount = 5_000.0,
+            interval = FinanceInterval.Quarterly,
+            category = FinanceCategory.Income(IncomeCategory.Bonus)
+        ),
+        Finance(
+            title = "Investment",
+            description = "",
+            amount = 1000.0,
+            interval = FinanceInterval.Quarterly,
+            category = FinanceCategory.Income(IncomeCategory.Investments)
+        ),
+        Finance(
+            title = "Housing",
+            description = "Rent",
+            amount = 500.0,
+            interval = FinanceInterval.Monthly,
+            category = FinanceCategory.Expense(ExpenseCategory.Housing)
+        )
+    )
+
     MaterialTheme {
         Scaffold { innerPadding ->
             FinanceListView(
-                state = FinanceListState(),
+                state = FinanceListState(
+                    finances = finances
+                ),
                 onAction = {},
                 modifier = Modifier.padding(innerPadding)
             )

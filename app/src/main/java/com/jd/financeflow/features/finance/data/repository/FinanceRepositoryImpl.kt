@@ -20,15 +20,6 @@ import com.jd.financeflow.features.finance.domain.models.FinanceType
 class FinanceRepositoryImpl(
     private val financeDao: FinanceDao
 ) : FinanceRepository {
-    override suspend fun getFinances(): Result<List<Finance>, DataError.Local> {
-        return try {
-            Result.Success(
-                financeDao.getAll().map { it.toFinance() }
-            )
-        } catch (_: Exception) {
-            Result.Error(DataError.Local.UNKNOWN)
-        }
-    }
 
     override suspend fun getFinanceById(id: Int): Result<Finance, DataError.Local> {
         return try {
@@ -44,28 +35,13 @@ class FinanceRepositoryImpl(
         }
     }
 
-    override suspend fun updateFinance(finance: Finance): EmptyResult<DataError.Local> {
+    override suspend fun getFinances(): Result<List<Finance>, DataError.Local> {
         return try {
-            financeDao.update(finance.toEntity())
-            Result.Success(Unit)
-        } catch (_: Exception) {
-            Result.Error(DataError.Local.UNKNOWN)
-        }
-    }
-
-    override suspend fun deleteFinance(finance: Finance): EmptyResult<DataError.Local> {
-        return try {
-            financeDao.delete(finance.toEntity())
-            Result.Success(Unit)
-        } catch (_: Exception) {
-            Result.Error(DataError.Local.UNKNOWN)
-        }
-    }
-
-    override suspend fun insertFinance(finance: Finance): EmptyResult<DataError.Local> {
-        return try {
-            financeDao.insert(finance.toEntity())
-            Result.Success(Unit)
+            Result.Success(
+                financeDao
+                    .getAll().map { it.toFinance() }
+                    .sortedByDescending { it.createdAt }
+            )
         } catch (_: Exception) {
             Result.Error(DataError.Local.UNKNOWN)
         }
@@ -124,6 +100,33 @@ class FinanceRepositoryImpl(
             return Result.Success(total)
         } catch (_: Exception) {
             return Result.Error(DataError.Local.UNKNOWN)
+        }
+    }
+
+    override suspend fun updateFinance(finance: Finance): EmptyResult<DataError.Local> {
+        return try {
+            financeDao.update(finance.toEntity())
+            Result.Success(Unit)
+        } catch (_: Exception) {
+            Result.Error(DataError.Local.UNKNOWN)
+        }
+    }
+
+    override suspend fun deleteFinance(finance: Finance): EmptyResult<DataError.Local> {
+        return try {
+            financeDao.delete(finance.toEntity())
+            Result.Success(Unit)
+        } catch (_: Exception) {
+            Result.Error(DataError.Local.UNKNOWN)
+        }
+    }
+
+    override suspend fun insertFinance(finance: Finance): EmptyResult<DataError.Local> {
+        return try {
+            financeDao.insert(finance.toEntity())
+            Result.Success(Unit)
+        } catch (_: Exception) {
+            Result.Error(DataError.Local.UNKNOWN)
         }
     }
 }

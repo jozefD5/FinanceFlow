@@ -11,7 +11,6 @@ sealed interface FinanceListActions {
     data class FinanceClicked(val id: Int) : FinanceListActions
     data class UpdateSearchQuery(val value: String) : FinanceListActions
     class OnSearch : FinanceListActions
-    class RefreshList : FinanceListActions
     data class UpdateFinanceTypeFilter(val value: FinanceType?) : FinanceListActions
     data class UpdateFinanceCategoryFilter(val value: FinanceCategory?) : FinanceListActions
 }

@@ -13,6 +13,14 @@ import com.jd.financeflow.features.finance.domain.models.FinanceType
  */
 interface FinanceRepository {
     /**
+     * Retrieves a specific financial transaction by its unique identifier.
+     *
+     * @param id The unique identifier of the transaction.
+     * @return The [Finance] object with the specified ID on success or [DataError.Local] on failure.
+     */
+    suspend fun getFinanceById(id: Int): Result<Finance, DataError.Local>
+
+    /**
      * Retrieves a list of all financial transactions.
      *
      * @return List of [Finance] objects on success or [DataError.Local] on failure.
@@ -20,12 +28,18 @@ interface FinanceRepository {
     suspend fun getFinances(): Result<List<Finance>, DataError.Local>
 
     /**
-     * Retrieves a specific financial transaction by its unique identifier.
+     * Retrieves the total income or expense for a specific type of financial transactions.
      *
-     * @param id The unique identifier of the transaction.
-     * @return The [Finance] object with the specified ID on success or [DataError.Local] on failure.
+     * @param type The type of transactions to retrieve the total for. If not provided, the total
+     * for all types will be calculated.
+     * @param category The category of the transactions to retrieve the total for. If not provided,
+     * the total for all categories will be calculated.
+     * @return The total as a [Double] value on success or [DataError.Local] on failure.
      */
-    suspend fun getFinanceById(id: Int): Result<Finance, DataError.Local>
+    suspend fun getTotal(
+        type: FinanceType? = null,
+        category: FinanceCategory? = null
+    ): Result<Double, DataError.Local>
 
     /**
      * Updates an existing financial transaction.
@@ -50,18 +64,4 @@ interface FinanceRepository {
      * @return [EmptyResult] on success or [DataError.Local] on failure.
      */
     suspend fun deleteFinance(finance: Finance): EmptyResult<DataError.Local>
-
-    /**
-     * Retrieves the total income or expense for a specific type of financial transactions.
-     *
-     * @param type The type of transactions to retrieve the total for. If not provided, the total
-     * for all types will be calculated.
-     * @param category The category of the transactions to retrieve the total for. If not provided,
-     * the total for all categories will be calculated.
-     * @return The total as a [Double] value on success or [DataError.Local] on failure.
-     */
-    suspend fun getTotal(
-        type: FinanceType? = null,
-        category: FinanceCategory? = null
-    ): Result<Double, DataError.Local>
 }

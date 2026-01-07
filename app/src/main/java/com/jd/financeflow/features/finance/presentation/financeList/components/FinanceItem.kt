@@ -12,15 +12,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import com.jd.financeflow.features.core.presentation.components.formatCurrency
 
+import com.jd.financeflow.features.core.presentation.components.formatCurrency
 import com.jd.financeflow.features.finance.domain.models.Finance
 import com.jd.financeflow.features.finance.domain.models.FinanceInterval
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 
-private val incomeColors = Color(0xFF0A9D0A)
-private val expenseColors = Color(0xFFCC1212)
+private val incomeColors = Color(0xFF308C30)
+private val expenseColors = Color(0xFFAF2222)
 
 /**
  * Displays a finance item with the given information as list item.

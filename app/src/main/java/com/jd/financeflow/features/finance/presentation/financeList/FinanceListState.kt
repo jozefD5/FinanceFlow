@@ -11,6 +11,7 @@ import com.jd.financeflow.features.finance.domain.models.FinanceType
 data class FinanceListState(
     val isLoading: Boolean = false,
     val error: UiText? = null,
+    val currencyCode: String = "EUR",
 
     val searchQuery: String = "",
 
