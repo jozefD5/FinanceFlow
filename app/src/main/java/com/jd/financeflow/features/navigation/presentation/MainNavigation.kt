@@ -111,30 +111,10 @@ fun MainNavigation(
                 is HomeRootKey.HomeScreen -> {
                     NavEntry(key = key) {
                         val homeViewModel: HomeViewModel = koinViewModel()
-                        val editTransactionViewModel: FinanceDetailsViewModel = koinViewModel(
-                            parameters = { parametersOf(null) }
-                        )
 
                         HomeScreen(
                             viewModel = homeViewModel,
-                            addTransactionContent = {
-                                FinanceDetailsScreen(
-                                    viewModel = editTransactionViewModel,
-                                    onSuccessfulAdd = {
-                                        homeViewModel.onAction(
-                                            HomeActions.RefreshBalance()
-                                        )
-                                        homeViewModel.onAction(
-                                            HomeActions.ShowBottomSheet(false)
-                                        )
-                                    },
-                                    modifier = Modifier
-                                        .background(
-                                            MaterialTheme.colorScheme.surfaceContainerLow
-                                        )
-                                        .padding(horizontal = 8.dp)
-                                )
-                            },
+                            onAddTransactionClicked = { },
                             modifier = Modifier.fillMaxSize()
                         )
                     }

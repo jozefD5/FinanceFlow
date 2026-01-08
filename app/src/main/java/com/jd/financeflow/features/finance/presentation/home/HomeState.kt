@@ -10,7 +10,6 @@ data class HomeState(
     // General
     val error: UiText? = null,
     val currencyCode: String = "EUR",
-    val showBottomSheet: Boolean = false,
 
     // Balance card
     val balance: Double = 0.0,
