@@ -56,7 +56,7 @@ class HomeViewModel(
                 }
             }
 
-            is HomeActions.AddTransaction -> {}
+            is HomeActions.AddTransactionClicked -> {}
 
             is HomeActions.ShowBottomSheet -> {
                 _state.update {

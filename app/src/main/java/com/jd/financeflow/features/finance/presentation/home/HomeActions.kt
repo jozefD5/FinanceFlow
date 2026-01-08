@@ -6,6 +6,6 @@ package com.jd.financeflow.features.finance.presentation.home
 sealed interface HomeActions {
     class ClearError : HomeActions
     class RefreshBalance : HomeActions
-    class AddTransaction : HomeActions
+    class AddTransactionClicked : HomeActions
     data class ShowBottomSheet(val value: Boolean) : HomeActions
 }
