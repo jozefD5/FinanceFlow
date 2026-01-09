@@ -6,5 +6,5 @@ package com.jd.financeflow.features.finance.presentation.home
 sealed interface HomeActions {
     data object OnClearError : HomeActions
     data object OnRefreshBalance : HomeActions
-    data object OnAddTransactionClicked : HomeActions
+    data object OnAddFinanceClicked : HomeActions
 }

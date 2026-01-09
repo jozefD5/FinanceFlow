@@ -10,6 +10,7 @@ import com.jd.financeflow.features.finance.data.localDataSource.FinanceDatabase
 import com.jd.financeflow.features.finance.data.localDataSource.FinanceFactory
 import com.jd.financeflow.features.finance.data.repository.FinanceRepositoryImpl
 import com.jd.financeflow.features.finance.domain.FinanceRepository
+import com.jd.financeflow.features.finance.domain.models.Finance
 import com.jd.financeflow.features.finance.presentation.financeDetails.FinanceDetailsViewModel
 import com.jd.financeflow.features.finance.presentation.financeList.FinanceListViewModel
 import com.jd.financeflow.features.finance.presentation.home.HomeViewModel
@@ -31,10 +32,10 @@ val appModule = module {
     singleOf(::FinanceRepositoryImpl).bind<FinanceRepository>()
 
     viewModel { HomeViewModel(get()) }
-    viewModel { (id: Int?) ->
+    viewModel { (finance: Finance?) ->
         FinanceDetailsViewModel(
             get(),
-            id
+            finance
         )
     }
     viewModel { FinanceListViewModel(get()) }

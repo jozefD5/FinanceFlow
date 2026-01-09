@@ -50,7 +50,7 @@ import com.jd.financeflow.ui.theme.primaryLightMediumContrast
 fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = koinViewModel(),
-    onAddTransactionClicked: () -> Unit = {}
+    onAddFinanceClicked: () -> Unit = {}
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
 
@@ -58,7 +58,7 @@ fun HomeScreen(
         state = state.value,
         onAction = { action ->
             when (action) {
-                is HomeActions.OnAddTransactionClicked -> onAddTransactionClicked()
+                is HomeActions.OnAddFinanceClicked -> onAddFinanceClicked()
                 else -> viewModel.onAction(action)
             }
         },
@@ -138,7 +138,7 @@ fun HomeView(
                     }
 
                     Button(
-                        onClick = { onAction(HomeActions.OnAddTransactionClicked) },
+                        onClick = { onAction(HomeActions.OnAddFinanceClicked) },
                         modifier = Modifier.weight(1f)
                     ) {
                         Icon(

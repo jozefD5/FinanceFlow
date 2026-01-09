@@ -56,7 +56,7 @@ class HomeViewModel(
                 }
             }
 
-            is HomeActions.OnAddTransactionClicked -> {}
+            is HomeActions.OnAddFinanceClicked -> {}
         }
     }
 

@@ -112,7 +112,7 @@ fun MainNavigation(
 
                                 HomeScreen(
                                     viewModel = viewModel,
-                                    onAddTransactionClicked = {
+                                    onAddFinanceClicked = {
                                         homeBackStack.add(HomeRootKey.FinanceDetailsScreen)
                                     },
                                     modifier = Modifier.fillMaxSize()
