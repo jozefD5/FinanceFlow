@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -93,25 +94,27 @@ fun FinanceDetailsView(
     scrollState: ScrollState = rememberScrollState()
 ) {
     Column(
-        verticalArrangement = Arrangement.SpaceBetween,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
+            .verticalScroll(scrollState)
     ) {
-        if (state.error != null) {
-            Text(
-                text = state.error.asString(),
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.titleMedium,
-            )
-        }
-
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
+                .weight(1f)
                 .fillMaxWidth()
                 .verticalScroll(scrollState)
         ) {
+            if (state.error != null) {
+                Text(
+                    text = state.error.asString(),
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+            }
+
             SingleChoiceSegmentedButtonRow(
                 modifier = Modifier
                     .padding(8.dp)
@@ -208,8 +211,6 @@ fun FinanceDetailsView(
             )
         }
 
-        Spacer(modifier = Modifier.padding(32.dp))
-
         Button(
             onClick = { onAction(FinanceDetailsActions.SaveTransaction()) },
             modifier = Modifier
@@ -237,6 +238,7 @@ fun FinanceDetailsViewPreview() {
                 ),
                 onAction = {},
                 modifier = Modifier
+                    .fillMaxSize()
                     .padding(innerPadding)
                     .background(MaterialTheme.colorScheme.surfaceDim)
             )

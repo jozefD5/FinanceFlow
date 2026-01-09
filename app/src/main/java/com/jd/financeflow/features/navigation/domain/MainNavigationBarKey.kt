@@ -56,6 +56,9 @@ sealed interface MainNavigationBarKey : NavKey {
 sealed interface HomeRootKey : NavKey {
     @Serializable
     data object HomeScreen : HomeRootKey
+
+    @Serializable
+    data object FinanceDetailsScreen : HomeRootKey
 }
 
 /**

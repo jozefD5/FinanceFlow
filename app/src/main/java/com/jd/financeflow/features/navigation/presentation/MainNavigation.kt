@@ -4,11 +4,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
@@ -21,27 +19,24 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import com.jd.financeflow.features.finance.presentation.financeDetails.FinanceDetailsScreen
+import com.jd.financeflow.features.finance.presentation.financeDetails.FinanceDetailsViewModel
 
 import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 import com.jd.financeflow.features.finance.presentation.home.HomeViewModel
 import com.jd.financeflow.features.navigation.domain.FinanceRootKey
 import com.jd.financeflow.features.navigation.domain.HomeRootKey
 import com.jd.financeflow.features.navigation.domain.MainNavigationBarKey
-import com.jd.financeflow.features.finance.presentation.financeDetails.FinanceDetailsScreen
-import com.jd.financeflow.features.finance.presentation.financeDetails.FinanceDetailsViewModel
 import com.jd.financeflow.features.finance.presentation.financeList.FinanceListScreen
 import com.jd.financeflow.features.finance.presentation.financeList.FinanceListViewModel
-import com.jd.financeflow.features.finance.presentation.home.HomeActions
 import com.jd.financeflow.features.finance.presentation.home.HomeScreen
-
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun MainNavigation(
@@ -108,18 +103,42 @@ fun MainNavigation(
             )
         ) { key ->
             when (key) {
-                is HomeRootKey.HomeScreen -> {
-                    NavEntry(key = key) {
-                        val homeViewModel: HomeViewModel = koinViewModel()
+                // Main screen destinations
+                is HomeRootKey -> {
+                    when (key) {
+                        is HomeRootKey.HomeScreen -> {
+                            NavEntry(key = key) {
+                                val viewModel: HomeViewModel = koinViewModel()
 
-                        HomeScreen(
-                            viewModel = homeViewModel,
-                            onAddTransactionClicked = { },
-                            modifier = Modifier.fillMaxSize()
-                        )
+                                HomeScreen(
+                                    viewModel = viewModel,
+                                    onAddTransactionClicked = {
+                                        homeBackStack.add(HomeRootKey.FinanceDetailsScreen)
+                                    },
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+                        }
+
+                        is HomeRootKey.FinanceDetailsScreen -> {
+                            NavEntry(key = key) {
+                                val viewModel: FinanceDetailsViewModel = koinViewModel(
+                                    parameters = { parametersOf(null) }
+                                )
+
+                                FinanceDetailsScreen(
+                                    viewModel = viewModel,
+                                    onSuccessfulAdd = {
+                                        homeBackStack.removeLastOrNull()
+                                    },
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+                        }
                     }
                 }
 
+                // Finance screen destinations
                 is FinanceRootKey.FinanceListScreen -> {
                     NavEntry(key = key) {
                         val financeListViewModel: FinanceListViewModel = koinViewModel()
