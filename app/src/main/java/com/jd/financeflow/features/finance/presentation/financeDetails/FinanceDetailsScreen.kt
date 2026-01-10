@@ -103,8 +103,9 @@ fun FinanceDetailsView(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .weight(1f)
                 .fillMaxWidth()
+                .padding(8.dp)
+                .weight(1f)
                 .verticalScroll(scrollState)
         ) {
             if (state.error != null) {
@@ -117,7 +118,7 @@ fun FinanceDetailsView(
 
             SingleChoiceSegmentedButtonRow(
                 modifier = Modifier
-                    .padding(8.dp)
+                    .padding(bottom = 8.dp)
                     .fillMaxWidth()
             ) {
                 FinanceType.entries.forEachIndexed { index, value ->

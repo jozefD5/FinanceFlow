@@ -1,6 +1,7 @@
 package com.jd.financeflow.features.finance.presentation.financeDetails
 
 import java.util.Locale
+import java.util.UUID
 
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,6 +14,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
 import com.jd.financeflow.features.core.domain.DataError
+import com.jd.financeflow.features.core.domain.Result
 import com.jd.financeflow.features.finance.domain.models.Finance
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceInterval
@@ -26,20 +28,20 @@ import com.jd.financeflow.features.finance.domain.models.FinanceType
 
 /**
  * View model for the finance transaction details screen. Responsible for adding new transaction or modifying
- * existing one if [finance] is provided.
+ * existing one if [financeId] is provided.
  *
  * @param financeRepository repository for finance transactions
- * @param finance finance transaction to be modified or null for new transaction
+ * @param financeId finance transaction to be modified or null for new transaction
  */
 class FinanceDetailsViewModel(
     private val financeRepository: FinanceRepository,
-    private val finance: Finance? = null
+    private val financeId: Int? = null
 ) : ViewModel() {
     private val _state = MutableStateFlow(FinanceDetailsState())
     val state = _state
         .onStart {
-            if (finance != null) {
-                displayFinance(finance)
+            if (financeId != null) {
+                loadExistingFinanceTransaction(financeId)
             }
         }
         .stateIn(
@@ -115,53 +117,65 @@ class FinanceDetailsViewModel(
     }
 
     /**
-     * Loads data for provided finance to be viewed or modified.
+     * Loads existing finance transaction from the repository.
      *
-     * @param item finance to be loaded
+     * @param id id of the finance transaction
      */
-    private fun displayFinance(item: Finance) = viewModelScope.launch {
+    private fun loadExistingFinanceTransaction(id: Int) = viewModelScope.launch {
         _state.update { it.copy(isLoading = true) }
 
-        try {
-            // Get index of the selected type and category
-            val typeIndex = when (item.category) {
-                is FinanceCategory.Income -> {
-                    FinanceType.INCOME.ordinal
+        runCatching {
+            when (val result = financeRepository.getFinanceById(id)) {
+                is Result.Success -> {
+                    // Get index of the selected type and category
+                    val typeIndex = when (result.data.category) {
+                        is FinanceCategory.Income -> {
+                            FinanceType.INCOME.ordinal
+                        }
+
+                        is FinanceCategory.Expense -> {
+                            FinanceType.EXPENSE.ordinal
+                        }
+                    }
+
+                    val categoryIndex = when (result.data.category) {
+                        is FinanceCategory.Income -> {
+                            IncomeCategory.entries.indexOf(result.data.category.category)
+                        }
+
+                        is FinanceCategory.Expense -> {
+                            ExpenseCategory.entries.indexOf(result.data.category.category)
+                        }
+                    }
+
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            error = null,
+                            title = result.data.title,
+                            description = result.data.description ?: "",
+                            amount = String.format(
+                                Locale.getDefault(),
+                                "%.2f",
+                                result.data.amount
+                            ),
+                            financeIntervalIndex = result.data.interval.ordinal,
+                            financeTypeIndex = typeIndex,
+                            financeCategoryIndex = categoryIndex
+                        )
+                    }
                 }
 
-                is FinanceCategory.Expense -> {
-                    FinanceType.EXPENSE.ordinal
+                is Result.Error -> {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            error = result.error.toUiText()
+                        )
+                    }
                 }
             }
-
-            val categoryIndex = when (item.category) {
-                is FinanceCategory.Income -> {
-                    IncomeCategory.entries.indexOf(item.category.category)
-                }
-
-                is FinanceCategory.Expense -> {
-                    ExpenseCategory.entries.indexOf(item.category.category)
-                }
-            }
-
-            _state.update {
-                it.copy(
-                    isLoading = false,
-                    error = null,
-                    title = item.title,
-                    description = item.description ?: "",
-                    amount = String.format(
-                        Locale.getDefault(),
-                        "%.2f",
-                        item.amount
-                    ),
-                    financeIntervalIndex = item.interval.ordinal,
-                    financeTypeIndex = typeIndex,
-                    financeCategoryIndex = categoryIndex
-                )
-            }
-
-        } catch (_: Exception) {
+        }.getOrElse {
             _state.update {
                 it.copy(
                     isLoading = false,
@@ -305,6 +319,7 @@ class FinanceDetailsViewModel(
             }
 
             val finance = Finance(
+                id = financeId ?: UUID.randomUUID().hashCode(),
                 title = _state.value.title,
                 description = _state.value.description,
                 amount = _state.value.amount.toDouble(),
@@ -312,7 +327,7 @@ class FinanceDetailsViewModel(
                 category = category
             )
 
-            val result = if (this@FinanceDetailsViewModel.finance == null) {
+            val result = if (financeId == null) {
                 financeRepository.insertFinance(finance)
             } else {
                 financeRepository.updateFinance(finance)
@@ -320,20 +335,6 @@ class FinanceDetailsViewModel(
 
             result
                 .onSuccess {
-                    _state.update {
-                        it.copy(
-                            isLoading = false,
-                            error = null,
-                            invalidTitle = false,
-                            invalidAmount = false,
-                            title = "",
-                            description = "",
-                            amount = "",
-                            financeIntervalIndex = 0,
-                            financeTypeIndex = 0,
-                            financeCategoryIndex = 0
-                        )
-                    }
                     onSuccessAction?.invoke()
                 }
                 .onError { error ->

@@ -44,14 +44,14 @@ import com.jd.financeflow.ui.theme.primaryLightMediumContrast
  * Screen for displaying a list of finance transactions.
  *
  * @param modifier modifier to be applied
- * @param onClicked callback for when an item is clicked
+ * @param onFinanceClicked callback for when an item is clicked
  * @param viewModel view model to be used
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FinanceListScreen(
     modifier: Modifier = Modifier,
-    onClicked: (id: Int) -> Unit = {},
+    onFinanceClicked: (id: Int) -> Unit = {},
     viewModel: FinanceListViewModel = koinViewModel()
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
@@ -60,7 +60,8 @@ fun FinanceListScreen(
         state = state.value,
         onAction = { action ->
             when (action) {
-                is FinanceListActions.FinanceClicked -> onClicked(action.id)
+                is FinanceListActions.FinanceClicked -> onFinanceClicked(action.id)
+
                 else -> viewModel.onAction(action)
             }
         },
@@ -85,7 +86,9 @@ fun FinanceListView(
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier.background(primaryLightMediumContrast)
+        modifier = modifier
+            .background(primaryLightMediumContrast)
+            .fillMaxWidth()
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -143,8 +146,12 @@ fun FinanceListView(
             FinanceList(
                 finances = state.finances,
                 currencyCode = state.currencyCode,
-                onItemClick = {},
-                modifier = Modifier.padding(16.dp)
+                onItemClick = {
+                    onAction(FinanceListActions.FinanceClicked(it.id))
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
             )
         }
     }

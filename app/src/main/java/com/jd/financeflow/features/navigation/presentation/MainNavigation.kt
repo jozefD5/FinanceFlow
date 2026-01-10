@@ -139,15 +139,39 @@ fun MainNavigation(
                 }
 
                 // Finance screen destinations
-                is FinanceRootKey.FinanceListScreen -> {
-                    NavEntry(key = key) {
-                        val financeListViewModel: FinanceListViewModel = koinViewModel()
+                is FinanceRootKey -> {
+                    when (key) {
+                        is FinanceRootKey.FinanceListScreen -> {
+                            NavEntry(key = key) {
+                                val viewModel: FinanceListViewModel = koinViewModel()
 
-                        FinanceListScreen(
-                            viewModel = financeListViewModel,
-                            onClicked = {},
-                            modifier = Modifier.fillMaxSize()
-                        )
+                                FinanceListScreen(
+                                    viewModel = viewModel,
+                                    onFinanceClicked = {
+                                        financeListBackStack.add(
+                                            FinanceRootKey.FinanceDetailsScreen(it)
+                                        )
+                                    },
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+                        }
+
+                        is FinanceRootKey.FinanceDetailsScreen -> {
+                            NavEntry(key = key) {
+                                val viewModel: FinanceDetailsViewModel = koinViewModel(
+                                    parameters = { parametersOf(key.financeId) }
+                                )
+
+                                FinanceDetailsScreen(
+                                    viewModel = viewModel,
+                                    onSuccessfulAdd = {
+                                        homeBackStack.removeLastOrNull()
+                                    },
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+                        }
                     }
                 }
 
