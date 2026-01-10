@@ -55,5 +55,7 @@
     <string name="finance_interval_quarterly">Quarterly</string>
     <string name="finance_interval_half_yearly">Half Yearly</string>
     <string name="finance_interval_yearly">Yearly</string>
+    <string name="delete_finance_item_title">Delete finance item?</string>
+    <string name="delete_finance_item_text">Are you sure you want to delete this finance item?</string>
 
 </resources>

@@ -14,7 +14,7 @@ import com.jd.financeflow.features.core.domain.DataError
 import com.jd.financeflow.features.core.domain.Result
 import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.finance.domain.FinanceRepository
-
+import com.jd.financeflow.features.finance.domain.models.Finance
 
 /**
  * View model for the FinanceList screen.
@@ -25,7 +25,7 @@ class FinanceListViewModel(
     private val _state = MutableStateFlow(FinanceListState())
     val state = _state
         .onStart {
-            updateFinances()
+            refreshFinanceList()
         }
         .stateIn(
             scope = viewModelScope,
@@ -40,27 +40,41 @@ class FinanceListViewModel(
      */
     fun onAction(action: FinanceListActions) {
         when (action) {
-            is FinanceListActions.ClearError -> {
+            is FinanceListActions.OnClearError -> {
                 _state.update { it.copy(error = null) }
             }
 
-            is FinanceListActions.FinanceClicked -> {}
-            is FinanceListActions.UpdateSearchQuery -> {
+            is FinanceListActions.OnFinanceItemClicked -> {}
+            is FinanceListActions.OnFinanceItemDelete -> {
+                deleteFinance(action.finance)
+            }
+
+            is FinanceListActions.OnSelectedDeleteFinanceItem -> {
+                _state.update {
+                    it.copy(
+                        showDeleteDialog = action.shoeDialog,
+                        selectedDeleteFinance = action.finance
+                    )
+                }
+            }
+
+            is FinanceListActions.OnUpdateSearchQuery -> {
                 _state.update { it.copy(searchQuery = action.value) }
             }
 
             is FinanceListActions.OnSearch -> {
-                updateFinances()
+                refreshFinanceList()
             }
-            is FinanceListActions.UpdateFinanceTypeFilter -> {}
-            is FinanceListActions.UpdateFinanceCategoryFilter -> {}
+
+            is FinanceListActions.OnUpdateFinanceTypeFilter -> {}
+            is FinanceListActions.OnUpdateFinanceCategoryFilter -> {}
         }
     }
 
     /**
      * Refreshes the list of finances.
      */
-    fun updateFinances() = viewModelScope.launch {
+    fun refreshFinanceList() = viewModelScope.launch {
         _state.update { it.copy(isLoading = true) }
 
         runCatching {
@@ -92,6 +106,49 @@ class FinanceListViewModel(
                 it.copy(
                     isLoading = false,
                     error = DataError.Local.UNKNOWN.toUiText()
+                )
+            }
+        }
+    }
+
+    /**
+     * Deletes a finance.
+     *
+     * @param finance finance to be deleted
+     */
+    fun deleteFinance(finance: Finance) = viewModelScope.launch {
+        _state.update { it.copy(isLoading = true) }
+
+        runCatching {
+            when (val result = repository.deleteFinance(finance)) {
+                is Result.Success -> {
+                    _state.update{
+                        it.copy(
+                            selectedDeleteFinance = null,
+                            showDeleteDialog = false
+                        )
+                    }
+                    refreshFinanceList()
+                }
+
+                is Result.Error -> {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            error = result.error.toUiText(),
+                            selectedDeleteFinance = null,
+                            showDeleteDialog = false
+                        )
+                    }
+                }
+            }
+        }.getOrElse {
+            _state.update {
+                it.copy(
+                    isLoading = false,
+                    error = DataError.Local.UNKNOWN.toUiText(),
+                    selectedDeleteFinance = null,
+                    showDeleteDialog = false
                 )
             }
         }
