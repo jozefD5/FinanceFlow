@@ -166,7 +166,7 @@ fun MainNavigation(
                                 FinanceDetailsScreen(
                                     viewModel = viewModel,
                                     onSuccessfulAdd = {
-                                        homeBackStack.removeLastOrNull()
+                                        financeListBackStack.removeLastOrNull()
                                     },
                                     modifier = Modifier.fillMaxSize()
                                 )
