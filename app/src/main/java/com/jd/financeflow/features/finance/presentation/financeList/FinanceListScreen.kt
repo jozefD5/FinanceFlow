@@ -191,9 +191,11 @@ fun FinanceListView(
             dismissButton = {
                 Button(
                     onClick = {
-                        FinanceListActions.OnSelectedDeleteFinanceItem(
-                            shoeDialog = false,
-                            finance = null
+                        onAction(
+                            FinanceListActions.OnSelectedDeleteFinanceItem(
+                                shoeDialog = false,
+                                finance = null
+                            )
                         )
                     }
                 ) {
