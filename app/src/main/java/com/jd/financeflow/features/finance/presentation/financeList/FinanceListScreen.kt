@@ -11,10 +11,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.outlined.Tune
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
@@ -42,19 +45,18 @@ import com.jd.financeflow.features.finance.domain.models.IncomeCategory
 import com.jd.financeflow.features.finance.presentation.financeList.components.FinanceList
 import com.jd.financeflow.ui.theme.primaryLightMediumContrast
 
-
 /**
  * Screen for displaying a list of finance transactions.
  *
  * @param modifier modifier to be applied
- * @param onClicked callback for when an item is clicked
+ * @param onFinanceClicked callback for when an item is clicked
  * @param viewModel view model to be used
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FinanceListScreen(
     modifier: Modifier = Modifier,
-    onClicked: (id: Int) -> Unit = {},
+    onFinanceClicked: (id: Int) -> Unit = {},
     viewModel: FinanceListViewModel = koinViewModel()
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
@@ -63,7 +65,8 @@ fun FinanceListScreen(
         state = state.value,
         onAction = { action ->
             when (action) {
-                is FinanceListActions.FinanceClicked -> onClicked(action.id)
+                is FinanceListActions.OnFinanceItemClicked -> onFinanceClicked(action.id)
+
                 else -> viewModel.onAction(action)
             }
         },
@@ -88,7 +91,9 @@ fun FinanceListView(
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier.background(primaryLightMediumContrast)
+        modifier = modifier
+            .background(primaryLightMediumContrast)
+            .fillMaxWidth()
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -108,7 +113,7 @@ fun FinanceListView(
                     SearchBarDefaults.InputField(
                         query = state.searchQuery,
                         onQueryChange = {
-                            onAction(FinanceListActions.UpdateSearchQuery(it))
+                            onAction(FinanceListActions.OnUpdateSearchQuery(it))
                         },
                         onSearch = {
                             onAction(FinanceListActions.OnSearch())
@@ -160,17 +165,77 @@ fun FinanceListView(
             FinanceList(
                 finances = state.finances,
                 currencyCode = state.currencyCode,
-                onItemClick = {},
-                modifier = Modifier.padding(16.dp)
+                onItemClick = {
+                    onAction(FinanceListActions.OnFinanceItemClicked(it.id))
+                },
+                onItemLongClick = {
+                    onAction(
+                        FinanceListActions.OnSelectedDeleteFinanceItem(
+                            shoeDialog = true,
+                            finance = it
+                        )
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
             )
         }
+    }
+
+    if (state.showDeleteDialog) {
+        AlertDialog(
+            icon = {},
+            title = { Text(text = stringResource(R.string.delete_finance_item_title)) },
+            text = {
+                Text(
+                    """
+                        ${stringResource(R.string.delete_finance_item_text)}
+                        ${state.selectedDeleteFinance?.title}
+                    """.trimIndent()
+                )
+            },
+            onDismissRequest = {
+                onAction(
+                    FinanceListActions.OnSelectedDeleteFinanceItem(
+                        shoeDialog = false,
+                        finance = null
+                    )
+                )
+            },
+            dismissButton = {
+                Button(
+                    onClick = {
+                        onAction(
+                            FinanceListActions.OnSelectedDeleteFinanceItem(
+                                shoeDialog = false,
+                                finance = null
+                            )
+                        )
+                    }
+                ) {
+                    Text(stringResource(R.string.dismiss_title))
+                }
+            },
+            confirmButton = {
+                OutlinedButton(
+                    onClick = {
+                        state.selectedDeleteFinance?.let {
+                            onAction(FinanceListActions.OnFinanceItemDelete(it))
+                        }
+                    }
+                ) {
+                    Text(stringResource(R.string.confirm_title))
+                }
+            }
+        )
     }
 
     if (state.error != null) {
         ErrorDialog(
             content = state.error.asString(),
-            onConfirmation = { onAction(FinanceListActions.ClearError()) },
-            onDismiss = { onAction(FinanceListActions.ClearError()) }
+            onConfirmation = { onAction(FinanceListActions.OnClearError()) },
+            onDismiss = { onAction(FinanceListActions.OnClearError()) }
         )
     }
 }

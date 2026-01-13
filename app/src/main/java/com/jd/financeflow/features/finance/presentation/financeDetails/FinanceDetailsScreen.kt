@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -63,7 +64,7 @@ fun FinanceDetailsScreen(
         state = state.value,
         onAction = { action ->
             val actualAction = when (action) {
-                is FinanceDetailsActions.SaveTransaction -> action
+                is FinanceDetailsActions.OnSaveFinance -> action
                     .copy(action = onSuccessfulAdd)
 
                 else -> action
@@ -93,28 +94,31 @@ fun FinanceDetailsView(
     scrollState: ScrollState = rememberScrollState()
 ) {
     Column(
-        verticalArrangement = Arrangement.SpaceBetween,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
+            .verticalScroll(scrollState)
     ) {
-        if (state.error != null) {
-            Text(
-                text = state.error.asString(),
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.titleMedium,
-            )
-        }
-
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(8.dp)
+                .weight(1f)
                 .verticalScroll(scrollState)
         ) {
+            if (state.error != null) {
+                Text(
+                    text = state.error.asString(),
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+            }
+
             SingleChoiceSegmentedButtonRow(
                 modifier = Modifier
-                    .padding(8.dp)
+                    .padding(bottom = 8.dp)
                     .fillMaxWidth()
             ) {
                 FinanceType.entries.forEachIndexed { index, value ->
@@ -124,7 +128,7 @@ fun FinanceDetailsView(
                             count = FinanceType.entries.size
                         ),
                         selected = state.financeTypeIndex == index,
-                        onClick = { onAction(FinanceDetailsActions.UpdateFinanceType(index)) },
+                        onClick = { onAction(FinanceDetailsActions.OnUpdateFinanceType(index)) },
                         label = { Text(value.toUiText().asString()) }
                     )
                 }
@@ -132,8 +136,8 @@ fun FinanceDetailsView(
 
             OutlinedTextField(
                 value = state.title,
-                onValueChange = { onAction(FinanceDetailsActions.UpdateTitle(it)) },
-                label = { Text(stringResource(R.string.add_transaction_title_label)) },
+                onValueChange = { onAction(FinanceDetailsActions.OnUpdateTitle(it)) },
+                label = { Text(stringResource(R.string.add_finance_title_label)) },
                 isError = state.invalidTitle,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                 keyboardActions = KeyboardActions(
@@ -146,8 +150,8 @@ fun FinanceDetailsView(
 
             OutlinedTextField(
                 value = state.description,
-                onValueChange = { onAction(FinanceDetailsActions.UpdateDescription(it)) },
-                label = { Text(stringResource(R.string.add_transaction_title_description)) },
+                onValueChange = { onAction(FinanceDetailsActions.OnUpdateDescription(it)) },
+                label = { Text(stringResource(R.string.add_finance_title_description)) },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                 keyboardActions = KeyboardActions(
                     onNext = { focusManager.moveFocus(FocusDirection.Down) }
@@ -160,8 +164,8 @@ fun FinanceDetailsView(
 
             OutlinedTextField(
                 value = state.amount,
-                onValueChange = { onAction(FinanceDetailsActions.UpdateAmount(it)) },
-                label = { Text(stringResource(R.string.add_transaction_title_amount)) },
+                onValueChange = { onAction(FinanceDetailsActions.OnUpdateAmount(it)) },
+                label = { Text(stringResource(R.string.add_finance_title_amount)) },
                 isError = state.invalidAmount,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
@@ -176,11 +180,11 @@ fun FinanceDetailsView(
             )
 
             LargeDropdownMenu(
-                label = stringResource(R.string.add_transaction_title_interval),
+                label = stringResource(R.string.add_finance_title_interval),
                 selectedIndex = state.financeIntervalIndex,
                 items = FinanceInterval.entries.map { it.toUiText().asString() },
                 onItemSelected = { index, _ ->
-                    onAction(FinanceDetailsActions.UpdateFinanceInterval(index))
+                    onAction(FinanceDetailsActions.OnUpdateFinanceInterval(index))
                 },
                 shape = RoundedCornerShape(24.dp),
                 modifier = Modifier
@@ -188,7 +192,7 @@ fun FinanceDetailsView(
             )
 
             LargeDropdownMenu(
-                label = stringResource(R.string.add_transaction_title_category),
+                label = stringResource(R.string.add_finance_title_category),
                 selectedIndex = state.financeCategoryIndex,
                 items = if (state.financeTypeIndex == FinanceType.INCOME.ordinal) {
                     IncomeCategory.entries.map {
@@ -200,7 +204,7 @@ fun FinanceDetailsView(
                     }
                 }.map { it.toUiText().asString() },
                 onItemSelected = { index, _ ->
-                    onAction(FinanceDetailsActions.UpdateFinanceCategory(index))
+                    onAction(FinanceDetailsActions.OnUpdateFinanceCategory(index))
                 },
                 shape = RoundedCornerShape(24.dp),
                 modifier = Modifier
@@ -208,10 +212,8 @@ fun FinanceDetailsView(
             )
         }
 
-        Spacer(modifier = Modifier.padding(32.dp))
-
         Button(
-            onClick = { onAction(FinanceDetailsActions.SaveTransaction()) },
+            onClick = { onAction(FinanceDetailsActions.OnSaveFinance()) },
             modifier = Modifier
                 .padding(8.dp)
                 .fillMaxWidth()
@@ -237,6 +239,7 @@ fun FinanceDetailsViewPreview() {
                 ),
                 onAction = {},
                 modifier = Modifier
+                    .fillMaxSize()
                     .padding(innerPadding)
                     .background(MaterialTheme.colorScheme.surfaceDim)
             )

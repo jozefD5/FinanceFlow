@@ -4,15 +4,13 @@
     <string name="home_tab_label">Home</string>
     <string name="finances_tab_label">Finances</string>
 
-    <string name="search_query_placeholder">Search</string>
+    <string name="income_overview_title">Income overview</string>
+    <string name="expense_overview_title">Expense overview</string>
+    <string name="add_finance_button_label">Add finance</string>
     <string name="save_button">Save</string>
     <string name="error_title">Error</string>
     <string name="dismiss_title">Dismiss</string>
     <string name="confirm_title">Confirm</string>
-
-    <string name="income_overview_title">Income overview</string>
-    <string name="expense_overview_title">Expense overview</string>
-    <string name="add_transaction_button_label">Add transaction</string>
 
     <string name="balance_card_label_your_balance">Your annual balance</string>
     <string name="balance_card_label_income">Income</string>
@@ -44,11 +42,11 @@
     <string name="finance_category_education">Education</string>
     <string name="finance_category_other">Other</string>
 
-    <string name="add_transaction_title_label">Title/Name</string>
-    <string name="add_transaction_title_description">Description</string>
-    <string name="add_transaction_title_amount">Amount</string>
-    <string name="add_transaction_title_interval">Interval</string>
-    <string name="add_transaction_title_category">Category</string>
+    <string name="add_finance_title_label">Title/Name</string>
+    <string name="add_finance_title_description">Description</string>
+    <string name="add_finance_title_amount">Amount</string>
+    <string name="add_finance_title_interval">Interval</string>
+    <string name="add_finance_title_category">Category</string>
 
     <string name="finance_interval_once">Once</string>
     <string name="finance_interval_daily">Daily"</string>
@@ -57,5 +55,7 @@
     <string name="finance_interval_quarterly">Quarterly</string>
     <string name="finance_interval_half_yearly">Half Yearly</string>
     <string name="finance_interval_yearly">Yearly</string>
+    <string name="delete_finance_item_title">Delete finance item?</string>
+    <string name="delete_finance_item_text">Are you sure you want to delete this finance item?</string>
 
 </resources>

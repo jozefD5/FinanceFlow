@@ -13,6 +13,9 @@ data class FinanceListState(
     val error: UiText? = null,
     val currencyCode: String = "EUR",
 
+    val showDeleteDialog: Boolean = false,
+    val selectedDeleteFinance: Finance? = null,
+
     val searchQuery: String = "",
 
     val type: FinanceType? = null,

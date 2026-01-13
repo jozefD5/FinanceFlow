@@ -31,10 +31,10 @@ val appModule = module {
     singleOf(::FinanceRepositoryImpl).bind<FinanceRepository>()
 
     viewModel { HomeViewModel(get()) }
-    viewModel { (id: Int?) ->
+    viewModel { (financeId: Int?) ->
         FinanceDetailsViewModel(
-            get(),
-            id
+            financeRepository = get(),
+            financeId = financeId
         )
     }
     viewModel { FinanceListViewModel(get()) }

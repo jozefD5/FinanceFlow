@@ -1,9 +1,5 @@
 package com.jd.financeflow.features.finance.presentation.home
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,14 +15,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -52,22 +44,25 @@ import com.jd.financeflow.ui.theme.primaryLightMediumContrast
  *
  * @param modifier modifier to be applied
  * @param viewModel view model to be used
- * @param addTransactionContent content for the add transaction screen
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = koinViewModel(),
-    addTransactionContent: @Composable () -> Unit = {}
+    onAddFinanceClicked: () -> Unit = {}
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
 
     HomeView(
         state = state.value,
-        onAction = { viewModel.onAction(it) },
+        onAction = { action ->
+            when (action) {
+                is HomeActions.OnAddFinanceClicked -> onAddFinanceClicked()
+                else -> viewModel.onAction(action)
+            }
+        },
         modifier = modifier,
-        addTransactionContent = addTransactionContent
     )
 }
 
@@ -77,9 +72,6 @@ fun HomeScreen(
  * @param state state to be displayed
  * @param onAction action to be performed
  * @param modifier modifier to be applied
- * @param addTransactionContent content for the add transaction screen
- * @param scope scope to be used
- * @param sheetState sheet state to be used
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,9 +79,6 @@ fun HomeView(
     state: HomeState,
     onAction: (HomeActions) -> Unit,
     modifier: Modifier = Modifier,
-    addTransactionContent: @Composable () -> Unit = {},
-    scope: CoroutineScope = rememberCoroutineScope(),
-    sheetState: SheetState = rememberModalBottomSheetState()
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -149,7 +138,7 @@ fun HomeView(
                     }
 
                     Button(
-                        onClick = { onAction(HomeActions.ShowBottomSheet(true)) },
+                        onClick = { onAction(HomeActions.OnAddFinanceClicked) },
                         modifier = Modifier.weight(1f)
                     ) {
                         Icon(
@@ -203,31 +192,11 @@ fun HomeView(
                 .fillMaxWidth()
         )
 
-        AnimatedVisibility(
-            visible = state.showBottomSheet
-        ) {
-            ModalBottomSheet(
-                onDismissRequest = {
-                    scope.launch {
-                        sheetState.hide()
-                    }.invokeOnCompletion {
-                        onAction(HomeActions.ShowBottomSheet(false))
-                    }
-                },
-                sheetState = sheetState,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth()
-            ) {
-                addTransactionContent()
-            }
-        }
-
         if (state.error != null) {
             ErrorDialog(
                 content = state.error.asString(),
-                onConfirmation = { onAction(HomeActions.ClearError()) },
-                onDismiss = { onAction(HomeActions.ClearError()) }
+                onConfirmation = { onAction(HomeActions.OnClearError) },
+                onDismiss = { onAction(HomeActions.OnClearError) }
             )
         }
     }
@@ -280,7 +249,6 @@ fun HomeViewPreview() {
             HomeView(
                 state = HomeState(
                     error = null, //DataError.Local.INVALID_ARGUMENT.toUiText(),
-                    showBottomSheet = false,
                     balance = 100_000.0,
                     income = 200_000.0,
                     expense = 30_000.0,

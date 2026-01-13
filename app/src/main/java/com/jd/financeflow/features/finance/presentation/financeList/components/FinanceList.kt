@@ -23,6 +23,7 @@ import com.jd.financeflow.features.finance.domain.models.IncomeCategory
  *
  * @param finances the list of finances to display
  * @param onItemClick the action to perform when an item is clicked
+ * @param onItemLongClick the action to perform when an item is long clicked
  * @param modifier the modifier to apply to the list
  * @param currencyCode the currency code to use e.g. EUR for Euro or USD for US Dollar
  */
@@ -30,6 +31,7 @@ import com.jd.financeflow.features.finance.domain.models.IncomeCategory
 fun FinanceList(
     finances: List<Finance>,
     onItemClick: (Finance) -> Unit,
+    onItemLongClick: (Finance) -> Unit,
     modifier: Modifier = Modifier,
     currencyCode: String = "EUR",
 ) {
@@ -39,9 +41,10 @@ fun FinanceList(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         items(finances, key = { it.id }) { item ->
-            FinanceItem(
+            FinanceListItem(
                 finance = item,
                 onClicked = onItemClick,
+                onLongClicked = onItemLongClick,
                 currencyCode = currencyCode,
             )
         }
@@ -87,6 +90,7 @@ fun FinanceListPreview() {
             FinanceList(
                 finances = finances,
                 onItemClick = {},
+                onItemLongClick = {},
                 modifier = Modifier
                     .padding(innerPadding)
             )

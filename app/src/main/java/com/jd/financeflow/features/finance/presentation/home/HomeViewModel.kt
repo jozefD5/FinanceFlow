@@ -46,23 +46,17 @@ class HomeViewModel(
      */
     fun onAction(action: HomeActions) {
         when (action) {
-            is HomeActions.RefreshBalance -> {
+            is HomeActions.OnRefreshBalance -> {
                 refresh()
             }
 
-            is HomeActions.ClearError -> {
+            is HomeActions.OnClearError -> {
                 _state.update {
                     it.copy(error = null)
                 }
             }
 
-            is HomeActions.AddTransaction -> {}
-
-            is HomeActions.ShowBottomSheet -> {
-                _state.update {
-                    it.copy(showBottomSheet = action.value)
-                }
-            }
+            is HomeActions.OnAddFinanceClicked -> {}
         }
     }
 

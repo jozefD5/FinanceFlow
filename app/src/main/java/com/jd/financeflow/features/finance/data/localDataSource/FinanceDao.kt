@@ -1,6 +1,7 @@
 package com.jd.financeflow.features.finance.data.localDataSource
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -50,6 +51,6 @@ interface FinanceDao {
      *
      * @param item The [FinanceEntity] object to delete.
      */
-    @Update
+    @Delete
     suspend fun delete(item: FinanceEntity)
 }

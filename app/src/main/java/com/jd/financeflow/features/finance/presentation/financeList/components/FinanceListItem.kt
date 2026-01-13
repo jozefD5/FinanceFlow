@@ -27,13 +27,15 @@ private val expenseColors = Color(0xFFAF2222)
  *
  * @param finance the finance item to display
  * @param onClicked the action to perform when the item is clicked
+ * @param onLongClicked the action to perform when the item is long clicked
  * @param modifier the modifier to apply to the item
  * @param currencyCode the currency code to use e.g. EUR for Euro or USD for US Dollar
  */
 @Composable
-fun FinanceItem(
+fun FinanceListItem(
     finance: Finance,
     onClicked: (finance: Finance) -> Unit,
+    onLongClicked: (finance: Finance) -> Unit,
     modifier: Modifier = Modifier,
     currencyCode: String = "EUR",
 ) {
@@ -79,15 +81,16 @@ fun FinanceItem(
         },
         modifier = modifier.combinedClickable(
             onClick = { onClicked(finance) },
+            onLongClick = { onLongClicked(finance) }
         )
     )
 }
 
 @Preview(showBackground = true)
 @Composable
-fun FinanceItemPreview() {
+fun FinanceListItemPreview() {
     MaterialTheme {
-        FinanceItem(
+        FinanceListItem(
             finance = Finance(
                 title = "Salary",
                 description = "Monthly salary",
@@ -95,7 +98,8 @@ fun FinanceItemPreview() {
                 interval = FinanceInterval.Monthly,
                 category = FinanceCategory.Income(IncomeCategory.Salary)
             ),
-            onClicked = {}
+            onClicked = {},
+            onLongClicked = {}
         )
     }
 }
