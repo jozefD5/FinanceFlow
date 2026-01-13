@@ -55,7 +55,7 @@ fun BalanceCard(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .padding(16.dp)
+                .padding(8.dp)
                 .background(Color.Transparent)
         ) {
             Text(

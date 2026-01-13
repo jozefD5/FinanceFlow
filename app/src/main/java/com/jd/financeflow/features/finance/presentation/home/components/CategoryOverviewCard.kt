@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -67,7 +68,7 @@ fun CategoryOverviewCard(
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(8.dp)
         ) {
             Column(
                 verticalArrangement = Arrangement.Center,
@@ -115,7 +116,8 @@ fun CategoryOverviewCard(
                         drawLine(
                             start = Offset(x = canvasWidth, y = 0f),
                             end = Offset(x = 0f, y = canvasHeight),
-                            strokeWidth = 2.dp.toPx(),
+                            strokeWidth = 4.dp.toPx(),
+                            cap = StrokeCap.Round,
                             color = lineGraphColor
                         )
                     }

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -25,9 +26,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jd.financeflow.R
 import org.koin.androidx.compose.koinViewModel
 
 import com.jd.financeflow.features.core.presentation.components.ErrorDialog
@@ -110,9 +113,23 @@ fun FinanceListView(
                         onSearch = {
                             onAction(FinanceListActions.OnSearch())
                         },
+                        trailingIcon = {
+                            if (state.searchQuery.isNotBlank()) {
+                                IconButton(
+                                    onClick = {
+                                        onAction(FinanceListActions.UpdateSearchQuery(""))
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Clear,
+                                        contentDescription = null,
+                                    )
+                                }
+                            }
+                        },
                         expanded = false,
                         onExpandedChange = { },
-                        placeholder = { Text("Search") }
+                        placeholder = { Text(stringResource(R.string.search_query_placeholder)) }
                     )
                 },
                 modifier = Modifier
@@ -197,7 +214,8 @@ fun FinanceListViewPreview() {
         Scaffold { innerPadding ->
             FinanceListView(
                 state = FinanceListState(
-                    finances = finances
+                    finances = finances,
+                    searchQuery = "abc"
                 ),
                 onAction = {},
                 modifier = Modifier.padding(innerPadding)
