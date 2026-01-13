@@ -215,7 +215,7 @@ fun FinanceDetailsView(
         Button(
             onClick = { onAction(FinanceDetailsActions.OnSaveFinance()) },
             modifier = Modifier
-                .padding(8.dp)
+                .padding(16.dp)
                 .fillMaxWidth()
         ) {
             Text(

@@ -11,6 +11,7 @@
     <string name="error_title">Error</string>
     <string name="dismiss_title">Dismiss</string>
     <string name="confirm_title">Confirm</string>
+    <string name="search_query_placeholder">Search</string>
 
     <string name="balance_card_label_your_balance">Your annual balance</string>
     <string name="balance_card_label_income">Income</string>

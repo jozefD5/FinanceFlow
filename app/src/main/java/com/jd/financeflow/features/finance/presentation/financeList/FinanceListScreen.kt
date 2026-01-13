@@ -122,7 +122,7 @@ fun FinanceListView(
                             if (state.searchQuery.isNotBlank()) {
                                 IconButton(
                                     onClick = {
-                                        onAction(FinanceListActions.UpdateSearchQuery(""))
+                                        onAction(FinanceListActions.OnUpdateSearchQuery(""))
                                     }
                                 ) {
                                     Icon(
