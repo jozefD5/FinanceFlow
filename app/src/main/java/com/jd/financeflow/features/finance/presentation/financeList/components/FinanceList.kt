@@ -85,7 +85,11 @@ fun FinanceListPreview() {
         )
     )
 
-    MaterialTheme {
+    MaterialTheme(
+        colorScheme = MaterialTheme.colorScheme.copy(
+            background = MaterialTheme.colorScheme.surfaceVariant
+        )
+    ) {
         Scaffold { innerPadding ->
             FinanceList(
                 finances = finances,

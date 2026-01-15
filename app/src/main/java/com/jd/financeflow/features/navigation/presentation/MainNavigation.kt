@@ -24,9 +24,8 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
-import com.jd.financeflow.features.finance.presentation.financeDetails.FinanceDetailsScreen
-import com.jd.financeflow.features.finance.presentation.financeDetails.FinanceDetailsViewModel
 
+import org.koin.core.parameter.parametersOf
 import org.koin.androidx.compose.koinViewModel
 
 import com.jd.financeflow.features.finance.presentation.home.HomeViewModel
@@ -36,7 +35,9 @@ import com.jd.financeflow.features.navigation.domain.MainNavigationBarKey
 import com.jd.financeflow.features.finance.presentation.financeList.FinanceListScreen
 import com.jd.financeflow.features.finance.presentation.financeList.FinanceListViewModel
 import com.jd.financeflow.features.finance.presentation.home.HomeScreen
-import org.koin.core.parameter.parametersOf
+import com.jd.financeflow.features.finance.presentation.financeDetails.FinanceDetailsScreen
+import com.jd.financeflow.features.finance.presentation.financeDetails.FinanceDetailsViewModel
+
 
 @Composable
 fun MainNavigation(
@@ -70,6 +71,10 @@ fun MainNavigation(
                         onClick = {
                             if (currentBarKey != key) {
                                 currentBarKey = key
+                            } else {
+                                while (currentBackStack.size > 1) {
+                                    currentBackStack.removeLastOrNull()
+                                }
                             }
                         },
                         icon = {
@@ -150,6 +155,11 @@ fun MainNavigation(
                                     onFinanceClicked = {
                                         financeListBackStack.add(
                                             FinanceRootKey.FinanceDetailsScreen(it)
+                                        )
+                                    },
+                                    onAddFinanceClicked = {
+                                        financeListBackStack.add(
+                                            FinanceRootKey.FinanceDetailsScreen(null)
                                         )
                                     },
                                     modifier = Modifier.fillMaxSize()

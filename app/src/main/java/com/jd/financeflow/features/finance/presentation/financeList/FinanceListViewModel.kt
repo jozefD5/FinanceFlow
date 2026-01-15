@@ -44,6 +44,8 @@ class FinanceListViewModel(
                 _state.update { it.copy(error = null) }
             }
 
+            is FinanceListActions.OnAddFinanceClicked -> {}
+            is FinanceListActions.OnFilterClicked -> {}
             is FinanceListActions.OnFinanceItemClicked -> {}
             is FinanceListActions.OnFinanceItemDelete -> {
                 deleteFinance(action.finance)
@@ -122,7 +124,7 @@ class FinanceListViewModel(
         runCatching {
             when (val result = repository.deleteFinance(finance)) {
                 is Result.Success -> {
-                    _state.update{
+                    _state.update {
                         it.copy(
                             selectedDeleteFinance = null,
                             showDeleteDialog = false

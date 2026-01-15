@@ -69,5 +69,5 @@ sealed interface FinanceRootKey : NavKey {
     data object FinanceListScreen : FinanceRootKey
 
     @Serializable
-    data class FinanceDetailsScreen(val financeId: Int) : FinanceRootKey
+    data class FinanceDetailsScreen(val financeId: Int?) : FinanceRootKey
 }

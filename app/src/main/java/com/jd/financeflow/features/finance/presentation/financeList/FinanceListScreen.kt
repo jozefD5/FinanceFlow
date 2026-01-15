@@ -9,11 +9,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.outlined.FilterList
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -24,10 +27,12 @@ import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SearchBarState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -50,6 +55,8 @@ import com.jd.financeflow.ui.theme.primaryLightMediumContrast
  *
  * @param modifier modifier to be applied
  * @param onFinanceClicked callback for when an item is clicked
+ * @param onFilterClicked callback for when the filter button is clicked
+ * @param onAddFinanceClicked callback for when the add button is clicked
  * @param viewModel view model to be used
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,6 +64,8 @@ import com.jd.financeflow.ui.theme.primaryLightMediumContrast
 fun FinanceListScreen(
     modifier: Modifier = Modifier,
     onFinanceClicked: (id: Int) -> Unit = {},
+    onFilterClicked: () -> Unit = {},
+    onAddFinanceClicked: () -> Unit = {},
     viewModel: FinanceListViewModel = koinViewModel()
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
@@ -66,6 +75,8 @@ fun FinanceListScreen(
         onAction = { action ->
             when (action) {
                 is FinanceListActions.OnFinanceItemClicked -> onFinanceClicked(action.id)
+                is FinanceListActions.OnFilterClicked -> onFilterClicked()
+                is FinanceListActions.OnAddFinanceClicked -> onAddFinanceClicked()
 
                 else -> viewModel.onAction(action)
             }
@@ -116,7 +127,7 @@ fun FinanceListView(
                             onAction(FinanceListActions.OnUpdateSearchQuery(it))
                         },
                         onSearch = {
-                            onAction(FinanceListActions.OnSearch())
+                            onAction(FinanceListActions.OnSearch)
                         },
                         trailingIcon = {
                             if (state.searchQuery.isNotBlank()) {
@@ -137,16 +148,33 @@ fun FinanceListView(
                         placeholder = { Text(stringResource(R.string.search_query_placeholder)) }
                     )
                 },
+                //colors = SearchBarDefaults.colors(containerColor = Color.Transparent),
                 modifier = Modifier
-                    .weight(1f)
+                    .weight(0.9f)
+                    .alpha(0.8f)
             )
 
             IconButton(
-                onClick = { },
-                modifier = Modifier.weight(0.15f)
+                onClick = {
+                    onAction(FinanceListActions.OnFilterClicked)
+                },
+                modifier = Modifier.weight(0.10f)
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.Tune,
+                    imageVector = Icons.Outlined.FilterList,
+                    contentDescription = null,
+                    tint = Color(0xFFFFFFFF)
+                )
+            }
+
+            IconButton(
+                onClick = {
+                    onAction(FinanceListActions.OnAddFinanceClicked)
+                },
+                modifier = Modifier.weight(0.10f)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
                     contentDescription = null,
                     tint = Color(0xFFFFFFFF)
                 )
@@ -154,7 +182,9 @@ fun FinanceListView(
         }
 
         Surface(
-            color = MaterialTheme.colorScheme.background,
+            color = MaterialTheme.colorScheme.background.copy(
+                alpha = 0.8f
+            ),
             shape = RoundedCornerShape(
                 topStart = 32.dp,
                 topEnd = 32.dp
@@ -234,8 +264,8 @@ fun FinanceListView(
     if (state.error != null) {
         ErrorDialog(
             content = state.error.asString(),
-            onConfirmation = { onAction(FinanceListActions.OnClearError()) },
-            onDismiss = { onAction(FinanceListActions.OnClearError()) }
+            onConfirmation = { onAction(FinanceListActions.OnClearError) },
+            onDismiss = { onAction(FinanceListActions.OnClearError) }
         )
     }
 }
