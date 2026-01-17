@@ -3,9 +3,7 @@ package com.jd.financeflow.features.finance.data.repository
 import com.jd.financeflow.features.core.domain.DataError
 import com.jd.financeflow.features.core.domain.EmptyResult
 import com.jd.financeflow.features.core.domain.Result
-import com.jd.financeflow.features.finance.data.database.FinanceDao
-import com.jd.financeflow.features.finance.data.mappers.toEntity
-import com.jd.financeflow.features.finance.data.mappers.toFinance
+import com.jd.financeflow.features.finance.data.localStorageDataSource.LocalStorageDataSource
 import com.jd.financeflow.features.finance.domain.models.Finance
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceInterval
@@ -15,33 +13,64 @@ import com.jd.financeflow.features.finance.domain.models.FinanceType
 /**
  * Finance repository implementation, allows to access and manage finance transactions.
  *
- * @property financeDao Finance data access object.
+ * @property localDataSource The data source for local storage operations.
  */
 class FinanceRepositoryImpl(
-    private val financeDao: FinanceDao
+    private val localDataSource: LocalStorageDataSource
 ) : FinanceRepository {
-
-    override suspend fun getFinanceById(id: Int): Result<Finance, DataError.Local> {
+    override suspend fun getFinances(): Result<List<Finance>, DataError.Local> {
         return try {
-            val data = financeDao.getById(id)
+            when (val result = localDataSource.getAll()) {
+                is Result.Success -> Result.Success(
+                    result.data.sortedByDescending { it.createdAt }
+                )
 
-            if (data != null) {
-                Result.Success(data.toFinance())
-            } else {
-                Result.Error(DataError.Local.INVALID_ARGUMENT)
+                is Result.Error -> Result.Error(result.error)
             }
         } catch (_: Exception) {
             Result.Error(DataError.Local.UNKNOWN)
         }
     }
 
-    override suspend fun getFinances(): Result<List<Finance>, DataError.Local> {
+    override suspend fun getFinanceById(id: Int): Result<Finance, DataError.Local> {
         return try {
-            Result.Success(
-                financeDao
-                    .getAll().map { it.toFinance() }
-                    .sortedByDescending { it.createdAt }
-            )
+            when (val result = localDataSource.getById(id)) {
+                is Result.Success -> Result.Success(result.data)
+                is Result.Error -> Result.Error(result.error)
+            }
+        } catch (_: Exception) {
+            Result.Error(DataError.Local.UNKNOWN)
+        }
+    }
+
+    override suspend fun insertFinance(finance: Finance): EmptyResult<DataError.Local> {
+        return try {
+            when (val result = localDataSource.insert(finance)) {
+                is Result.Success -> Result.Success(Unit)
+                is Result.Error -> Result.Error(result.error)
+            }
+        } catch (_: Exception) {
+            Result.Error(DataError.Local.UNKNOWN)
+        }
+    }
+
+    override suspend fun updateFinance(finance: Finance): EmptyResult<DataError.Local> {
+        return try {
+            when (val result = localDataSource.update(finance)) {
+                is Result.Success -> Result.Success(Unit)
+                is Result.Error -> Result.Error(result.error)
+            }
+        } catch (_: Exception) {
+            Result.Error(DataError.Local.UNKNOWN)
+        }
+    }
+
+    override suspend fun deleteFinance(finance: Finance): EmptyResult<DataError.Local> {
+        return try {
+            when (val result = localDataSource.delete(finance)) {
+                is Result.Success -> Result.Success(Unit)
+                is Result.Error -> Result.Error(result.error)
+            }
         } catch (_: Exception) {
             Result.Error(DataError.Local.UNKNOWN)
         }
@@ -52,7 +81,11 @@ class FinanceRepositoryImpl(
         category: FinanceCategory?
     ): Result<Double, DataError.Local> {
         try {
-            val finances = financeDao.getAll()
+            val finances = when(val result = localDataSource.getAll()) {
+                is Result.Success -> result.data
+                is Result.Error -> return Result.Error(result.error)
+            }
+
             val filteredFinances = finances.filter { item ->
                 val typeMatch = if (type == null) {
                     true
@@ -100,33 +133,6 @@ class FinanceRepositoryImpl(
             return Result.Success(total)
         } catch (_: Exception) {
             return Result.Error(DataError.Local.UNKNOWN)
-        }
-    }
-
-    override suspend fun updateFinance(finance: Finance): EmptyResult<DataError.Local> {
-        return try {
-            financeDao.update(finance.toEntity())
-            Result.Success(Unit)
-        } catch (_: Exception) {
-            Result.Error(DataError.Local.UNKNOWN)
-        }
-    }
-
-    override suspend fun deleteFinance(finance: Finance): EmptyResult<DataError.Local> {
-        return try {
-            financeDao.delete(finance.toEntity())
-            Result.Success(Unit)
-        } catch (_: Exception) {
-            Result.Error(DataError.Local.UNKNOWN)
-        }
-    }
-
-    override suspend fun insertFinance(finance: Finance): EmptyResult<DataError.Local> {
-        return try {
-            financeDao.insert(finance.toEntity())
-            Result.Success(Unit)
-        } catch (_: Exception) {
-            Result.Error(DataError.Local.UNKNOWN)
         }
     }
 }

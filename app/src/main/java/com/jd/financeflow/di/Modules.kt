@@ -8,6 +8,7 @@ import org.koin.android.ext.koin.androidApplication
 
 import com.jd.financeflow.features.finance.data.database.FinanceDatabase
 import com.jd.financeflow.features.finance.data.database.FinanceFactory
+import com.jd.financeflow.features.finance.data.localStorageDataSource.LocalStorageDataSource
 import com.jd.financeflow.features.finance.data.repository.FinanceRepositoryImpl
 import com.jd.financeflow.features.finance.domain.FinanceRepository
 import com.jd.financeflow.features.finance.presentation.financeDetails.FinanceDetailsViewModel
@@ -28,6 +29,7 @@ val appModule = module {
         get<FinanceDatabase>().financeDao()
     }
 
+    single{ LocalStorageDataSource(financeDao = get()) }
     singleOf(::FinanceRepositoryImpl).bind<FinanceRepository>()
 
     viewModel { HomeViewModel(get()) }
