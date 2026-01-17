@@ -31,13 +31,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.jd.financeflow.R
 import org.koin.androidx.compose.koinViewModel
 
+import com.jd.financeflow.R
 import com.jd.financeflow.features.core.presentation.components.ErrorDialog
 import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
 import com.jd.financeflow.features.finance.domain.models.Finance
@@ -98,21 +98,21 @@ fun FinanceListView(
     searchBarState: SearchBarState = rememberSearchBarState()
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
         modifier = modifier
             .background(primaryLightMediumContrast)
             .fillMaxWidth()
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    top = 16.dp,
-                    bottom = 16.dp,
-                    start = 8.dp,
-                    end = 8.dp
+                    top = dimensionResource(R.dimen.padding_large),
+                    bottom = dimensionResource(R.dimen.padding_large),
+                    start = dimensionResource(R.dimen.padding_medium),
+                    end = dimensionResource(R.dimen.padding_medium)
                 )
         ) {
             SearchBar(
@@ -183,8 +183,8 @@ fun FinanceListView(
                 alpha = 0.8f
             ),
             shape = RoundedCornerShape(
-                topStart = 32.dp,
-                topEnd = 32.dp
+                topStart = dimensionResource(R.dimen.padding_extra_extra_large),
+                topEnd = dimensionResource(R.dimen.padding_extra_extra_large)
             ),
             modifier = Modifier
                 .fillMaxSize()
@@ -205,7 +205,7 @@ fun FinanceListView(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(dimensionResource(R.dimen.padding_large))
             )
         }
     }

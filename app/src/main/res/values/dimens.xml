@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="padding_small">4.dp</dimen>
+    <dimen name="padding_medium">8.dp</dimen>
+    <dimen name="padding_large">16.dp</dimen>
+    <dimen name="padding_extra_large">24.dp</dimen>
+    <dimen name="padding_extra_extra_large">32.dp</dimen>
+
+    <dimen name="round_corner_size_medium">24.dp</dimen>
+</resources>

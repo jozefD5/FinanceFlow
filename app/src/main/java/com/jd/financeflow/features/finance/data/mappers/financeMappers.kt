@@ -1,6 +1,6 @@
 package com.jd.financeflow.features.finance.data.mappers
 
-import com.jd.financeflow.features.finance.data.localDataSource.FinanceEntity
+import com.jd.financeflow.features.finance.data.database.FinanceEntity
 import com.jd.financeflow.features.finance.domain.models.Finance
 
 /**

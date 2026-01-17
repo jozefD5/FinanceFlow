@@ -28,10 +28,10 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 
@@ -94,17 +94,17 @@ fun FinanceDetailsView(
     scrollState: ScrollState = rememberScrollState()
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
             .verticalScroll(scrollState)
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
+                .padding(dimensionResource(R.dimen.padding_small))
                 .weight(1f)
                 .verticalScroll(scrollState)
         ) {
@@ -118,7 +118,7 @@ fun FinanceDetailsView(
 
             SingleChoiceSegmentedButtonRow(
                 modifier = Modifier
-                    .padding(bottom = 8.dp)
+                    .padding(bottom = dimensionResource(R.dimen.padding_small))
                     .fillMaxWidth()
             ) {
                 FinanceType.entries.forEachIndexed { index, value ->
@@ -143,7 +143,7 @@ fun FinanceDetailsView(
                 keyboardActions = KeyboardActions(
                     onNext = { focusManager.moveFocus(FocusDirection.Down) }
                 ),
-                shape = RoundedCornerShape(24.dp),
+                shape = RoundedCornerShape(dimensionResource(R.dimen.round_corner_size_medium)),
                 modifier = Modifier
                     .fillMaxWidth()
             )
@@ -156,7 +156,7 @@ fun FinanceDetailsView(
                 keyboardActions = KeyboardActions(
                     onNext = { focusManager.moveFocus(FocusDirection.Down) }
                 ),
-                shape = RoundedCornerShape(24.dp),
+                shape = RoundedCornerShape(dimensionResource(R.dimen.round_corner_size_medium)),
                 maxLines = 3,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -174,7 +174,7 @@ fun FinanceDetailsView(
                 keyboardActions = KeyboardActions(
                     onNext = { focusManager.moveFocus(FocusDirection.Down) }
                 ),
-                shape = RoundedCornerShape(24.dp),
+                shape = RoundedCornerShape(dimensionResource(R.dimen.round_corner_size_medium)),
                 modifier = Modifier
                     .fillMaxWidth()
             )
@@ -186,7 +186,7 @@ fun FinanceDetailsView(
                 onItemSelected = { index, _ ->
                     onAction(FinanceDetailsActions.OnUpdateFinanceInterval(index))
                 },
-                shape = RoundedCornerShape(24.dp),
+                shape = RoundedCornerShape(dimensionResource(R.dimen.round_corner_size_medium)),
                 modifier = Modifier
                     .fillMaxWidth()
             )
@@ -206,7 +206,7 @@ fun FinanceDetailsView(
                 onItemSelected = { index, _ ->
                     onAction(FinanceDetailsActions.OnUpdateFinanceCategory(index))
                 },
-                shape = RoundedCornerShape(24.dp),
+                shape = RoundedCornerShape(dimensionResource(R.dimen.round_corner_size_medium)),
                 modifier = Modifier
                     .fillMaxWidth()
             )
@@ -215,16 +215,16 @@ fun FinanceDetailsView(
         Button(
             onClick = { onAction(FinanceDetailsActions.OnSaveFinance()) },
             modifier = Modifier
-                .padding(16.dp)
+                .padding(dimensionResource(R.dimen.padding_large))
                 .fillMaxWidth()
         ) {
             Text(
                 text = stringResource(R.string.save_button),
-                modifier = Modifier.padding(8.dp)
+                modifier = Modifier.padding(dimensionResource(R.dimen.padding_large))
             )
         }
 
-        Spacer(modifier = Modifier.padding(16.dp))
+        Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.padding_large)))
     }
 }
 
