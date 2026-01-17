@@ -23,9 +23,11 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.jd.financeflow.R
 
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.finance.presentation.components.toUiText
@@ -68,7 +70,7 @@ fun CategoryOverviewCard(
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(8.dp)
+            modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium))
         ) {
             Column(
                 verticalArrangement = Arrangement.Center,
@@ -90,7 +92,7 @@ fun CategoryOverviewCard(
                     )
                 )
 
-                Spacer(modifier = Modifier.padding(4.dp))
+                Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)))
 
                 if (lineGraphMaxValue != null) {
                     Canvas(

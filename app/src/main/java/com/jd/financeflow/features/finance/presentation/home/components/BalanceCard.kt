@@ -19,10 +19,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 
 import com.jd.financeflow.R
 import com.jd.financeflow.features.core.presentation.components.formatCurrency
@@ -57,7 +57,7 @@ fun BalanceCard(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .padding(8.dp)
+                .padding(dimensionResource(R.dimen.padding_medium))
                 .background(Color.Transparent)
         ) {
             Text(
@@ -100,7 +100,7 @@ fun BalanceCard(
 
                 VerticalDivider(
                     modifier = Modifier
-                        .heightIn(max = 32.dp)
+                        .heightIn(max = dimensionResource(R.dimen.padding_extra_extra_large))
                 )
 
                 Column {
@@ -144,7 +144,7 @@ fun BalanceCardPreview() {
                     expense = 50_000.0,
                     currencyCode = "EUR",
                     modifier = Modifier
-                        .padding(24.dp)
+                        .padding(dimensionResource(R.dimen.padding_extra_extra_large))
                         .fillMaxWidth()
                 )
             }

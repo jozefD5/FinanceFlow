@@ -9,8 +9,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.jd.financeflow.R
 
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
@@ -55,7 +57,7 @@ fun CategoryOverviewGrid(
                 textColor = textColor,
                 lineGraphColor = lineGraphColor,
                 lineGraphMaxValue = lineGraphMaxValue,
-                modifier = Modifier.padding(4.dp)
+                modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
             )
         }
     }

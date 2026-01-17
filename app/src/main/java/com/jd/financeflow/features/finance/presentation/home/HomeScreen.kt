@@ -22,10 +22,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 
@@ -81,21 +81,21 @@ fun HomeView(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
         modifier = modifier
     ) {
         Surface(
             color = primaryLightMediumContrast,
             shape = RoundedCornerShape(
-                bottomStart = 32.dp,
-                bottomEnd = 32.dp
+                bottomStart = dimensionResource(R.dimen.padding_extra_extra_large),
+                bottomEnd = dimensionResource(R.dimen.padding_extra_extra_large)
             ),
             modifier = Modifier
                 .fillMaxWidth()
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
@@ -111,10 +111,10 @@ fun HomeView(
                 )
 
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                        .padding(16.dp)
+                        .padding(dimensionResource(R.dimen.padding_large))
                         .fillMaxWidth()
                 ) {
                     FilledTonalButton(
@@ -156,7 +156,7 @@ fun HomeView(
                 fontWeight = FontWeight.Bold
             ),
             modifier = Modifier
-                .padding(horizontal = 8.dp)
+                .padding(horizontal = dimensionResource(R.dimen.padding_medium))
                 .fillMaxWidth()
         )
 
@@ -167,7 +167,7 @@ fun HomeView(
             lineGraphColor = Color.Green,
             onClicked = { },
             modifier = Modifier
-                .padding(horizontal = 8.dp)
+                .padding(horizontal = dimensionResource(R.dimen.padding_medium))
                 .fillMaxWidth()
         )
 
@@ -177,7 +177,7 @@ fun HomeView(
                 fontWeight = FontWeight.Bold
             ),
             modifier = Modifier
-                .padding(horizontal = 8.dp)
+                .padding(horizontal = dimensionResource(R.dimen.padding_medium))
                 .fillMaxWidth()
         )
 
@@ -188,7 +188,7 @@ fun HomeView(
             lineGraphColor = Color.Red,
             onClicked = { },
             modifier = Modifier
-                .padding(horizontal = 8.dp)
+                .padding(horizontal = dimensionResource(R.dimen.padding_medium))
                 .fillMaxWidth()
         )
 
