@@ -59,4 +59,7 @@
     <string name="delete_finance_item_title">Delete finance item?</string>
     <string name="delete_finance_item_text">Are you sure you want to delete this finance item?</string>
 
+    <string name="filter_type_button_both_label">Both</string>
+    <string name="filter_category_switch_label">Category</string>
+
 </resources>

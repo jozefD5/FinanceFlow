@@ -96,8 +96,7 @@ fun FinanceDetailsView(
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
-            .verticalScroll(scrollState)
+        modifier = modifier.verticalScroll(scrollState)
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),

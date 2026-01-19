@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class FinanceListFilterViewModel() : ViewModel()  {
+class FinanceListFilterViewModel() : ViewModel() {
     private val _state = MutableStateFlow(FinanceListFilterState())
     val state = _state.asStateFlow()
 
@@ -20,6 +20,12 @@ class FinanceListFilterViewModel() : ViewModel()  {
             is FinanceListFilterActions.OnUpdateType -> {
                 _state.update {
                     it.copy(selectedTypeIndex = action.typeIndex)
+                }
+            }
+
+            is FinanceListFilterActions.OnEnableCategories -> {
+                _state.update {
+                    it.copy(enableCategories = action.enable)
                 }
             }
 
