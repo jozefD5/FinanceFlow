@@ -5,10 +5,18 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
+/**
+ * View model for the finance list filter screen.
+ */
 class FinanceListFilterViewModel() : ViewModel() {
     private val _state = MutableStateFlow(FinanceListFilterState())
     val state = _state.asStateFlow()
 
+    /**
+     * Handles the actions performed on the screen.
+     *
+     * @param action The action to be performed.
+     */
     fun onAction(action: FinanceListFilterActions) {
         when (action) {
             is FinanceListFilterActions.OnClearError -> {
@@ -16,6 +24,9 @@ class FinanceListFilterViewModel() : ViewModel() {
                     it.copy(error = null)
                 }
             }
+
+            is FinanceListFilterActions.OnApplyFilter -> {}
+
 
             is FinanceListFilterActions.OnUpdateType -> {
                 _state.update {
@@ -28,10 +39,6 @@ class FinanceListFilterViewModel() : ViewModel() {
                     it.copy(enableCategories = action.enable)
                 }
             }
-
-            is FinanceListFilterActions.OnAddCategory -> {}
-
-            is FinanceListFilterActions.OnRemoveCategory -> {}
 
             is FinanceListFilterActions.OnEnableAmountRange -> {
                 _state.update {

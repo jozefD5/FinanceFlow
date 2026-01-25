@@ -37,6 +37,8 @@ import com.jd.financeflow.features.finance.presentation.financeList.FinanceListV
 import com.jd.financeflow.features.finance.presentation.home.HomeScreen
 import com.jd.financeflow.features.finance.presentation.financeDetails.FinanceDetailsScreen
 import com.jd.financeflow.features.finance.presentation.financeDetails.FinanceDetailsViewModel
+import com.jd.financeflow.features.finance.presentation.financeListFilter.FinanceListFilterScreen
+import com.jd.financeflow.features.finance.presentation.financeListFilter.FinanceListFilterViewModel
 
 
 @Composable
@@ -162,6 +164,9 @@ fun MainNavigation(
                                             FinanceRootKey.FinanceDetailsScreen(null)
                                         )
                                     },
+                                    onFilterClicked = {
+                                        financeListBackStack.add(FinanceRootKey.FinanceFilterScreen)
+                                    },
                                     modifier = Modifier.fillMaxSize()
                                 )
                             }
@@ -176,6 +181,20 @@ fun MainNavigation(
                                 FinanceDetailsScreen(
                                     viewModel = viewModel,
                                     onSuccessfulAdd = {
+                                        financeListBackStack.removeLastOrNull()
+                                    },
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+                        }
+
+                        is FinanceRootKey.FinanceFilterScreen -> {
+                            NavEntry(key = key) {
+                                val viewModel: FinanceListFilterViewModel = koinViewModel()
+
+                                FinanceListFilterScreen(
+                                    viewModel = viewModel,
+                                    onApplyFilter = {
                                         financeListBackStack.removeLastOrNull()
                                     },
                                     modifier = Modifier.fillMaxSize()

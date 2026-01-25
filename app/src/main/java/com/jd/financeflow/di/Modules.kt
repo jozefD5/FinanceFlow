@@ -40,4 +40,6 @@ val appModule = module {
         )
     }
     viewModel { FinanceListViewModel(get()) }
+
+    viewModel { FinanceListViewModel(get()) }
 }
