@@ -13,6 +13,7 @@ import com.jd.financeflow.features.finance.data.repository.FinanceRepositoryImpl
 import com.jd.financeflow.features.finance.domain.FinanceRepository
 import com.jd.financeflow.features.finance.presentation.financeDetails.FinanceDetailsViewModel
 import com.jd.financeflow.features.finance.presentation.financeList.FinanceListViewModel
+import com.jd.financeflow.features.finance.presentation.financeListFilter.FinanceListFilterViewModel
 import com.jd.financeflow.features.finance.presentation.home.HomeViewModel
 
 /**
@@ -41,5 +42,5 @@ val appModule = module {
     }
     viewModel { FinanceListViewModel(get()) }
 
-    viewModel { FinanceListViewModel(get()) }
+    viewModel { FinanceListFilterViewModel() }
 }

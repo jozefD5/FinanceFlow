@@ -126,10 +126,11 @@ fun FinanceListFilterView(
             Switch(
                 checked = state.enableCategories,
                 enabled = state.selectedTypeIndex > 0,
-                onCheckedChange = {}
+                onCheckedChange = {
+                    onAction(FinanceListFilterActions.OnEnableCategories(!state.enableCategories))
+                }
             )
         }
-
 
         Column(
             verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
@@ -138,7 +139,11 @@ fun FinanceListFilterView(
                 .fillMaxWidth()
                 .padding(start = dimensionResource(R.dimen.padding_medium))
         ) {
-            if (state.selectedType != null && state.enableCategories && state.selectedTypeIndex > 0) {
+            if (
+                state.selectedType != null &&
+                state.enableCategories &&
+                state.selectedTypeIndex > 0
+            ) {
                 if (state.selectedType == FinanceType.INCOME) {
                     state.categoryIncomeOptions.forEachIndexed { index, category ->
                         Row(
@@ -147,13 +152,27 @@ fun FinanceListFilterView(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable(
-                                    onClick = {}
+                                    onClick = {
+                                        onAction(
+                                            FinanceListFilterActions.OnCategorySelected(
+                                                FinanceType.INCOME,
+                                                index
+                                            )
+                                        )
+                                    }
                                 )
                         ) {
                             Text(category.toUiText().asString())
                             Checkbox(
                                 checked = state.categoryIncomeSelectedOptions[index],
-                                onCheckedChange = {}
+                                onCheckedChange = {
+                                    onAction(
+                                        FinanceListFilterActions.OnCategorySelected(
+                                            FinanceType.INCOME,
+                                            index
+                                        )
+                                    )
+                                }
                             )
                         }
                     }
@@ -165,13 +184,27 @@ fun FinanceListFilterView(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable(
-                                    onClick = {}
+                                    onClick = {
+                                        onAction(
+                                            FinanceListFilterActions.OnCategorySelected(
+                                                FinanceType.EXPENSE,
+                                                index
+                                            )
+                                        )
+                                    }
                                 )
                         ) {
                             Text(category.toUiText().asString())
                             Checkbox(
                                 checked = state.categoryExpenseSelectedOptions[index],
-                                onCheckedChange = {}
+                                onCheckedChange = {
+                                    onAction(
+                                        FinanceListFilterActions.OnCategorySelected(
+                                            FinanceType.EXPENSE,
+                                            index
+                                        )
+                                    )
+                                }
                             )
                         }
                     }
@@ -187,7 +220,7 @@ fun FinanceListFilterViewPreview() {
     MaterialTheme {
         FinanceListFilterView(
             state = FinanceListFilterState(
-                selectedTypeIndex = 0,
+                selectedTypeIndex = 1,
                 selectedType = FinanceType.INCOME,
                 enableCategories = true
             ),

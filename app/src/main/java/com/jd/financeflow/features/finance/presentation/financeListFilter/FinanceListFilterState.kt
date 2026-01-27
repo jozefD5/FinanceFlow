@@ -11,14 +11,17 @@ data class FinanceListFilterState(
 
     val selectedTypeIndex: Int = 0,
     val selectedType: FinanceType? = null,
-
     val enableCategories: Boolean = false,
+
+    // Available income options to be presented in the UI
     val categoryIncomeOptions: List<FinanceCategory> = IncomeCategory.entries.map {
         FinanceCategory.Income(it)
     },
     val categoryExpenseOptions: List<FinanceCategory> = ExpenseCategory.entries.map {
         FinanceCategory.Expense(it)
     },
+
+    // Selected options for each category, state of chack boxes.
     val categoryIncomeSelectedOptions: List<Boolean> = IncomeCategory.entries.map { true },
     val categoryExpenseSelectedOptions: List<Boolean> = ExpenseCategory.entries.map { true },
 
