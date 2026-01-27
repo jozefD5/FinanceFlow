@@ -9,5 +9,5 @@ sealed interface FinanceListFilterActions {
     data class OnEnableCategories(val enable: Boolean) : FinanceListFilterActions
     data class OnCategorySelected(val type: FinanceType, val index: Int) : FinanceListFilterActions
     data class OnEnableAmountRange(val enable: Boolean) : FinanceListFilterActions
-    data class OnUpdateAmountRange(val mini: Double?, val max: Double?) : FinanceListFilterActions
+    data class OnUpdateAmountRange(val mini: Float, val max: Float) : FinanceListFilterActions
 }

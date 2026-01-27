@@ -8,6 +8,8 @@ import com.jd.financeflow.features.finance.domain.models.IncomeCategory
 
 data class FinanceListFilterState(
     val error: UiText? = null,
+    val currencyCode: String = "EUR",
+
 
     val selectedTypeIndex: Int = 0,
     val selectedType: FinanceType? = null,

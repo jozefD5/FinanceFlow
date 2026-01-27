@@ -56,7 +56,14 @@ class FinanceListFilterViewModel() : ViewModel() {
                 }
             }
 
-            is FinanceListFilterActions.OnUpdateAmountRange -> {}
+            is FinanceListFilterActions.OnUpdateAmountRange -> {
+                _state.update {
+                    it.copy(
+                        selectedAmountRangeMini = action.mini,
+                        selectedAmountRangeMax = action.max
+                    )
+                }
+            }
         }
     }
 

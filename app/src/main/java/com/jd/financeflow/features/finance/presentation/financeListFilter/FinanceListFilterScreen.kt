@@ -32,10 +32,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+
 import org.koin.androidx.compose.koinViewModel
 
-
 import com.jd.financeflow.R
+import com.jd.financeflow.features.core.presentation.components.formatCurrency
 import com.jd.financeflow.features.finance.domain.models.FinanceType
 import com.jd.financeflow.features.finance.presentation.components.toUiText
 
@@ -229,12 +230,52 @@ fun FinanceListFilterView(
             AnimatedVisibility(visible = state.enableAmountRange) {
                 Column {
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(dimensionResource(R.dimen.padding_small))
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(text = stringResource(R.string.filter_mini_range_label))
+                            Text(
+                                text = formatCurrency(
+                                    state.selectedAmountRangeMini.toDouble(),
+                                    state.currencyCode
+                                )
+                            )
+                        }
+
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(text = stringResource(R.string.filter_max_range_label))
+                            Text(
+                                text = formatCurrency(
+                                    state.selectedAmountRangeMax.toDouble(),
+                                    state.currencyCode
+                                )
+                            )
+                        }
+                    }
 
                     RangeSlider(
                         value = state.selectedAmountRangeMini..state.selectedAmountRangeMax,
-                        steps = 100,
+                        steps = 1000,
                         valueRange = state.minimumAmount..state.maximumAmount,
-                        onValueChange = {},
+                        onValueChange = { range ->
+                            onAction(
+                                FinanceListFilterActions.OnUpdateAmountRange(
+                                    range.start,
+                                    range.endInclusive
+                                )
+                            )
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(dimensionResource(R.dimen.padding_small))
                     )
                 }
             }
@@ -251,7 +292,7 @@ fun FinanceListFilterViewPreview() {
                 state = FinanceListFilterState(
                     selectedTypeIndex = 1,
                     selectedType = FinanceType.INCOME,
-                    enableCategories = false,
+                    enableCategories = true,
                     enableAmountRange = true
                 ),
                 onAction = {},
