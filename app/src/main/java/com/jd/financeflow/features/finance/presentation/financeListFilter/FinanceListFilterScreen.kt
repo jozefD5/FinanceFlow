@@ -1,5 +1,6 @@
 package com.jd.financeflow.features.finance.presentation.financeListFilter
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,9 +10,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.RangeSlider
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -23,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 
@@ -73,15 +81,14 @@ fun FinanceListFilterView(
     scrollState: ScrollState = rememberScrollState(),
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.verticalScroll(scrollState)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(dimensionResource(R.dimen.padding_large))
+            .verticalScroll(scrollState)
     ) {
-        SingleChoiceSegmentedButtonRow(
-            modifier = Modifier
-                .padding(bottom = dimensionResource(R.dimen.padding_small))
-                .fillMaxWidth()
-        ) {
+        // Type selection (connected unit)
+        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
             SegmentedButton(
                 shape = SegmentedButtonDefaults.itemShape(
                     index = 0,
@@ -110,81 +117,79 @@ fun FinanceListFilterView(
             }
         }
 
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(
-                    onClick = {
-                        onAction(FinanceListFilterActions.OnEnableCategories(!state.enableCategories))
+        // Category section
+        OutlinedCard(
+            shape = RoundedCornerShape(
+                dimensionResource(R.dimen.padding_medium)
+            ),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column {
+                // Header with Switch
+                ListItem(
+                    headlineContent = {
+                        Text(
+                            text = stringResource(R.string.filter_category_switch_label),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    },
+                    trailingContent = {
+                        Switch(
+                            enabled = state.selectedTypeIndex > 0,
+                            checked = state.enableCategories,
+                            onCheckedChange = {
+                                onAction(
+                                    FinanceListFilterActions.OnEnableCategories(!state.enableCategories)
+                                )
+                            }
+                        )
                     }
                 )
-        ) {
-            Text(stringResource(R.string.filter_category_switch_label))
 
-            Switch(
-                checked = state.enableCategories,
-                enabled = state.selectedTypeIndex > 0,
-                onCheckedChange = {
-                    onAction(FinanceListFilterActions.OnEnableCategories(!state.enableCategories))
-                }
-            )
-        }
+                // Category List (Animated Visibility makes it feel premium)
+                AnimatedVisibility(visible = state.enableCategories && state.selectedTypeIndex > 0) {
+                    Column {
+                        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                        val currentCategories = if (state.selectedType == FinanceType.INCOME)
+                            state.categoryIncomeOptions else state.categoryExpenseOptions
 
-        Column(
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = dimensionResource(R.dimen.padding_medium))
-        ) {
-            if (
-                state.selectedType != null &&
-                state.enableCategories &&
-                state.selectedTypeIndex > 0
-            ) {
-                if (state.selectedType == FinanceType.INCOME) {
-                    state.categoryIncomeOptions.forEachIndexed { index, category ->
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable(
-                                    onClick = {
+                        val checkList = if (state.selectedType == FinanceType.INCOME)
+                            state.categoryIncomeSelectedOptions else state.categoryExpenseSelectedOptions
+
+                        currentCategories.forEachIndexed { index, category ->
+                            ListItem(
+                                headlineContent = { Text(category.toUiText().asString()) },
+                                trailingContent = {
+                                    Checkbox(
+                                        checked = checkList[index],
+                                        onCheckedChange = {
+                                            if (state.selectedType == FinanceType.INCOME) {
+                                                onAction(
+                                                    FinanceListFilterActions.OnCategorySelected(
+                                                        FinanceType.INCOME,
+                                                        index
+                                                    )
+                                                )
+                                            } else {
+                                                onAction(
+                                                    FinanceListFilterActions.OnCategorySelected(
+                                                        FinanceType.EXPENSE,
+                                                        index
+                                                    )
+                                                )
+                                            }
+                                        }
+                                    )
+                                },
+                                modifier = Modifier.clickable {
+                                    if (state.selectedType == FinanceType.INCOME) {
                                         onAction(
                                             FinanceListFilterActions.OnCategorySelected(
                                                 FinanceType.INCOME,
                                                 index
                                             )
                                         )
-                                    }
-                                )
-                        ) {
-                            Text(category.toUiText().asString())
-                            Checkbox(
-                                checked = state.categoryIncomeSelectedOptions[index],
-                                onCheckedChange = {
-                                    onAction(
-                                        FinanceListFilterActions.OnCategorySelected(
-                                            FinanceType.INCOME,
-                                            index
-                                        )
-                                    )
-                                }
-                            )
-                        }
-                    }
-                } else {
-                    state.categoryExpenseOptions.forEachIndexed { index, category ->
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable(
-                                    onClick = {
+                                    } else {
                                         onAction(
                                             FinanceListFilterActions.OnCategorySelected(
                                                 FinanceType.EXPENSE,
@@ -192,22 +197,45 @@ fun FinanceListFilterView(
                                             )
                                         )
                                     }
-                                )
-                        ) {
-                            Text(category.toUiText().asString())
-                            Checkbox(
-                                checked = state.categoryExpenseSelectedOptions[index],
-                                onCheckedChange = {
-                                    onAction(
-                                        FinanceListFilterActions.OnCategorySelected(
-                                            FinanceType.EXPENSE,
-                                            index
-                                        )
-                                    )
-                                }
+                                },
                             )
                         }
                     }
+                }
+            }
+        }
+
+        // Amount section
+        OutlinedCard(modifier = Modifier.fillMaxWidth()) {
+            ListItem(
+                headlineContent = {
+                    Text(
+                        text = stringResource(R.string.filter_amount_switch_label),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                },
+                trailingContent = {
+                    Switch(
+                        checked = state.enableAmountRange,
+                        onCheckedChange = {
+                            onAction(
+                                FinanceListFilterActions.OnEnableAmountRange(!state.enableAmountRange)
+                            )
+                        }
+                    )
+                }
+            )
+
+            AnimatedVisibility(visible = state.enableAmountRange) {
+                Column {
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+
+                    RangeSlider(
+                        value = state.selectedAmountRangeMini..state.selectedAmountRangeMax,
+                        steps = 100,
+                        valueRange = state.minimumAmount..state.maximumAmount,
+                        onValueChange = {},
+                    )
                 }
             }
         }
@@ -218,14 +246,19 @@ fun FinanceListFilterView(
 @Composable
 fun FinanceListFilterViewPreview() {
     MaterialTheme {
-        FinanceListFilterView(
-            state = FinanceListFilterState(
-                selectedTypeIndex = 1,
-                selectedType = FinanceType.INCOME,
-                enableCategories = true
-            ),
-            onAction = {},
-            modifier = Modifier.fillMaxSize()
-        )
+        Scaffold { innerPadding ->
+            FinanceListFilterView(
+                state = FinanceListFilterState(
+                    selectedTypeIndex = 1,
+                    selectedType = FinanceType.INCOME,
+                    enableCategories = false,
+                    enableAmountRange = true
+                ),
+                onAction = {},
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            )
+        }
     }
 }

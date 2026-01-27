@@ -26,6 +26,9 @@ data class FinanceListFilterState(
     val categoryExpenseSelectedOptions: List<Boolean> = ExpenseCategory.entries.map { true },
 
     val enableAmountRange: Boolean = false,
-    val selectedAmountRangeMini: Double? = null,
-    val selectedAmountRangeMax: Double? = null
+    val minimumAmount: Float = 0.0f,
+    val maximumAmount: Float = 100_000_00.0f,
+
+    val selectedAmountRangeMini: Float = 0.0f,
+    val selectedAmountRangeMax: Float = 100_000_00.0f,
 )

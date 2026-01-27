@@ -61,5 +61,8 @@
 
     <string name="filter_type_button_both_label">Both</string>
     <string name="filter_category_switch_label">Category</string>
+    <string name="filter_amount_switch_label">Amount</string>
+
+
 
 </resources>
