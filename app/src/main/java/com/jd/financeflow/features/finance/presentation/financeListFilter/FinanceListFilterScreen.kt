@@ -132,44 +132,12 @@ fun FinanceListFilterView(
             }
         }
 
-        // Type selection (connected unit)
-        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-            SegmentedButton(
-                shape = SegmentedButtonDefaults.itemShape(
-                    index = 0,
-                    count = FinanceType.entries.size,
-                ),
-                selected = state.selectedTypeIndex == 0,
-                onClick = {
-                    onAction(FinanceListFilterActions.OnUpdateType(0))
-                },
-                label = { Text(stringResource(R.string.filter_type_button_both_label)) }
-            )
-
-            FinanceType.entries.forEachIndexed { index, value ->
-                val actualIndex = index + 1
-                SegmentedButton(
-                    shape = SegmentedButtonDefaults.itemShape(
-                        index = actualIndex,
-                        count = FinanceType.entries.size + 1,
-                    ),
-                    selected = state.selectedTypeIndex == actualIndex,
-                    onClick = {
-                        onAction(FinanceListFilterActions.OnUpdateType(actualIndex))
-                    },
-                    label = { Text(value.toUiText().asString()) }
-                )
-            }
-        }
-
-        // Category section
+        // Type and category selection
         OutlinedCard(
-            shape = RoundedCornerShape(
-                dimensionResource(R.dimen.padding_medium)
-            ),
+            shape = RoundedCornerShape(dimensionResource(R.dimen.padding_medium)),
             modifier = Modifier.fillMaxWidth()
         ) {
-            Column {
+            Column(modifier = Modifier.padding(bottom = 8.dp)) {
                 ListItem(
                     headlineContent = {
                         Text(
@@ -179,69 +147,74 @@ fun FinanceListFilterView(
                     },
                     trailingContent = {
                         Switch(
-                            enabled = state.selectedTypeIndex > 0,
                             checked = state.enableCategories,
                             onCheckedChange = {
-                                onAction(
-                                    FinanceListFilterActions.OnEnableCategories(!state.enableCategories)
-                                )
+                                onAction(FinanceListFilterActions.OnEnableCategories(!state.enableCategories))
                             }
                         )
                     }
                 )
 
-                // Category List (Animated Visibility makes it feel premium)
-                AnimatedVisibility(visible = state.enableCategories && state.selectedTypeIndex > 0) {
+                // Integrated Segmented Button
+                // We only show this if Categories are enabled to keep the UI clean
+                AnimatedVisibility(visible = state.enableCategories) {
                     Column {
-                        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-                        val currentCategories = if (state.selectedType == FinanceType.INCOME)
-                            state.categoryIncomeOptions else state.categoryExpenseOptions
+                        SingleChoiceSegmentedButtonRow(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                        ) {
+                            val totalButtons = FinanceType.entries.size + 1
 
-                        val checkList = if (state.selectedType == FinanceType.INCOME)
-                            state.categoryIncomeSelectedOptions else state.categoryExpenseSelectedOptions
+                            // "Both" Option
+                            SegmentedButton(
+                                shape = SegmentedButtonDefaults.itemShape(index = 0, count = totalButtons),
+                                selected = state.selectedTypeIndex == 0,
+                                onClick = { onAction(FinanceListFilterActions.OnUpdateType(0)) },
+                                label = { Text(stringResource(R.string.filter_type_button_both_label)) }
+                            )
 
-                        currentCategories.forEachIndexed { index, category ->
-                            ListItem(
-                                headlineContent = { Text(category.toUiText().asString()) },
-                                trailingContent = {
-                                    Checkbox(
-                                        checked = checkList[index],
-                                        onCheckedChange = {
-                                            if (state.selectedType == FinanceType.INCOME) {
-                                                onAction(
-                                                    FinanceListFilterActions.OnCategorySelected(
-                                                        FinanceType.INCOME,
-                                                        index
-                                                    )
-                                                )
-                                            } else {
-                                                onAction(
-                                                    FinanceListFilterActions.OnCategorySelected(
-                                                        FinanceType.EXPENSE,
-                                                        index
-                                                    )
-                                                )
-                                            }
-                                        }
-                                    )
-                                },
-                                modifier = Modifier.clickable {
-                                    if (state.selectedType == FinanceType.INCOME) {
-                                        onAction(
-                                            FinanceListFilterActions.OnCategorySelected(
-                                                FinanceType.INCOME,
-                                                index
-                                            )
+                            FinanceType.entries.forEachIndexed { index, value ->
+                                val actualIndex = index + 1
+                                SegmentedButton(
+                                    shape = SegmentedButtonDefaults.itemShape(index = actualIndex, count = totalButtons),
+                                    selected = state.selectedTypeIndex == actualIndex,
+                                    onClick = { onAction(FinanceListFilterActions.OnUpdateType(actualIndex)) },
+                                    label = { Text(value.toUiText().asString()) }
+                                )
+                            }
+                        }
+
+                        // Conditional Category List
+                        if (state.selectedTypeIndex > 0) {
+                            HorizontalDivider(modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp))
+
+                            val currentType = state.selectedType ?: FinanceType.EXPENSE
+                            val categories = if (currentType == FinanceType.INCOME)
+                                state.categoryIncomeOptions else state.categoryExpenseOptions
+                            val selections = if (currentType == FinanceType.INCOME)
+                                state.categoryIncomeSelectedOptions else state.categoryExpenseSelectedOptions
+
+                            categories.forEachIndexed { index, category ->
+                                val toggleAction = FinanceListFilterActions.OnCategorySelected(currentType, index)
+                                ListItem(
+                                    headlineContent = { Text(category.toUiText().asString()) },
+                                    trailingContent = {
+                                        Checkbox(
+                                            checked = selections[index],
+                                            onCheckedChange = { onAction(toggleAction) }
                                         )
-                                    } else {
-                                        onAction(
-                                            FinanceListFilterActions.OnCategorySelected(
-                                                FinanceType.EXPENSE,
-                                                index
-                                            )
-                                        )
-                                    }
-                                },
+                                    },
+                                    modifier = Modifier.clickable { onAction(toggleAction) }
+                                )
+                            }
+                        } else {
+                            // Feedback when "Both" is selected
+                            Text(
+                                text = "Select Income or Expense to filter by specific categories",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(16.dp)
                             )
                         }
                     }
@@ -334,7 +307,7 @@ fun FinanceListFilterViewPreview() {
                 state = FinanceListFilterState(
                     selectedTypeIndex = 1,
                     selectedType = FinanceType.INCOME,
-                    enableCategories = false,
+                    enableCategories = true,
                     enableAmountRange = true
                 ),
                 onAction = {},
