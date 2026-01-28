@@ -8,7 +8,10 @@ import androidx.lifecycle.ViewModel
 
 import com.jd.financeflow.features.core.domain.DataError
 import com.jd.financeflow.features.core.presentation.toUiText
+import com.jd.financeflow.features.finance.domain.models.FilterConfiguration
 import com.jd.financeflow.features.finance.domain.models.FinanceType
+import com.jd.financeflow.features.finance.domain.models.IncomeCategory
+import com.jd.financeflow.features.finance.domain.models.SortOrder
 
 
 /**
@@ -31,7 +34,13 @@ class FinanceListFilterViewModel() : ViewModel() {
                 }
             }
 
-            is FinanceListFilterActions.OnApplyFilter -> {}
+            is FinanceListFilterActions.OnApplyFilter -> {
+                applyFilter(action.callback)
+            }
+
+            is FinanceListFilterActions.OnResetFilter -> {
+                resetFilter()
+            }
 
             is FinanceListFilterActions.OnUpdateSort -> {
                 _state.update {
@@ -140,6 +149,72 @@ class FinanceListFilterViewModel() : ViewModel() {
                     error = DataError.Local.UNKNOWN.toUiText()
                 )
             }
+        }
+    }
+
+    /**
+     * Applies the filter configuration to the data.
+     *
+     * @param callback The callback to be invoked with the filter configuration.
+     */
+    private fun applyFilter(callback: ((FilterConfiguration) -> Unit)?) {
+        callback ?: return
+
+        // Extract the current state
+        val currentState = state.value
+
+        // Extract the values from the current state
+        val sortOrder = SortOrder.entries[currentState.selectedSortIndex]
+        val type = currentState.selectedType
+
+        val (miniAmount, maxAmount) = if (currentState.enableAmountRange) {
+            Pair(
+                currentState.selectedAmountRangeMini.toDouble(),
+                currentState.selectedAmountRangeMax.toDouble()
+            )
+        } else {
+            Pair(null, null)
+        }
+
+        // Streamlined category selection
+        val filterCategories = when (type) {
+            FinanceType.INCOME -> currentState.categoryIncomeOptions
+                .filterIndexed { index, _ -> currentState.categoryIncomeSelectedOptions[index] }
+
+            FinanceType.EXPENSE -> currentState.categoryExpenseOptions
+                .filterIndexed { index, _ -> currentState.categoryExpenseSelectedOptions[index] }
+
+            else -> emptyList()
+        }.ifEmpty { null }
+
+        callback.invoke(
+            FilterConfiguration(
+                sortOrder = sortOrder,
+                type = type,
+                categories = filterCategories,
+                miniAmount = miniAmount,
+                maxAmount = maxAmount
+            )
+        )
+    }
+
+    /**
+     * Resets the filter to its initial state.
+     */
+    private fun resetFilter() {
+        val currentState = state.value
+        _state.update {
+            it.copy(
+                selectedSortIndex = 0,
+                selectedTypeIndex = 0,
+                selectedType = null,
+                enableCategories = false,
+                categoryIncomeSelectedOptions = IncomeCategory.entries.map { true },
+                categoryExpenseSelectedOptions = IncomeCategory.entries.map { true },
+                enableAmountRange = false,
+                selectedAmountRangeMini = currentState.minimumAmount,
+                selectedAmountRangeMax = currentState.maximumAmount
+            )
         }
     }
 }
