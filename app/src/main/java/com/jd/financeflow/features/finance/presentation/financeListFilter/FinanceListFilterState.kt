@@ -10,7 +10,7 @@ data class FinanceListFilterState(
     val error: UiText? = null,
     val currencyCode: String = "EUR",
 
-
+    val selectedSortIndex: Int = 0,
     val selectedTypeIndex: Int = 0,
     val selectedType: FinanceType? = null,
     val enableCategories: Boolean = false,

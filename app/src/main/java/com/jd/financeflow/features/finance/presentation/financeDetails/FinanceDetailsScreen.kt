@@ -186,8 +186,7 @@ fun FinanceDetailsView(
                     onAction(FinanceDetailsActions.OnUpdateFinanceInterval(index))
                 },
                 shape = RoundedCornerShape(dimensionResource(R.dimen.round_corner_size_medium)),
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             )
 
             LargeDropdownMenu(
@@ -206,8 +205,7 @@ fun FinanceDetailsView(
                     onAction(FinanceDetailsActions.OnUpdateFinanceCategory(index))
                 },
                 shape = RoundedCornerShape(dimensionResource(R.dimen.round_corner_size_medium)),
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             )
         }
 

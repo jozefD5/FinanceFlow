@@ -17,6 +17,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
@@ -24,6 +25,8 @@ import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.ui.graphics.Color
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,8 +39,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 
 import com.jd.financeflow.R
+import com.jd.financeflow.features.core.presentation.components.LargeDropdownMenu
 import com.jd.financeflow.features.core.presentation.components.formatCurrency
 import com.jd.financeflow.features.finance.domain.models.FinanceType
+import com.jd.financeflow.features.finance.domain.models.SortOrder
 import com.jd.financeflow.features.finance.presentation.components.toUiText
 
 /**
@@ -88,6 +93,45 @@ fun FinanceListFilterView(
             .padding(dimensionResource(R.dimen.padding_large))
             .verticalScroll(scrollState)
     ) {
+        // Sort section
+        OutlinedCard(
+            shape = RoundedCornerShape(
+                dimensionResource(R.dimen.padding_medium)
+            ),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            ListItem(
+                headlineContent = {
+                    Text(
+                        text = stringResource(R.string.filter_sort_switch_label),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                },
+            )
+
+            Column {
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                LargeDropdownMenu(
+                    selectedIndex = state.selectedSortIndex,
+                    items = SortOrder.entries.map { it.toUiText().asString() },
+                    onItemSelected = { index, _ ->
+                        onAction(FinanceListFilterActions.OnUpdateSort(index))
+                    },
+                    shape = TextFieldDefaults.shape,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color.Transparent,
+                        unfocusedBorderColor = Color.Transparent,
+                        disabledBorderColor = Color.Transparent,
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp)
+                )
+            }
+        }
+
         // Type selection (connected unit)
         SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
             SegmentedButton(
@@ -126,7 +170,6 @@ fun FinanceListFilterView(
             modifier = Modifier.fillMaxWidth()
         ) {
             Column {
-                // Header with Switch
                 ListItem(
                     headlineContent = {
                         Text(
@@ -263,7 +306,6 @@ fun FinanceListFilterView(
 
                     RangeSlider(
                         value = state.selectedAmountRangeMini..state.selectedAmountRangeMax,
-                        steps = 1000,
                         valueRange = state.minimumAmount..state.maximumAmount,
                         onValueChange = { range ->
                             onAction(
@@ -275,7 +317,7 @@ fun FinanceListFilterView(
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(dimensionResource(R.dimen.padding_small))
+                            .padding(dimensionResource(R.dimen.padding_large))
                     )
                 }
             }
@@ -292,7 +334,7 @@ fun FinanceListFilterViewPreview() {
                 state = FinanceListFilterState(
                     selectedTypeIndex = 1,
                     selectedType = FinanceType.INCOME,
-                    enableCategories = true,
+                    enableCategories = false,
                     enableAmountRange = true
                 ),
                 onAction = {},

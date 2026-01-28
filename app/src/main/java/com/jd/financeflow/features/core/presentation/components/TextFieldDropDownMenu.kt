@@ -29,8 +29,10 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
@@ -44,10 +46,10 @@ import com.jd.financeflow.ui.theme.FinanceFlowTheme
  * Larg drop down menu for selecting an item from a list of items. Composable is using outlined
  * text field to show selected content, and a dialog to show list of selectable items.
  *
- * @param label Label for the outlined text field.
  * @param items List of items to select from.
  * @param onItemSelected Callback to invoke when an item is selected.
  * @param modifier Modifier for the composable.
+ * @param label Label for the outlined text field.
  * @param enabled Whether the composable is enabled or not.
  * @param notSetLabel Label for the "not set" option.
  * @param selectedIndex Index of the currently selected item.
@@ -56,15 +58,16 @@ import com.jd.financeflow.ui.theme.FinanceFlowTheme
  */
 @Composable
 fun <T> LargeDropdownMenu(
-    label: String,
     items: List<T>,
     onItemSelected: (index: Int, item: T) -> Unit,
     modifier: Modifier = Modifier,
+    label: String? = null,
     enabled: Boolean = true,
     notSetLabel: String? = null,
     selectedIndex: Int = -1,
     selectedItemToString: (T) -> String = { it.toString() },
     shape: Shape = OutlinedTextFieldDefaults.shape,
+    colors: TextFieldColors = OutlinedTextFieldDefaults.colors(),
     drawItem: @Composable (T, Boolean, Boolean, () -> Unit) -> Unit = { item, selected, itemEnabled, onClick ->
         LargeDropdownMenuItem(
             text = item.toString(),
@@ -78,7 +81,9 @@ fun <T> LargeDropdownMenu(
 
     Box(modifier = modifier.height(IntrinsicSize.Min)) {
         OutlinedTextField(
-            label = { Text(label) },
+            label = {
+                if (label != null) Text(label)
+            },
             value = items.getOrNull(selectedIndex)?.let { selectedItemToString(it) } ?: "",
             enabled = enabled,
             modifier = Modifier.fillMaxWidth(),
@@ -92,6 +97,7 @@ fun <T> LargeDropdownMenu(
             onValueChange = { },
             shape = shape,
             readOnly = true,
+            colors = colors
         )
 
         // Transparent clickable surface on top of OutlinedTextField
@@ -199,7 +205,7 @@ private fun LargeDropdownMenuItem(
 @Preview(showBackground = true)
 @Composable
 fun TextFieldDropDownMenuPreview() {
-    var selectedIndex by remember { mutableStateOf(0) }
+    var selectedIndex by remember { mutableIntStateOf(0) }
     FinanceFlowTheme {
         Column {
             Spacer(modifier = Modifier.padding(34.dp))

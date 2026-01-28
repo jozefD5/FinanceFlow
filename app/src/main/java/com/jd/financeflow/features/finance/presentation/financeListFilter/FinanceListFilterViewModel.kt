@@ -33,6 +33,12 @@ class FinanceListFilterViewModel() : ViewModel() {
 
             is FinanceListFilterActions.OnApplyFilter -> {}
 
+            is FinanceListFilterActions.OnUpdateSort -> {
+                _state.update {
+                    it.copy(selectedSortIndex = action.index)
+                }
+            }
+
             is FinanceListFilterActions.OnUpdateType -> {
                 updateSelectedType(action.index)
             }
