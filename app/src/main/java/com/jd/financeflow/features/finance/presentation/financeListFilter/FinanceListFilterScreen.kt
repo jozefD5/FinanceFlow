@@ -235,7 +235,7 @@ fun FinanceListFilterView(
                                 val categories = if (currentType == FinanceType.INCOME)
                                     state.categoryIncomeOptions else state.categoryExpenseOptions
                                 val selections = if (currentType == FinanceType.INCOME)
-                                    state.categoryIncomeSelectedOptions else state.categoryExpenseSelectedOptions
+                                    state.selectedIncomeCategories else state.selectedExpenseCategories
 
                                 categories.forEachIndexed { index, category ->
                                     val toggleAction =

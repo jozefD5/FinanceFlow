@@ -16,8 +16,13 @@ import com.jd.financeflow.features.finance.domain.models.SortOrder
 
 /**
  * View model for the finance list filter screen.
+ *
+ * @param configuration The initial filter configuration.
  */
-class FinanceListFilterViewModel() : ViewModel() {
+class FinanceListFilterViewModel(
+    private val currencyCode: String = "EUR",
+    private val configuration: FilterConfiguration? = null
+) : ViewModel() {
     private val _state = MutableStateFlow(FinanceListFilterState())
     val state = _state.asStateFlow()
 
@@ -82,6 +87,7 @@ class FinanceListFilterViewModel() : ViewModel() {
         }
     }
 
+
     /**
      * Updates the selected type in the state.
      *
@@ -125,21 +131,21 @@ class FinanceListFilterViewModel() : ViewModel() {
         try {
             when (financeType) {
                 FinanceType.INCOME -> {
-                    val selectedOptions = _state.value.categoryIncomeSelectedOptions.toMutableList()
+                    val selectedOptions = _state.value.selectedIncomeCategories.toMutableList()
                     selectedOptions[index] = !selectedOptions[index]
 
                     _state.update {
-                        it.copy(categoryIncomeSelectedOptions = selectedOptions)
+                        it.copy(selectedIncomeCategories = selectedOptions)
                     }
                 }
 
                 FinanceType.EXPENSE -> {
                     val selectedOptions =
-                        _state.value.categoryExpenseSelectedOptions.toMutableList()
+                        _state.value.selectedExpenseCategories.toMutableList()
                     selectedOptions[index] = !selectedOptions[index]
 
                     _state.update {
-                        it.copy(categoryExpenseSelectedOptions = selectedOptions)
+                        it.copy(selectedExpenseCategories = selectedOptions)
                     }
                 }
             }
@@ -149,6 +155,70 @@ class FinanceListFilterViewModel() : ViewModel() {
                     error = DataError.Local.UNKNOWN.toUiText()
                 )
             }
+        }
+    }
+
+    /**
+     * Applies the initial configuration to the state.
+     *
+     * @param currencyCode The currency code to be used.
+     * @param config The initial filter configuration.
+     */
+    private fun applyInitialConfiguration(
+        currencyCode: String,
+        config: FilterConfiguration
+    ) {
+        val currentState = state.value
+        val miniAmountLimit = config.miniAmountLimit?.toFloat() ?: currentState.minimumAmount
+        val maxAmountLimit = config.maxAmountLimit?.toFloat() ?: currentState.maximumAmount
+
+        // Streamlined category selection, based on the type
+        val (selectedIncomes, selectedExpense) = when (config.type) {
+            FinanceType.INCOME -> {
+                val selectedIncomes = mutableListOf<Boolean>()
+                currentState.categoryIncomeOptions.forEach { category ->
+                    selectedIncomes.add(config.categories?.contains(category) ?: false)
+                }
+
+                Pair(
+                    selectedIncomes,
+                    currentState.selectedExpenseCategories
+                )
+            }
+
+            FinanceType.EXPENSE -> {
+                val selectedExpense = mutableListOf<Boolean>()
+                currentState.categoryExpenseOptions.forEach { category ->
+                    selectedExpense.add(config.categories?.contains(category) ?: false)
+                }
+
+                Pair(
+                    currentState.selectedIncomeCategories,
+                    selectedExpense
+                )
+            }
+
+            else -> {
+                Pair(
+                    currentState.selectedIncomeCategories,
+                    currentState.selectedExpenseCategories
+                )
+            }
+        }
+
+        _state.update {
+            it.copy(
+                currencyCode = currencyCode,
+                selectedSortIndex = config.sortOrder.ordinal,
+                selectedTypeIndex = config.type?.ordinal ?: 0,
+                selectedType = config.type,
+                enableCategories = config.categories != null,
+                selectedIncomeCategories = selectedIncomes,
+                selectedExpenseCategories = selectedExpense,
+                enableAmountRange = config.miniSetAmount != null && config.maxSetAmount != null,
+                selectedAmountRangeMini = miniAmountLimit,
+                selectedAmountRangeMax = maxAmountLimit,
+            )
         }
     }
 
@@ -179,10 +249,10 @@ class FinanceListFilterViewModel() : ViewModel() {
         // Streamlined category selection
         val filterCategories = when (type) {
             FinanceType.INCOME -> currentState.categoryIncomeOptions
-                .filterIndexed { index, _ -> currentState.categoryIncomeSelectedOptions[index] }
+                .filterIndexed { index, _ -> currentState.selectedIncomeCategories[index] }
 
             FinanceType.EXPENSE -> currentState.categoryExpenseOptions
-                .filterIndexed { index, _ -> currentState.categoryExpenseSelectedOptions[index] }
+                .filterIndexed { index, _ -> currentState.selectedExpenseCategories[index] }
 
             else -> emptyList()
         }.ifEmpty { null }
@@ -192,11 +262,12 @@ class FinanceListFilterViewModel() : ViewModel() {
                 sortOrder = sortOrder,
                 type = type,
                 categories = filterCategories,
-                miniAmount = miniAmount,
-                maxAmount = maxAmount
+                miniSetAmount = miniAmount,
+                maxSetAmount = maxAmount
             )
         )
     }
+
 
     /**
      * Resets the filter to its initial state.
@@ -209,8 +280,8 @@ class FinanceListFilterViewModel() : ViewModel() {
                 selectedTypeIndex = 0,
                 selectedType = null,
                 enableCategories = false,
-                categoryIncomeSelectedOptions = IncomeCategory.entries.map { true },
-                categoryExpenseSelectedOptions = IncomeCategory.entries.map { true },
+                selectedIncomeCategories = IncomeCategory.entries.map { true },
+                selectedExpenseCategories = IncomeCategory.entries.map { true },
                 enableAmountRange = false,
                 selectedAmountRangeMini = currentState.minimumAmount,
                 selectedAmountRangeMax = currentState.maximumAmount

@@ -24,13 +24,15 @@ data class FinanceListFilterState(
     },
 
     // Selected options for each category, state of chack boxes.
-    val categoryIncomeSelectedOptions: List<Boolean> = IncomeCategory.entries.map { true },
-    val categoryExpenseSelectedOptions: List<Boolean> = ExpenseCategory.entries.map { true },
+    val selectedIncomeCategories: List<Boolean> = IncomeCategory.entries.map { true },
+    val selectedExpenseCategories: List<Boolean> = ExpenseCategory.entries.map { true },
 
+    // Amount range
     val enableAmountRange: Boolean = false,
     val minimumAmount: Float = 0.0f,
     val maximumAmount: Float = 100_000_00.0f,
 
+    // Mini and max allowed amount range
     val selectedAmountRangeMini: Float = 0.0f,
     val selectedAmountRangeMax: Float = 100_000_00.0f,
 )
