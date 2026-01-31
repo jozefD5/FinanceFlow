@@ -216,11 +216,11 @@ fun HomeViewPreview() {
             50_000.0
         ),
         Pair(
-            FinanceCategory.Income(IncomeCategory.Investments),
+            FinanceCategory.Income(IncomeCategory.Investment),
             40_000.0
         ),
         Pair(
-            FinanceCategory.Income(IncomeCategory.Commissions),
+            FinanceCategory.Income(IncomeCategory.Commission),
             10_000.0
         )
     )

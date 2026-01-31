@@ -1,10 +1,13 @@
 package com.jd.financeflow.features.finance.presentation.financeListFilter
 
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 
 import com.jd.financeflow.features.core.domain.DataError
 import com.jd.financeflow.features.core.presentation.toUiText
@@ -12,7 +15,6 @@ import com.jd.financeflow.features.finance.domain.models.FilterConfiguration
 import com.jd.financeflow.features.finance.domain.models.FinanceType
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
 import com.jd.financeflow.features.finance.domain.models.SortOrder
-
 
 /**
  * View model for the finance list filter screen.
@@ -23,8 +25,20 @@ class FinanceListFilterViewModel(
     private val currencyCode: String = "EUR",
     private val configuration: FilterConfiguration? = null
 ) : ViewModel() {
-    private val _state = MutableStateFlow(FinanceListFilterState())
-    val state = _state.asStateFlow()
+    private val _state = MutableStateFlow(FinanceListFilterState(
+        currencyCode = currencyCode,
+    ))
+    val state = _state
+        .onStart {
+            if (configuration != null) {
+                applyInitialConfiguration(currencyCode, configuration)
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = FinanceListFilterState(currencyCode = currencyCode)
+        )
 
     /**
      * Handles the actions performed on the screen.
@@ -267,7 +281,6 @@ class FinanceListFilterViewModel(
             )
         )
     }
-
 
     /**
      * Resets the filter to its initial state.

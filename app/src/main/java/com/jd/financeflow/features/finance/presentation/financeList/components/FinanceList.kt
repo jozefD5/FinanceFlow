@@ -75,7 +75,7 @@ fun FinanceListPreview() {
             description = "",
             amount = 1000.0,
             interval = FinanceInterval.Quarterly,
-            category = FinanceCategory.Income(IncomeCategory.Investments)
+            category = FinanceCategory.Income(IncomeCategory.Investment)
         ),
         Finance(
             title = "Housing",

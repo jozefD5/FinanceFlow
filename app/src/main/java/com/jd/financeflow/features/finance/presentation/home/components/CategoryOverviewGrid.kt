@@ -76,11 +76,11 @@ fun CategoryOverviewGridPreview() {
             50_000.0
         ),
         Pair(
-            FinanceCategory.Income(IncomeCategory.Commissions),
+            FinanceCategory.Income(IncomeCategory.Commission),
             40_000.0
         ),
         Pair(
-            FinanceCategory.Income(IncomeCategory.Investments),
+            FinanceCategory.Income(IncomeCategory.Investment),
             10_000.0
         )
     )

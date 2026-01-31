@@ -45,6 +45,9 @@ import com.jd.financeflow.features.finance.presentation.financeListFilter.Financ
 fun MainNavigation(
     modifier: Modifier = Modifier
 ) {
+    // Default currency code
+    val currencyCode: String = "EUR"
+
     // Navigation back stacks for individual tabs
     val homeBackStack = rememberNavBackStack(HomeRootKey.HomeScreen)
     val financeListBackStack = rememberNavBackStack(FinanceRootKey.FinanceListScreen)
@@ -165,7 +168,11 @@ fun MainNavigation(
                                         )
                                     },
                                     onFilterClicked = {
-                                        financeListBackStack.add(FinanceRootKey.FinanceFilterScreen)
+                                        financeListBackStack.add(
+                                            FinanceRootKey.FinanceFilterScreen(
+                                                configuration = viewModel.state.value.filterConfiguration
+                                            )
+                                        )
                                     },
                                     modifier = Modifier.fillMaxSize()
                                 )
@@ -190,7 +197,11 @@ fun MainNavigation(
 
                         is FinanceRootKey.FinanceFilterScreen -> {
                             NavEntry(key = key) {
-                                val viewModel: FinanceListFilterViewModel = koinViewModel()
+                                val viewModel: FinanceListFilterViewModel = koinViewModel(
+                                    parameters = {
+                                        parametersOf(currencyCode, key.configuration)
+                                    }
+                                )
 
                                 FinanceListFilterScreen(
                                     viewModel = viewModel,

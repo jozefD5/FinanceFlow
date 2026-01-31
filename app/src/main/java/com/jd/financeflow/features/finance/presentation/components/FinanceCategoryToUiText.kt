@@ -28,9 +28,9 @@ private fun FinanceCategory.toStringResourceId(): Int {
             when (this.category) {
                 IncomeCategory.Salary -> R.string.finance_category_salary
                 IncomeCategory.Bonus -> R.string.finance_category_bonus
-                IncomeCategory.Commissions -> R.string.finance_category_commissions
-                IncomeCategory.Benefits -> R.string.finance_category_benefits
-                IncomeCategory.Investments -> R.string.finance_category_investments
+                IncomeCategory.Commission -> R.string.finance_category_commission
+                IncomeCategory.Benefit -> R.string.finance_category_benefit
+                IncomeCategory.Investment -> R.string.finance_category_investment
                 IncomeCategory.Other -> R.string.finance_category_other
             }
         }

@@ -11,6 +11,7 @@ import com.jd.financeflow.features.finance.data.database.FinanceFactory
 import com.jd.financeflow.features.finance.data.localStorageDataSource.LocalStorageDataSource
 import com.jd.financeflow.features.finance.data.repository.FinanceRepositoryImpl
 import com.jd.financeflow.features.finance.domain.FinanceRepository
+import com.jd.financeflow.features.finance.domain.models.FilterConfiguration
 import com.jd.financeflow.features.finance.presentation.financeDetails.FinanceDetailsViewModel
 import com.jd.financeflow.features.finance.presentation.financeList.FinanceListViewModel
 import com.jd.financeflow.features.finance.presentation.financeListFilter.FinanceListFilterViewModel
@@ -30,7 +31,7 @@ val appModule = module {
         get<FinanceDatabase>().financeDao()
     }
 
-    single{ LocalStorageDataSource(financeDao = get()) }
+    single { LocalStorageDataSource(financeDao = get()) }
     singleOf(::FinanceRepositoryImpl).bind<FinanceRepository>()
 
     viewModel { HomeViewModel(get()) }
@@ -42,5 +43,10 @@ val appModule = module {
     }
     viewModel { FinanceListViewModel(get()) }
 
-    viewModel { FinanceListFilterViewModel() }
+    viewModel { (currencyCode: String, configuration: FilterConfiguration?) ->
+        FinanceListFilterViewModel(
+            currencyCode = currencyCode,
+            configuration = configuration
+        )
+    }
 }

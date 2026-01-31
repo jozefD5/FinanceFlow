@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation3.runtime.NavKey
 
 import com.jd.financeflow.R
+import com.jd.financeflow.features.finance.domain.models.FilterConfiguration
 
 /**
  * Sealed interface representing the navigation bar keys for the main navigation bar.
@@ -72,5 +73,7 @@ sealed interface FinanceRootKey : NavKey {
     data class FinanceDetailsScreen(val financeId: Int?) : FinanceRootKey
 
     @Serializable
-    data object FinanceFilterScreen : FinanceRootKey
+    data class FinanceFilterScreen(
+        val configuration: FilterConfiguration?
+    ) : FinanceRootKey
 }

@@ -14,15 +14,23 @@ import com.jd.financeflow.features.core.domain.DataError
 import com.jd.financeflow.features.core.domain.Result
 import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.finance.domain.FinanceRepository
+import com.jd.financeflow.features.finance.domain.models.FilterConfiguration
 import com.jd.financeflow.features.finance.domain.models.Finance
 
 /**
  * View model for the FinanceList screen.
  */
 class FinanceListViewModel(
-    private val repository: FinanceRepository
+    private val repository: FinanceRepository,
+    private val currencyCode: String = "EUR",
+    private val filterConfiguration: FilterConfiguration? = null,
 ) : ViewModel() {
-    private val _state = MutableStateFlow(FinanceListState())
+    private val _state = MutableStateFlow(
+        FinanceListState(
+            currencyCode = currencyCode,
+            filterConfiguration = filterConfiguration
+        )
+    )
     val state = _state
         .onStart {
             refreshFinanceList()
@@ -68,8 +76,8 @@ class FinanceListViewModel(
                 refreshFinanceList()
             }
 
-            is FinanceListActions.OnUpdateFinanceTypeFilter -> {}
-            is FinanceListActions.OnUpdateFinanceCategoryFilter -> {}
+            is FinanceListActions.OnUpdateFilterConfiguration -> {}
+
         }
     }
 

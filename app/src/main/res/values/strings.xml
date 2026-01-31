@@ -31,9 +31,9 @@
 
     <string name="finance_category_salary">Salary</string>
     <string name="finance_category_bonus">Bonus</string>
-    <string name="finance_category_commissions">Commissions</string>
-    <string name="finance_category_benefits">Benefits</string>
-    <string name="finance_category_investments">Investments</string>
+    <string name="finance_category_commission">Commission</string>
+    <string name="finance_category_benefit">Benefit</string>
+    <string name="finance_category_investment">Investment</string>
     <string name="finance_category_utility">Utility</string>
     <string name="finance_category_housing">Housing</string>
     <string name="finance_category_transport">Transport</string>
