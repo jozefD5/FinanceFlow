@@ -23,12 +23,10 @@ import com.jd.financeflow.features.finance.domain.models.Finance
 class FinanceListViewModel(
     private val repository: FinanceRepository,
     private val currencyCode: String = "EUR",
-    private val filterConfiguration: FilterConfiguration? = null,
 ) : ViewModel() {
     private val _state = MutableStateFlow(
         FinanceListState(
             currencyCode = currencyCode,
-            filterConfiguration = filterConfiguration
         )
     )
     val state = _state

@@ -13,9 +13,11 @@ data class FilterConfiguration(
     // Type of the transactions to be filtered
     val type: FinanceType? = null,
 
-    // Indexes of the categories to be filtered
-    val selectedIncomeIndexes: List<Int> = emptyList(),
-    val selectedExpenseIndexes: List<Int> = emptyList(),
+    // Selected income and expense categories. Set both fields to null if no
+    // categories are selected. Position of each element corresponds to category position of each
+    // enum for the type of category (income or expense)
+    val selectedIncomeIndexes: List<Boolean>? = null,
+    val selectedExpenseIndexes: List<Boolean>? = null,
 
     // Amount limits for the transactions to be filtered
     val miniSetAmount: Double? = null,

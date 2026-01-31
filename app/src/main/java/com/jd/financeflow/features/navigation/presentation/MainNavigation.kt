@@ -24,6 +24,7 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import com.jd.financeflow.features.finance.domain.models.FilterConfiguration
 
 import org.koin.core.parameter.parametersOf
 import org.koin.androidx.compose.koinViewModel
@@ -47,6 +48,7 @@ fun MainNavigation(
 ) {
     // Default currency code
     val currencyCode: String = "EUR"
+    var financeFilterConfiguration by rememberSaveable { mutableStateOf(FilterConfiguration()) }
 
     // Navigation back stacks for individual tabs
     val homeBackStack = rememberNavBackStack(HomeRootKey.HomeScreen)
@@ -104,6 +106,9 @@ fun MainNavigation(
                 .fillMaxSize()
                 .padding(innerPadding),
             backStack = currentBackStack,
+            onBack = {
+                currentBackStack.removeLastOrNull()
+            },
             transitionSpec = {
                 fadeIn(animationSpec = tween(200)) togetherWith fadeOut(tween(200))
             },
@@ -205,7 +210,8 @@ fun MainNavigation(
 
                                 FinanceListFilterScreen(
                                     viewModel = viewModel,
-                                    onApplyFilter = {
+                                    onApplyFilter = { config ->
+                                        filterConfiguration
                                         financeListBackStack.removeLastOrNull()
                                     },
                                     modifier = Modifier.fillMaxSize()
