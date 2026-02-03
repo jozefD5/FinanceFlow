@@ -1,5 +1,6 @@
 package com.jd.financeflow.features.finance.presentation.financeListFilter
 
+import android.util.Log
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.SharingStarted
@@ -184,6 +185,9 @@ class FinanceListFilterViewModel(
         currencyCode: String,
         config: FilterConfiguration
     ) {
+
+        Log.d("FinanceListFilterViewModel", "Filter configuration: $config")
+
         val currentState = state.value
         val miniAmountLimit = config.miniAmountLimit?.toFloat() ?: currentState.minimumAmount
         val maxAmountLimit = config.maxAmountLimit?.toFloat() ?: currentState.maximumAmount

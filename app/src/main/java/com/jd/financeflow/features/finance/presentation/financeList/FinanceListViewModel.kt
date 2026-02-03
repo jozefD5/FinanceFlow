@@ -1,5 +1,6 @@
 package com.jd.financeflow.features.finance.presentation.financeList
 
+import android.util.Log
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.SharingStarted
@@ -33,6 +34,7 @@ class FinanceListViewModel(
     )
     val state = _state
         .onStart {
+            applyFilterConfiguration(filterConfiguration)
             refreshFinanceList()
         }
         .stateIn(
@@ -82,9 +84,78 @@ class FinanceListViewModel(
     }
 
     /**
+     * Apply filter configuration.
+     *
+     * @param config new filter configuration
+     */
+    private fun applyFilterConfiguration(config: FilterConfiguration?) = viewModelScope.launch {
+
+        // Get maximum value of finances (+10%) or set to null if list is empty
+        val highestAmount = runCatching {
+            when (val result = repository.getFinances()) {
+                is Result.Success -> {
+                    val value = if (result.data.isEmpty()) {
+                        null
+                    } else {
+                        result.data.maxOfOrNull { it.amount }
+                    }
+                    value?.times(1.1)
+                }
+
+                is Result.Error -> {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            error = result.error.toUiText()
+                        )
+                    }
+                    return@launch
+                }
+            }
+        }.getOrElse {
+            _state.update {
+                it.copy(
+                    isLoading = false,
+                    error = DataError.Local.UNKNOWN.toUiText()
+                )
+            }
+            return@launch
+        }
+
+        // If provided, use supplied configuration with updated max amount limit. Else, Create new
+        // filtered configuration object.
+        when (config) {
+            is FilterConfiguration -> {
+                config.copy(
+                    miniAmountLimit = 0.0,
+                    maxAmountLimit = highestAmount
+                )
+            }
+
+            null -> {
+                FilterConfiguration(
+                    miniAmountLimit = 0.0,
+                    maxAmountLimit = highestAmount
+                )
+            }
+        }
+
+        // Update state with new configuration
+        _state.update {
+            it.copy(
+                currencyCode = currencyCode,
+                filterConfiguration = config,
+            )
+        }
+
+
+        Log.d("FinanceListViewModel", "Filter configuration: $config")
+    }
+
+    /**
      * Refreshes the list of finances.
      */
-    fun refreshFinanceList() = viewModelScope.launch {
+    private fun refreshFinanceList() = viewModelScope.launch {
         _state.update { it.copy(isLoading = true) }
 
         runCatching {
@@ -126,7 +197,7 @@ class FinanceListViewModel(
      *
      * @param finance finance to be deleted
      */
-    fun deleteFinance(finance: Finance) = viewModelScope.launch {
+    private fun deleteFinance(finance: Finance) = viewModelScope.launch {
         _state.update { it.copy(isLoading = true) }
 
         runCatching {
