@@ -124,7 +124,7 @@ class FinanceListViewModel(
 
         // If provided, use supplied configuration with updated max amount limit. Else, Create new
         // filtered configuration object.
-        when (config) {
+        val updatedConfig = when (config) {
             is FilterConfiguration -> {
                 config.copy(
                     miniAmountLimit = 0.0,
@@ -144,12 +144,12 @@ class FinanceListViewModel(
         _state.update {
             it.copy(
                 currencyCode = currencyCode,
-                filterConfiguration = config,
+                filterConfiguration = updatedConfig,
             )
         }
 
 
-        Log.d("FinanceListViewModel", "Filter configuration: $config")
+        Log.d("FinanceListViewModel", "Filter configuration: $updatedConfig")
     }
 
     /**
