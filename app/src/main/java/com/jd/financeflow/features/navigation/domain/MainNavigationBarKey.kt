@@ -67,13 +67,15 @@ sealed interface HomeRootKey : NavKey {
  */
 sealed interface FinanceRootKey : NavKey {
     @Serializable
-    data object FinanceListScreen : FinanceRootKey
+    data class FinanceListScreen(
+        val filterConfiguration: FilterConfiguration? = null
+    ) : FinanceRootKey
 
     @Serializable
     data class FinanceDetailsScreen(val financeId: Int?) : FinanceRootKey
 
     @Serializable
     data class FinanceFilterScreen(
-        val configuration: FilterConfiguration?
+        val filterConfiguration: FilterConfiguration? = null
     ) : FinanceRootKey
 }

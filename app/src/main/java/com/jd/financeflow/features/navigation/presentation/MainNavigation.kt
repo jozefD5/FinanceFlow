@@ -24,7 +24,6 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
-import com.jd.financeflow.features.finance.domain.models.FilterConfiguration
 
 import org.koin.core.parameter.parametersOf
 import org.koin.androidx.compose.koinViewModel
@@ -47,12 +46,11 @@ fun MainNavigation(
     modifier: Modifier = Modifier
 ) {
     // Default currency code
-    val currencyCode: String = "EUR"
-    var financeFilterConfiguration by rememberSaveable { mutableStateOf(FilterConfiguration()) }
+    val currencyCode = "EUR"
 
     // Navigation back stacks for individual tabs
     val homeBackStack = rememberNavBackStack(HomeRootKey.HomeScreen)
-    val financeListBackStack = rememberNavBackStack(FinanceRootKey.FinanceListScreen)
+    val financeListBackStack = rememberNavBackStack(FinanceRootKey.FinanceListScreen())
 
     // Current navigation bar key (selected tab/key)
     var currentBarKey by rememberSaveable(stateSaver = MainNavigationBarKey.stateSaver) {
@@ -158,7 +156,14 @@ fun MainNavigation(
                     when (key) {
                         is FinanceRootKey.FinanceListScreen -> {
                             NavEntry(key = key) {
-                                val viewModel: FinanceListViewModel = koinViewModel()
+                                val viewModel: FinanceListViewModel = koinViewModel(
+                                    parameters = {
+                                        parametersOf(
+                                            currencyCode,
+                                            key.filterConfiguration
+                                        )
+                                    }
+                                )
 
                                 FinanceListScreen(
                                     viewModel = viewModel,
@@ -175,7 +180,8 @@ fun MainNavigation(
                                     onFilterClicked = {
                                         financeListBackStack.add(
                                             FinanceRootKey.FinanceFilterScreen(
-                                                configuration = viewModel.state.value.filterConfiguration
+                                                filterConfiguration = viewModel
+                                                    .state.value.filterConfiguration
                                             )
                                         )
                                     },
@@ -204,15 +210,20 @@ fun MainNavigation(
                             NavEntry(key = key) {
                                 val viewModel: FinanceListFilterViewModel = koinViewModel(
                                     parameters = {
-                                        parametersOf(currencyCode, key.configuration)
+                                        parametersOf(
+                                            currencyCode,
+                                            key.filterConfiguration
+                                        )
                                     }
                                 )
 
                                 FinanceListFilterScreen(
                                     viewModel = viewModel,
                                     onApplyFilter = { config ->
-                                        filterConfiguration
-                                        financeListBackStack.removeLastOrNull()
+                                        currentBackStack.clear()
+                                        currentBackStack.add(
+                                            FinanceRootKey.FinanceListScreen(config)
+                                        )
                                     },
                                     modifier = Modifier.fillMaxSize()
                                 )

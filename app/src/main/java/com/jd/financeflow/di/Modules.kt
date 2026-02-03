@@ -35,13 +35,21 @@ val appModule = module {
     singleOf(::FinanceRepositoryImpl).bind<FinanceRepository>()
 
     viewModel { HomeViewModel(get()) }
+
     viewModel { (financeId: Int?) ->
         FinanceDetailsViewModel(
             financeRepository = get(),
             financeId = financeId
         )
     }
-    viewModel { FinanceListViewModel(get()) }
+
+    viewModel { (currencyCode: String, configuration: FilterConfiguration?) ->
+        FinanceListViewModel(
+            repository = get(),
+            currencyCode = currencyCode,
+            filterConfiguration = configuration
+        )
+    }
 
     viewModel { (currencyCode: String, configuration: FilterConfiguration?) ->
         FinanceListFilterViewModel(
