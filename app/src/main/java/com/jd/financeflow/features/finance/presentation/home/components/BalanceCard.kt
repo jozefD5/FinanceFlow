@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -18,10 +19,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 
 import com.jd.financeflow.R
 import com.jd.financeflow.features.core.presentation.components.formatCurrency
@@ -35,6 +36,7 @@ import com.jd.financeflow.features.core.presentation.components.formatCurrency
  * @param color the background color of the card
  * @param textColor the text color of the card
  */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun BalanceCard(
     balance: Double,
@@ -55,7 +57,7 @@ fun BalanceCard(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .padding(16.dp)
+                .padding(dimensionResource(R.dimen.padding_medium))
                 .background(Color.Transparent)
         ) {
             Text(
@@ -67,7 +69,7 @@ fun BalanceCard(
             )
             Text(
                 text = formatCurrency(balance, currencyCode),
-                style = MaterialTheme.typography.displaySmall.copy(
+                style = MaterialTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight.Bold,
                     color = textColor
                 )
@@ -98,7 +100,7 @@ fun BalanceCard(
 
                 VerticalDivider(
                     modifier = Modifier
-                        .heightIn(max = 32.dp)
+                        .heightIn(max = dimensionResource(R.dimen.padding_extra_extra_large))
                 )
 
                 Column {
@@ -142,7 +144,7 @@ fun BalanceCardPreview() {
                     expense = 50_000.0,
                     currencyCode = "EUR",
                     modifier = Modifier
-                        .padding(24.dp)
+                        .padding(dimensionResource(R.dimen.padding_extra_extra_large))
                         .fillMaxWidth()
                 )
             }

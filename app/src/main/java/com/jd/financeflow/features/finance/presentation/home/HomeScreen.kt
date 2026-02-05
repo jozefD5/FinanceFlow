@@ -1,15 +1,9 @@
 package com.jd.financeflow.features.finance.presentation.home
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -21,56 +15,54 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 
 import com.jd.financeflow.R
-import com.jd.financeflow.features.core.domain.DataError
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.core.presentation.components.ErrorDialog
-import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
 import com.jd.financeflow.features.finance.presentation.home.components.BalanceCard
 import com.jd.financeflow.features.finance.presentation.home.components.CategoryOverviewGrid
 import com.jd.financeflow.ui.theme.FinanceFlowTheme
+import com.jd.financeflow.ui.theme.primaryLightMediumContrast
 
 /**
  * Screen for the home screen.
  *
  * @param modifier modifier to be applied
  * @param viewModel view model to be used
- * @param addTransactionContent content for the add transaction screen
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = koinViewModel(),
-    addTransactionContent: @Composable () -> Unit = {}
+    onAddFinanceClicked: () -> Unit = {}
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
 
     HomeView(
         state = state.value,
-        onAction = { viewModel.onAction(it) },
+        onAction = { action ->
+            when (action) {
+                is HomeActions.OnAddFinanceClicked -> onAddFinanceClicked()
+                else -> viewModel.onAction(action)
+            }
+        },
         modifier = modifier,
-        addTransactionContent = addTransactionContent
     )
 }
 
@@ -80,9 +72,6 @@ fun HomeScreen(
  * @param state state to be displayed
  * @param onAction action to be performed
  * @param modifier modifier to be applied
- * @param addTransactionContent content for the add transaction screen
- * @param scope scope to be used
- * @param sheetState sheet state to be used
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -90,25 +79,23 @@ fun HomeView(
     state: HomeState,
     onAction: (HomeActions) -> Unit,
     modifier: Modifier = Modifier,
-    addTransactionContent: @Composable () -> Unit = {},
-    scope: CoroutineScope = rememberCoroutineScope(),
-    sheetState: SheetState = rememberModalBottomSheetState()
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
         modifier = modifier
     ) {
         Surface(
-            color = Color(0xFF1C2781),
+            color = primaryLightMediumContrast,
             shape = RoundedCornerShape(
-                bottomStart = 32.dp,
-                bottomEnd = 32.dp
+                bottomStart = dimensionResource(R.dimen.padding_extra_extra_large),
+                bottomEnd = dimensionResource(R.dimen.padding_extra_extra_large)
             ),
             modifier = Modifier
                 .fillMaxWidth()
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
@@ -123,13 +110,11 @@ fun HomeView(
                         .fillMaxWidth()
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
-
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                        .padding(16.dp)
+                        .padding(dimensionResource(R.dimen.padding_large))
                         .fillMaxWidth()
                 ) {
                     FilledTonalButton(
@@ -153,7 +138,7 @@ fun HomeView(
                     }
 
                     Button(
-                        onClick = { onAction(HomeActions.ShowBottomSheet(true)) },
+                        onClick = { onAction(HomeActions.OnAddFinanceClicked) },
                         modifier = Modifier.weight(1f)
                     ) {
                         Icon(
@@ -162,8 +147,6 @@ fun HomeView(
                         )
                     }
                 }
-
-                Spacer(modifier = Modifier.height(8.dp))
             }
         }
 
@@ -173,7 +156,7 @@ fun HomeView(
                 fontWeight = FontWeight.Bold
             ),
             modifier = Modifier
-                .padding(horizontal = 8.dp)
+                .padding(horizontal = dimensionResource(R.dimen.padding_medium))
                 .fillMaxWidth()
         )
 
@@ -184,7 +167,7 @@ fun HomeView(
             lineGraphColor = Color.Green,
             onClicked = { },
             modifier = Modifier
-                .padding(horizontal = 8.dp)
+                .padding(horizontal = dimensionResource(R.dimen.padding_medium))
                 .fillMaxWidth()
         )
 
@@ -194,7 +177,7 @@ fun HomeView(
                 fontWeight = FontWeight.Bold
             ),
             modifier = Modifier
-                .padding(horizontal = 8.dp)
+                .padding(horizontal = dimensionResource(R.dimen.padding_medium))
                 .fillMaxWidth()
         )
 
@@ -205,40 +188,19 @@ fun HomeView(
             lineGraphColor = Color.Red,
             onClicked = { },
             modifier = Modifier
-                .padding(horizontal = 8.dp)
+                .padding(horizontal = dimensionResource(R.dimen.padding_medium))
                 .fillMaxWidth()
         )
-
-        AnimatedVisibility(
-            visible = state.showBottomSheet
-        ) {
-            ModalBottomSheet(
-                onDismissRequest = {
-                    scope.launch {
-                        sheetState.hide()
-                    }.invokeOnCompletion {
-                        onAction(HomeActions.ShowBottomSheet(false))
-                    }
-                },
-                sheetState = sheetState,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth()
-            ) {
-                addTransactionContent()
-            }
-        }
 
         if (state.error != null) {
             ErrorDialog(
                 content = state.error.asString(),
-                onConfirmation = { onAction(HomeActions.ClearError()) },
-                onDismiss = { onAction(HomeActions.ClearError()) }
+                onConfirmation = { onAction(HomeActions.OnClearError) },
+                onDismiss = { onAction(HomeActions.OnClearError) }
             )
         }
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
@@ -254,11 +216,11 @@ fun HomeViewPreview() {
             50_000.0
         ),
         Pair(
-            FinanceCategory.Income(IncomeCategory.Investments),
+            FinanceCategory.Income(IncomeCategory.Investment),
             40_000.0
         ),
         Pair(
-            FinanceCategory.Income(IncomeCategory.Commissions),
+            FinanceCategory.Income(IncomeCategory.Commission),
             10_000.0
         )
     )
@@ -286,8 +248,7 @@ fun HomeViewPreview() {
         Scaffold { innerPadding ->
             HomeView(
                 state = HomeState(
-                    error = DataError.Local.INVALID_ARGUMENT.toUiText(),
-                    showBottomSheet = false,
+                    error = null, //DataError.Local.INVALID_ARGUMENT.toUiText(),
                     balance = 100_000.0,
                     income = 200_000.0,
                     expense = 30_000.0,

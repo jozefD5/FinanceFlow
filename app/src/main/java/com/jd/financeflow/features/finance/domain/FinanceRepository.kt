@@ -28,20 +28,20 @@ interface FinanceRepository {
     suspend fun getFinanceById(id: Int): Result<Finance, DataError.Local>
 
     /**
-     * Updates an existing financial transaction.
-     *
-     * @param finance The updated [Finance] object.
-     * @return [EmptyResult] on success or [DataError.Local] on failure.
-     */
-    suspend fun updateFinance(finance: Finance): EmptyResult<DataError.Local>
-
-    /**
      * Inserts a new financial transaction.
      *
      * @param finance The [Finance] object to insert.
      * @return [EmptyResult] on success or [DataError.Local] on failure.
      */
     suspend fun insertFinance(finance: Finance): EmptyResult<DataError.Local>
+
+    /**
+     * Updates an existing financial transaction.
+     *
+     * @param finance The updated [Finance] object.
+     * @return [EmptyResult] on success or [DataError.Local] on failure.
+     */
+    suspend fun updateFinance(finance: Finance): EmptyResult<DataError.Local>
 
     /**
      * Deletes a financial transaction by its unique identifier.
@@ -64,4 +64,8 @@ interface FinanceRepository {
         type: FinanceType? = null,
         category: FinanceCategory? = null
     ): Result<Double, DataError.Local>
+
+
+
+
 }

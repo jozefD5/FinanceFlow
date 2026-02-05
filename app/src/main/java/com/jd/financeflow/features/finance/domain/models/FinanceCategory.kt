@@ -15,9 +15,9 @@ enum class FinanceType {
 enum class IncomeCategory {
     Salary,
     Bonus,
-    Commissions,
-    Benefits,
-    Investments,
+    Commission,
+    Benefit,
+    Investment,
     Other
 }
 

@@ -1,17 +1,21 @@
 package com.jd.financeflow.di
 
-import com.jd.financeflow.features.finance.data.localDataSource.FinanceDatabase
-import com.jd.financeflow.features.finance.data.localDataSource.FinanceFactory
 import org.koin.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.koin.core.module.dsl.viewModel
+import org.koin.android.ext.koin.androidApplication
 
+import com.jd.financeflow.features.finance.data.database.FinanceDatabase
+import com.jd.financeflow.features.finance.data.database.FinanceFactory
+import com.jd.financeflow.features.finance.data.localStorageDataSource.LocalStorageDataSource
 import com.jd.financeflow.features.finance.data.repository.FinanceRepositoryImpl
 import com.jd.financeflow.features.finance.domain.FinanceRepository
-import com.jd.financeflow.features.finance.presentation.transactionDetails.TransactionDetailsViewModel
+import com.jd.financeflow.features.finance.domain.models.FilterConfiguration
+import com.jd.financeflow.features.finance.presentation.financeDetails.FinanceDetailsViewModel
+import com.jd.financeflow.features.finance.presentation.financeList.FinanceListViewModel
+import com.jd.financeflow.features.finance.presentation.financeListFilter.FinanceListFilterViewModel
 import com.jd.financeflow.features.finance.presentation.home.HomeViewModel
-import org.koin.android.ext.koin.androidApplication
 
 /**
  * Koin module for the FinanceFlow application.
@@ -27,13 +31,30 @@ val appModule = module {
         get<FinanceDatabase>().financeDao()
     }
 
+    single { LocalStorageDataSource(financeDao = get()) }
     singleOf(::FinanceRepositoryImpl).bind<FinanceRepository>()
 
     viewModel { HomeViewModel(get()) }
-    viewModel { (id: Int?) ->
-        TransactionDetailsViewModel(
-            get(),
-            id
+
+    viewModel { (financeId: Int?) ->
+        FinanceDetailsViewModel(
+            financeRepository = get(),
+            financeId = financeId
+        )
+    }
+
+    viewModel { (currencyCode: String, configuration: FilterConfiguration?) ->
+        FinanceListViewModel(
+            repository = get(),
+            currencyCode = currencyCode,
+            filterConfiguration = configuration
+        )
+    }
+
+    viewModel { (currencyCode: String, configuration: FilterConfiguration?) ->
+        FinanceListFilterViewModel(
+            currencyCode = currencyCode,
+            configuration = configuration
         )
     }
 }
