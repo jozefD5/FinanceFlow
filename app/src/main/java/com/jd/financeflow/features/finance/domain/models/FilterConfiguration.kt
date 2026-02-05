@@ -16,10 +16,12 @@ data class FilterConfiguration(
     // Selected income and expense categories. Set both fields to null if no
     // categories are selected. Position of each element corresponds to category position of each
     // enum for the type of category (income or expense)
+    val enableCategoryFilter: Boolean = false,
     val selectedIncomeIndexes: List<Boolean>? = null,
     val selectedExpenseIndexes: List<Boolean>? = null,
 
     // Amount limits for the transactions to be filtered
+    val enableAmountFilter: Boolean = false,
     val miniSetAmount: Double? = null,
     val maxSetAmount: Double? = null,
 

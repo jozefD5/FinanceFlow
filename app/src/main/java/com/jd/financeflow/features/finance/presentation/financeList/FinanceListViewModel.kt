@@ -1,6 +1,5 @@
 package com.jd.financeflow.features.finance.presentation.financeList
 
-import android.util.Log
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,6 +16,7 @@ import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.finance.domain.FinanceRepository
 import com.jd.financeflow.features.finance.domain.models.FilterConfiguration
 import com.jd.financeflow.features.finance.domain.models.Finance
+import kotlin.math.ceil
 
 /**
  * View model for the FinanceList screen.
@@ -90,8 +90,8 @@ class FinanceListViewModel(
      */
     private fun applyFilterConfiguration(config: FilterConfiguration?) = viewModelScope.launch {
 
-        // Get maximum value of finances (+10%) or set to null if list is empty
-        val highestAmount = runCatching {
+        // Get maximum value of finances (+10%) or set to default value
+        val highestAmount: Double = runCatching {
             when (val result = repository.getFinances()) {
                 is Result.Success -> {
                     val value = if (result.data.isEmpty()) {
@@ -99,7 +99,10 @@ class FinanceListViewModel(
                     } else {
                         result.data.maxOfOrNull { it.amount }
                     }
-                    value?.times(1.1)
+
+                    // Round up to nearest 1000
+                    val rawValue = value?.times(1.1) ?: 10_000.0
+                    ceil(rawValue / 1000.0) * 1000.0
                 }
 
                 is Result.Error -> {
@@ -147,9 +150,6 @@ class FinanceListViewModel(
                 filterConfiguration = updatedConfig,
             )
         }
-
-
-        Log.d("FinanceListViewModel", "Filter configuration: $updatedConfig")
     }
 
     /**

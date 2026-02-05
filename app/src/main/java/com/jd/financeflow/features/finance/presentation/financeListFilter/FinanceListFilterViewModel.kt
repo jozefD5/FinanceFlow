@@ -1,6 +1,5 @@
 package com.jd.financeflow.features.finance.presentation.financeListFilter
 
-import android.util.Log
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.SharingStarted
@@ -185,30 +184,46 @@ class FinanceListFilterViewModel(
         currencyCode: String,
         config: FilterConfiguration
     ) {
-
-        Log.d("FinanceListFilterViewModel", "Filter configuration: $config")
-
         val currentState = state.value
-        val miniAmountLimit = config.miniAmountLimit?.toFloat() ?: currentState.minimumAmount
-        val maxAmountLimit = config.maxAmountLimit?.toFloat() ?: currentState.maximumAmount
+
+        val (selectedType, selectedTypeIndex) = if (config.type != null) {
+            Pair(
+                config.type,
+                config.type.ordinal + 1
+            )
+        } else {
+            Pair(null, 0)
+        }
+
 
         val selectedIncomeCategories =
             config.selectedIncomeIndexes ?: currentState.selectedIncomeCategories
         val selectedExpenseCategories =
             config.selectedExpenseIndexes ?: currentState.selectedExpenseCategories
 
+        val miniAmountLimit = config.miniAmountLimit?.toFloat() ?: currentState.minimumAmount
+        val maxAmountLimit = config.maxAmountLimit?.toFloat() ?: currentState.maximumAmount
+
         _state.update {
             it.copy(
                 currencyCode = currencyCode,
+
+                // Sort order
                 selectedSortIndex = config.sortOrder.ordinal,
-                selectedTypeIndex = config.type?.ordinal ?: 0,
-                selectedType = config.type,
-                enableCategories = (config.selectedIncomeIndexes != null && config.selectedExpenseIndexes != null),
+
+                // Selected type and categories
+                enableCategories = config.enableCategoryFilter,
+                selectedType = selectedType,
+                selectedTypeIndex = selectedTypeIndex,
                 selectedIncomeCategories = selectedIncomeCategories,
                 selectedExpenseCategories = selectedExpenseCategories,
-                enableAmountRange = (config.miniSetAmount != null && config.maxSetAmount != null),
-                selectedAmountRangeMini = miniAmountLimit,
-                selectedAmountRangeMax = maxAmountLimit,
+
+                // Amount range
+                enableAmountRange = config.enableAmountFilter,
+                minimumAmount = miniAmountLimit,
+                maximumAmount = maxAmountLimit,
+                selectedAmountRangeMini = config.miniSetAmount?.toFloat() ?: miniAmountLimit,
+                selectedAmountRangeMax = config.maxSetAmount?.toFloat() ?: maxAmountLimit
             )
         }
     }
@@ -241,8 +256,10 @@ class FinanceListFilterViewModel(
             FilterConfiguration(
                 sortOrder = sortOrder,
                 type = type,
+                enableCategoryFilter = currentState.enableCategories,
                 selectedIncomeIndexes = currentState.selectedIncomeCategories,
                 selectedExpenseIndexes = currentState.selectedExpenseCategories,
+                enableAmountFilter = currentState.enableAmountRange,
                 miniSetAmount = miniAmount,
                 maxSetAmount = maxAmount
             )
