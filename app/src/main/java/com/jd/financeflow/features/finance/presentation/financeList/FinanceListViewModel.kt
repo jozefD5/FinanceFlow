@@ -7,6 +7,13 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.math.ceil
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -23,6 +30,7 @@ import com.jd.financeflow.features.finance.domain.models.FinanceType
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
 import com.jd.financeflow.features.finance.domain.models.SortOrder
 
+
 /**
  * View model for the FinanceList screen.
  */
@@ -31,6 +39,9 @@ class FinanceListViewModel(
     private val currencyCode: String = "EUR",
     private val filterConfiguration: FilterConfiguration? = null
 ) : ViewModel() {
+    private var searchJob: Job? = null
+    private var cachedFinances: List<Finance> = emptyList()
+
     private val _state = MutableStateFlow(
         FinanceListState(
             currencyCode = currencyCode,
@@ -40,6 +51,7 @@ class FinanceListViewModel(
     val state = _state
         .onStart {
             applyFilterConfiguration(filterConfiguration)
+            observeSearchQuery()
         }
         .stateIn(
             scope = viewModelScope,
@@ -85,6 +97,27 @@ class FinanceListViewModel(
             is FinanceListActions.OnUpdateFilterConfiguration -> {}
 
         }
+    }
+
+    @OptIn(FlowPreview::class)
+    private fun observeSearchQuery() {
+        state
+            .map { it.searchQuery }
+            .distinctUntilChanged()
+            .debounce(500L)
+            .onEach { query ->
+                when {
+                    query.isBlank() -> {
+                        _state.update { it.copy(finances = cachedFinances) }
+                    }
+
+                    query.length >= 2 -> {
+                        searchJob?.cancel()
+                        searchJob = refreshFinanceList(query = query)
+                    }
+                }
+            }
+            .launchIn(viewModelScope)
     }
 
     /**
@@ -179,9 +212,7 @@ class FinanceListViewModel(
             val items = if (refresh) {
                 when (val result = repository.getFinances()) {
                     is Result.Success -> {
-                        _state.update {
-                            it.copy(finances = result.data)
-                        }
+                        cachedFinances = result.data
                         result.data
                     }
 
@@ -196,7 +227,7 @@ class FinanceListViewModel(
                     }
                 }
             } else {
-                _state.value.finances
+                cachedFinances
             }
 
             // Filter items by query or filter configuration. If none are provided, use all items.
@@ -211,7 +242,7 @@ class FinanceListViewModel(
             _state.update {
                 it.copy(
                     isLoading = false,
-                    filteredFinances = filteredItems
+                    finances = filteredItems
                 )
             }
 
