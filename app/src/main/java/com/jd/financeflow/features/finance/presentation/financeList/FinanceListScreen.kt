@@ -190,7 +190,7 @@ fun FinanceListView(
                 .fillMaxSize()
         ) {
             FinanceList(
-                finances = state.finances,
+                finances = state.filteredFinances,
                 currencyCode = state.currencyCode,
                 onItemClick = {
                     onAction(FinanceListActions.OnFinanceItemClicked(it.id))

@@ -156,41 +156,62 @@ class FinanceListViewModel(
             )
         }
 
-        refreshFinanceList(filterConfiguration = updatedConfig)
+        refreshFinanceList(refresh = true, filterConfiguration = updatedConfig)
     }
 
     /**
      * Refreshes the list of finances.
+     *
+     * @param refresh whether to get new list form local storage or use current list. Only one
+     * search field can be used, [query] or [filterConfiguration]. Prior option has precedence.
+     *
+     * @param query the query to be used for filtering
+     * @param filterConfiguration the filter configuration to be used for filtering
      */
     private fun refreshFinanceList(
+        refresh: Boolean = false,
         query: String? = null,
         filterConfiguration: FilterConfiguration? = null
     ) = viewModelScope.launch {
         _state.update { it.copy(isLoading = true) }
 
         runCatching {
-            val items = when (val result = repository.getFinances()) {
-                is Result.Success -> {
-                    result.data
-                }
-
-                is Result.Error -> {
-                    _state.update {
-                        it.copy(
-                            isLoading = false,
-                            error = result.error.toUiText()
-                        )
+            val items = if (refresh) {
+                when (val result = repository.getFinances()) {
+                    is Result.Success -> {
+                        _state.update {
+                            it.copy(finances = result.data)
+                        }
+                        result.data
                     }
-                    return@launch
+
+                    is Result.Error -> {
+                        _state.update {
+                            it.copy(
+                                isLoading = false,
+                                error = result.error.toUiText()
+                            )
+                        }
+                        return@launch
+                    }
                 }
+            } else {
+                _state.value.finances
             }
 
-            val filteredItems = filterItemsByFilter(items, filterConfiguration)
+            // Filter items by query or filter configuration. If none are provided, use all items.
+            val filteredItems = if (query != null) {
+                filterItemsByQuery(items, query)
+            } else if (filterConfiguration != null) {
+                filterItemsByFilter(items, filterConfiguration)
+            } else {
+                items
+            }
 
             _state.update {
                 it.copy(
                     isLoading = false,
-                    finances = filteredItems
+                    filteredFinances = filteredItems
                 )
             }
 
@@ -285,7 +306,23 @@ class FinanceListViewModel(
         }
     }
 
+    /**
+     * Filters the items by the provided query.
+     *
+     * @param items the list of items to be filtered
+     * @param query the query to be used for filtering
+     * @return the filtered list of items
+     */
+    private fun filterItemsByQuery(items: List<Finance>, query: String?): List<Finance> {
+        if (query.isNullOrBlank()) {
+            return items
+        }
 
+        return items.filter { finance ->
+            finance.title.contains(query, ignoreCase = true) ||
+                    finance.description?.contains(query, ignoreCase = true) == true
+        }
+    }
 
     /**
      * Deletes a finance.
@@ -306,6 +343,7 @@ class FinanceListViewModel(
                     }
 
                     refreshFinanceList(
+                        refresh = true,
                         filterConfiguration = state.value.filterConfiguration
                     )
                 }
