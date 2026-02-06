@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlin.math.ceil
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,9 +15,13 @@ import com.jd.financeflow.features.core.domain.DataError
 import com.jd.financeflow.features.core.domain.Result
 import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.finance.domain.FinanceRepository
+import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
 import com.jd.financeflow.features.finance.domain.models.FilterConfiguration
 import com.jd.financeflow.features.finance.domain.models.Finance
-import kotlin.math.ceil
+import com.jd.financeflow.features.finance.domain.models.FinanceCategory
+import com.jd.financeflow.features.finance.domain.models.FinanceType
+import com.jd.financeflow.features.finance.domain.models.IncomeCategory
+import com.jd.financeflow.features.finance.domain.models.SortOrder
 
 /**
  * View model for the FinanceList screen.
@@ -35,7 +40,6 @@ class FinanceListViewModel(
     val state = _state
         .onStart {
             applyFilterConfiguration(filterConfiguration)
-            refreshFinanceList()
         }
         .stateIn(
             scope = viewModelScope,
@@ -75,7 +79,7 @@ class FinanceListViewModel(
             }
 
             is FinanceListActions.OnSearch -> {
-                refreshFinanceList()
+                refreshFinanceList(query = state.value.searchQuery)
             }
 
             is FinanceListActions.OnUpdateFilterConfiguration -> {}
@@ -137,6 +141,7 @@ class FinanceListViewModel(
 
             null -> {
                 FilterConfiguration(
+                    sortOrder = SortOrder.NEWEST_FIRST,
                     miniAmountLimit = 0.0,
                     maxAmountLimit = highestAmount
                 )
@@ -150,12 +155,17 @@ class FinanceListViewModel(
                 filterConfiguration = updatedConfig,
             )
         }
+
+        refreshFinanceList(filterConfiguration = updatedConfig)
     }
 
     /**
      * Refreshes the list of finances.
      */
-    private fun refreshFinanceList() = viewModelScope.launch {
+    private fun refreshFinanceList(
+        query: String? = null,
+        filterConfiguration: FilterConfiguration? = null
+    ) = viewModelScope.launch {
         _state.update { it.copy(isLoading = true) }
 
         runCatching {
@@ -175,10 +185,12 @@ class FinanceListViewModel(
                 }
             }
 
+            val filteredItems = filterItemsByFilter(items, filterConfiguration)
+
             _state.update {
                 it.copy(
                     isLoading = false,
-                    finances = items
+                    finances = filteredItems
                 )
             }
 
@@ -191,6 +203,89 @@ class FinanceListViewModel(
             }
         }
     }
+
+    /**
+     * Filters the items by the provided filter configuration.
+     *
+     * @param items the list of items to be filtered
+     * @param filterConfiguration the filter configuration to be used for filtering
+     * @return the filtered list of items
+     */
+    private fun filterItemsByFilter(
+        items: List<Finance>,
+        filterConfiguration: FilterConfiguration?
+    ): List<Finance> {
+        if (filterConfiguration == null) {
+            return items
+        }
+
+        val filteredItems = items
+            .filter { finance ->
+                // Filter by finance type
+                val financeTypeCheck = when (filterConfiguration.type) {
+                    FinanceType.INCOME -> finance.category is FinanceCategory.Income
+                    FinanceType.EXPENSE -> finance.category is FinanceCategory.Expense
+                    null -> true
+                }
+
+                // Filter by category
+                val categoryCheck =
+                    if (filterConfiguration.enableCategoryFilter && filterConfiguration.type != null) {
+                        val categoryCheckList = mutableListOf<FinanceCategory>()
+
+                        // Add all selected categories to comparison/check list
+                        when (filterConfiguration.type) {
+                            FinanceType.INCOME -> {
+                                IncomeCategory.entries.forEachIndexed { index, category ->
+                                    if (filterConfiguration.selectedIncomeIndexes?.get(index) == true) {
+                                        categoryCheckList.add(FinanceCategory.Income(category))
+                                    }
+                                }
+                            }
+
+                            FinanceType.EXPENSE -> {
+                                ExpenseCategory.entries.forEachIndexed { index, category ->
+                                    if (filterConfiguration.selectedExpenseIndexes?.get(index) == true) {
+                                        categoryCheckList.add(FinanceCategory.Expense(category))
+                                    }
+                                }
+                            }
+                        }
+
+                        // Check if finance category is in comparison/check list
+                        if (categoryCheckList.isEmpty()) {
+                            true
+                        } else {
+                            categoryCheckList.contains(finance.category)
+                        }
+                    } else {
+                        true
+                    }
+
+
+                // Filter by amount, must be within the range
+                val amountCheck = if (filterConfiguration.enableAmountFilter &&
+                    filterConfiguration.miniSetAmount != null &&
+                    filterConfiguration.maxSetAmount != null
+                ) {
+                    finance.amount in filterConfiguration.miniSetAmount..filterConfiguration.maxSetAmount
+                } else {
+                    true
+                }
+
+                financeTypeCheck && categoryCheck && amountCheck
+            }
+
+        // Sort items by sort order
+        return when (filterConfiguration.sortOrder) {
+            SortOrder.AMOUNT_ASCENDING -> filteredItems.sortedBy { it.amount }
+            SortOrder.AMOUNT_DESCENDING -> filteredItems.sortedByDescending { it.amount }
+            SortOrder.NEWEST_FIRST -> filteredItems.sortedByDescending { it.createdAt }
+            SortOrder.OLDEST_FIRST -> filteredItems.sortedBy { it.createdAt }
+        }
+    }
+
+
 
     /**
      * Deletes a finance.
@@ -209,7 +304,10 @@ class FinanceListViewModel(
                             showDeleteDialog = false
                         )
                     }
-                    refreshFinanceList()
+
+                    refreshFinanceList(
+                        filterConfiguration = state.value.filterConfiguration
+                    )
                 }
 
                 is Result.Error -> {
