@@ -231,7 +231,7 @@ fun FinanceListView(
                 )
             },
             dismissButton = {
-                Button(
+                OutlinedButton(
                     onClick = {
                         onAction(
                             FinanceListActions.OnSelectedDeleteFinanceItem(
@@ -245,7 +245,7 @@ fun FinanceListView(
                 }
             },
             confirmButton = {
-                OutlinedButton(
+                Button(
                     onClick = {
                         state.selectedDeleteFinance?.let {
                             onAction(FinanceListActions.OnFinanceItemDelete(it))

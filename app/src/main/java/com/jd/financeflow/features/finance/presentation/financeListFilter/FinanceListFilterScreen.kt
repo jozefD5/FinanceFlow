@@ -1,6 +1,7 @@
 package com.jd.financeflow.features.finance.presentation.financeListFilter
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,10 +15,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -36,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import org.koin.androidx.compose.koinViewModel
@@ -113,15 +117,22 @@ fun FinanceListFilterView(
                 shape = RoundedCornerShape(
                     dimensionResource(R.dimen.padding_medium)
                 ),
+                border = BorderStroke(width = 0.dp, color = Color.Transparent),
+                colors = CardDefaults.outlinedCardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                ),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 ListItem(
+                    colors = ListItemDefaults.colors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    ),
                     headlineContent = {
                         Text(
                             text = stringResource(R.string.filter_sort_switch_label),
                             style = MaterialTheme.typography.titleMedium
                         )
-                    },
+                    }
                 )
 
                 Column {
@@ -154,12 +165,19 @@ fun FinanceListFilterView(
             // Type and category selection
             OutlinedCard(
                 shape = RoundedCornerShape(dimensionResource(R.dimen.padding_medium)),
+                border = BorderStroke(width = 0.dp, color = Color.Transparent),
+                colors = CardDefaults.outlinedCardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                ),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(
                     modifier = Modifier.padding(bottom = dimensionResource(R.dimen.padding_small))
                 ) {
                     ListItem(
+                        colors = ListItemDefaults.colors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                        ),
                         headlineContent = {
                             Text(
                                 text = stringResource(R.string.filter_category_switch_label),
@@ -244,6 +262,9 @@ fun FinanceListFilterView(
                                             index
                                         )
                                     ListItem(
+                                        colors = ListItemDefaults.colors(
+                                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                                        ),
                                         headlineContent = { Text(category.toUiText().asString()) },
                                         trailingContent = {
                                             Checkbox(
@@ -271,8 +292,17 @@ fun FinanceListFilterView(
             }
 
             // Amount section
-            OutlinedCard(modifier = Modifier.fillMaxWidth()) {
+            OutlinedCard(
+                border = BorderStroke(width = 0.dp, color = Color.Transparent),
+                colors = CardDefaults.outlinedCardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                ),
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 ListItem(
+                    colors = ListItemDefaults.colors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    ),
                     headlineContent = {
                         Text(
                             text = stringResource(R.string.filter_amount_switch_label),
@@ -371,7 +401,7 @@ fun FinanceListFilterView(
                         text = stringResource(R.string.filter_apply_button_label),
                         modifier = Modifier.padding(
                             vertical = dimensionResource(R.dimen.padding_small),
-                            horizontal = dimensionResource(R.dimen.padding_extra_large)
+                            horizontal = dimensionResource(R.dimen.padding_small)
                         )
                     )
                 }
@@ -403,7 +433,7 @@ fun FinanceListFilterViewPreview() {
                 state = FinanceListFilterState(
                     selectedTypeIndex = 1,
                     selectedType = FinanceType.INCOME,
-                    enableCategories = false,
+                    enableCategories = true,
                     enableAmountRange = true
                 ),
                 onAction = {},
