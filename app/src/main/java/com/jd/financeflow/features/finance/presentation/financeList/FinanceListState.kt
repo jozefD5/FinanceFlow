@@ -16,6 +16,7 @@ data class FinanceListState(
     val showDeleteDialog: Boolean = false,
     val selectedDeleteFinance: Finance? = null,
 
+    val isSearching: Boolean = false,
     val searchQuery: String = "",
     val finances: List<Finance> = emptyList()
 )

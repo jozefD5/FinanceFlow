@@ -86,6 +86,10 @@ class FinanceListViewModel(
                 }
             }
 
+            is FinanceListActions.OnEnableSearch -> {
+                _state.update { it.copy(isSearching = action.value) }
+            }
+
             is FinanceListActions.OnUpdateSearchQuery -> {
                 _state.update { it.copy(searchQuery = action.value) }
             }

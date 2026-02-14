@@ -1,5 +1,10 @@
 package com.jd.financeflow.features.finance.presentation.financeList
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,8 +14,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.FilterList
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -30,6 +37,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -109,10 +117,8 @@ fun FinanceListView(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    top = dimensionResource(R.dimen.padding_large),
-                    bottom = dimensionResource(R.dimen.padding_large),
-                    start = dimensionResource(R.dimen.padding_medium),
-                    end = dimensionResource(R.dimen.padding_medium)
+                    vertical = dimensionResource(R.dimen.padding_large),
+                    horizontal = dimensionResource(R.dimen.padding_medium),
                 )
         ) {
             SearchBar(
@@ -125,6 +131,24 @@ fun FinanceListView(
                         },
                         onSearch = {
                             onAction(FinanceListActions.OnSearch)
+                        },
+                        leadingIcon = {
+                            if (state.isSearching) {
+                                IconButton(onClick = {
+                                    onAction(
+                                        FinanceListActions.OnEnableSearch(
+                                            false
+                                        )
+                                    )
+                                }) {
+                                    Icon(
+                                        Icons.AutoMirrored.Filled.ArrowBackIos,
+                                        contentDescription = null
+                                    )
+                                }
+                            } else {
+                                Icon(Icons.Default.Search, contentDescription = null)
+                            }
                         },
                         trailingIcon = {
                             if (state.searchQuery.isNotBlank()) {
@@ -140,54 +164,69 @@ fun FinanceListView(
                                 }
                             }
                         },
-                        expanded = false,
-                        onExpandedChange = { },
+                        expanded = state.isSearching,
+                        onExpandedChange = { toggle ->
+                            onAction(FinanceListActions.OnEnableSearch(toggle))
+                        },
                         placeholder = { Text(stringResource(R.string.search_query_placeholder)) }
                     )
                 },
-                //colors = SearchBarDefaults.colors(containerColor = Color.Transparent),
                 modifier = Modifier
-                    .weight(0.9f)
-                    .alpha(0.8f)
+                    .weight(0.8f)
+                    .alpha(0.85f)
             )
 
-            IconButton(
-                onClick = {
-                    onAction(FinanceListActions.OnFilterClicked)
-                },
-                modifier = Modifier.weight(0.10f)
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.FilterList,
-                    contentDescription = null,
-                    tint = Color(0xFFFFFFFF)
-                )
-            }
 
-            IconButton(
-                onClick = {
-                    onAction(FinanceListActions.OnAddFinanceClicked)
-                },
-                modifier = Modifier.weight(0.10f)
+            AnimatedVisibility(
+                visible = !state.isSearching,
+                enter = fadeIn() + expandHorizontally(),
+                exit = fadeOut() + shrinkVertically(),
+                modifier = Modifier.weight(0.2f)
             ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = null,
-                    tint = Color(0xFFFFFFFF)
-                )
+                Row(
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    IconButton(
+                        onClick = {
+                            onAction(FinanceListActions.OnFilterClicked)
+                        },
+                        modifier = Modifier.weight(0.10f)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.FilterList,
+                            contentDescription = null,
+                            tint = Color(0xFFFFFFFF)
+                        )
+                    }
+
+                    IconButton(
+                        onClick = {
+                            onAction(FinanceListActions.OnAddFinanceClicked)
+                        },
+                        modifier = Modifier.weight(0.10f)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = null,
+                            tint = Color(0xFFFFFFFF)
+                        )
+                    }
+                }
             }
         }
 
         Surface(
-            color = MaterialTheme.colorScheme.background.copy(
-                alpha = 0.8f
-            ),
             shape = RoundedCornerShape(
                 topStart = dimensionResource(R.dimen.padding_extra_extra_large),
                 topEnd = dimensionResource(R.dimen.padding_extra_extra_large)
             ),
             modifier = Modifier
                 .fillMaxSize()
+                .onFocusEvent { focusState ->
+                    if (focusState.isFocused) {
+                        onAction(FinanceListActions.OnEnableSearch(false))
+                    }
+                }
         ) {
             FinanceList(
                 finances = state.finances,
@@ -307,7 +346,7 @@ fun FinanceListViewPreview() {
             FinanceListView(
                 state = FinanceListState(
                     finances = finances,
-                    searchQuery = "abc"
+                    searchQuery = "abc123"
                 ),
                 onAction = {},
                 modifier = Modifier.padding(innerPadding)

@@ -213,6 +213,7 @@ fun FinanceDetailsView(
             onClick = { onAction(FinanceDetailsActions.OnSaveFinance()) },
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(horizontal = dimensionResource(R.dimen.padding_large))
         ) {
             Text(
                 text = stringResource(R.string.save_button),
