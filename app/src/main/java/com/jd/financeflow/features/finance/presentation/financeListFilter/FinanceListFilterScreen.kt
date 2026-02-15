@@ -47,8 +47,11 @@ import org.koin.androidx.compose.koinViewModel
 import com.jd.financeflow.R
 import com.jd.financeflow.features.core.presentation.components.LargeDropdownMenu
 import com.jd.financeflow.features.core.presentation.components.formatCurrency
+import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
 import com.jd.financeflow.features.finance.domain.models.FilterConfiguration
+import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceType
+import com.jd.financeflow.features.finance.domain.models.IncomeCategory
 import com.jd.financeflow.features.finance.domain.models.SortOrder
 import com.jd.financeflow.features.finance.presentation.components.toUiText
 
@@ -206,32 +209,16 @@ fun FinanceListFilterView(
                                         vertical = dimensionResource(R.dimen.padding_small)
                                     )
                             ) {
-                                val totalButtons = FinanceType.entries.size + 1
-
-                                // "Both" Option
-                                SegmentedButton(
-                                    shape = SegmentedButtonDefaults.itemShape(
-                                        index = 0,
-                                        count = totalButtons
-                                    ),
-                                    selected = state.selectedTypeIndex == 0,
-                                    onClick = { onAction(FinanceListFilterActions.OnUpdateType(0)) },
-                                    label = { Text(stringResource(R.string.filter_type_button_both_label)) }
-                                )
-
                                 FinanceType.entries.forEachIndexed { index, value ->
-                                    val actualIndex = index + 1
                                     SegmentedButton(
                                         shape = SegmentedButtonDefaults.itemShape(
-                                            index = actualIndex,
-                                            count = totalButtons
+                                            index = index,
+                                            count = FinanceType.entries.size
                                         ),
-                                        selected = state.selectedTypeIndex == actualIndex,
+                                        selected = state.selectedTypeIndex == index,
                                         onClick = {
                                             onAction(
-                                                FinanceListFilterActions.OnUpdateType(
-                                                    actualIndex
-                                                )
+                                                FinanceListFilterActions.OnUpdateType(index)
                                             )
                                         },
                                         label = { Text(value.toUiText().asString()) }
@@ -240,7 +227,7 @@ fun FinanceListFilterView(
                             }
 
                             // Conditional Category List
-                            if (state.selectedTypeIndex > 0) {
+                            if (state.enableCategories) {
                                 HorizontalDivider(
                                     modifier = Modifier.padding(
                                         top = dimensionResource(R.dimen.padding_small),
@@ -248,10 +235,18 @@ fun FinanceListFilterView(
                                         end = dimensionResource(R.dimen.padding_large)
                                     )
                                 )
+                                val currentType = FinanceType.entries[state.selectedTypeIndex]
 
-                                val currentType = state.selectedType ?: FinanceType.EXPENSE
-                                val categories = if (currentType == FinanceType.INCOME)
-                                    state.categoryIncomeOptions else state.categoryExpenseOptions
+                                val categories = if (currentType == FinanceType.INCOME) {
+                                    IncomeCategory.entries.map { category ->
+                                        FinanceCategory.Income(category)
+                                    }
+                                } else {
+                                    ExpenseCategory.entries.map { category ->
+                                        FinanceCategory.Expense(category)
+                                    }
+                                }
+
                                 val selections = if (currentType == FinanceType.INCOME)
                                     state.selectedIncomeCategories else state.selectedExpenseCategories
 
@@ -431,8 +426,7 @@ fun FinanceListFilterViewPreview() {
         Scaffold { innerPadding ->
             FinanceListFilterView(
                 state = FinanceListFilterState(
-                    selectedTypeIndex = 1,
-                    selectedType = FinanceType.INCOME,
+                    selectedTypeIndex = 0,
                     enableCategories = true,
                     enableAmountRange = true
                 ),

@@ -2,8 +2,6 @@ package com.jd.financeflow.features.finance.presentation.financeListFilter
 
 import com.jd.financeflow.features.core.presentation.UiText
 import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
-import com.jd.financeflow.features.finance.domain.models.FinanceCategory
-import com.jd.financeflow.features.finance.domain.models.FinanceType
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
 
 data class FinanceListFilterState(
@@ -12,16 +10,7 @@ data class FinanceListFilterState(
 
     val selectedSortIndex: Int = 0,
     val selectedTypeIndex: Int = 0,
-    val selectedType: FinanceType? = null,
     val enableCategories: Boolean = false,
-
-    // Available income options to be presented in the UI
-    val categoryIncomeOptions: List<FinanceCategory> = IncomeCategory.entries.map {
-        FinanceCategory.Income(it)
-    },
-    val categoryExpenseOptions: List<FinanceCategory> = ExpenseCategory.entries.map {
-        FinanceCategory.Expense(it)
-    },
 
     // Selected options for each category, state of chack boxes.
     val selectedIncomeCategories: List<Boolean> = IncomeCategory.entries.map { true },

@@ -69,14 +69,14 @@ class FinanceListFilterViewModel(
                 }
             }
 
-            is FinanceListFilterActions.OnUpdateType -> {
-                updateSelectedType(action.index)
-            }
-
             is FinanceListFilterActions.OnEnableCategories -> {
                 _state.update {
                     it.copy(enableCategories = action.enable)
                 }
+            }
+
+            is FinanceListFilterActions.OnUpdateType -> {
+                updateSelectedType(action.index)
             }
 
             is FinanceListFilterActions.OnCategorySelected -> {
@@ -111,25 +111,8 @@ class FinanceListFilterViewModel(
      */
     private fun updateSelectedType(index: Int) {
         try {
-            if (index >= 0 && index <= FinanceType.entries.size + 1) {
-                val selectedType = try {
-                    FinanceType.entries[index - 1]
-                } catch (_: IndexOutOfBoundsException) {
-                    null
-                }
-
-                _state.update {
-                    it.copy(
-                        selectedTypeIndex = index,
-                        selectedType = selectedType
-                    )
-                }
-            } else {
-                _state.update {
-                    it.copy(
-                        error = DataError.Local.INVALID_ARGUMENT.toUiText()
-                    )
-                }
+            _state.update {
+                it.copy(selectedTypeIndex = index)
             }
         } catch (_: Exception) {
             _state.update {
@@ -185,19 +168,11 @@ class FinanceListFilterViewModel(
         config: FilterConfiguration
     ) {
         val currentState = state.value
-
-        val (selectedType, selectedTypeIndex) = if (config.type != null) {
-            Pair(
-                config.type,
-                config.type.ordinal + 1
-            )
-        } else {
-            Pair(null, 0)
-        }
-
+        val selectedTypeIndex = config.type?.ordinal ?: 0
 
         val selectedIncomeCategories =
             config.selectedIncomeIndexes ?: currentState.selectedIncomeCategories
+
         val selectedExpenseCategories =
             config.selectedExpenseIndexes ?: currentState.selectedExpenseCategories
 
@@ -213,7 +188,6 @@ class FinanceListFilterViewModel(
 
                 // Selected type and categories
                 enableCategories = config.enableCategoryFilter,
-                selectedType = selectedType,
                 selectedTypeIndex = selectedTypeIndex,
                 selectedIncomeCategories = selectedIncomeCategories,
                 selectedExpenseCategories = selectedExpenseCategories,
@@ -241,8 +215,6 @@ class FinanceListFilterViewModel(
 
         // Extract the values from the current state
         val sortOrder = SortOrder.entries[currentState.selectedSortIndex]
-        val type = currentState.selectedType
-
         val (miniAmount, maxAmount) = if (currentState.enableAmountRange) {
             Pair(
                 currentState.selectedAmountRangeMini.toDouble(),
@@ -255,10 +227,10 @@ class FinanceListFilterViewModel(
         callback.invoke(
             FilterConfiguration(
                 sortOrder = sortOrder,
-                type = type,
                 enableCategoryFilter = currentState.enableCategories,
                 selectedIncomeIndexes = currentState.selectedIncomeCategories,
                 selectedExpenseIndexes = currentState.selectedExpenseCategories,
+                type = FinanceType.entries[currentState.selectedTypeIndex],
                 enableAmountFilter = currentState.enableAmountRange,
                 miniSetAmount = miniAmount,
                 maxSetAmount = maxAmount
@@ -275,7 +247,6 @@ class FinanceListFilterViewModel(
             it.copy(
                 selectedSortIndex = 0,
                 selectedTypeIndex = 0,
-                selectedType = null,
                 enableCategories = false,
                 selectedIncomeCategories = IncomeCategory.entries.map { true },
                 selectedExpenseCategories = IncomeCategory.entries.map { true },

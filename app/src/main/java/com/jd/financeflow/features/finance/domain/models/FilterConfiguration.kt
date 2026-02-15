@@ -10,15 +10,15 @@ data class FilterConfiguration(
     // Sort order for the transactions
     val sortOrder: SortOrder = SortOrder.NEWEST_FIRST,
 
-    // Type of the transactions to be filtered
-    val type: FinanceType? = null,
-
     // Selected income and expense categories. Set both fields to null if no
     // categories are selected. Position of each element corresponds to category position of each
     // enum for the type of category (income or expense)
     val enableCategoryFilter: Boolean = false,
     val selectedIncomeIndexes: List<Boolean>? = null,
     val selectedExpenseIndexes: List<Boolean>? = null,
+
+    // Type of the transactions to be filtered
+    val type: FinanceType? = null,
 
     // Amount limits for the transactions to be filtered
     val enableAmountFilter: Boolean = false,

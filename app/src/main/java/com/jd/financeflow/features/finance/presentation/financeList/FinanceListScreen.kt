@@ -15,10 +15,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
+import androidx.compose.material.icons.automirrored.outlined.Sort
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.FilterList
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -176,7 +176,6 @@ fun FinanceListView(
                     .alpha(0.85f)
             )
 
-
             AnimatedVisibility(
                 visible = !state.isSearching,
                 enter = fadeIn() + expandHorizontally(),
@@ -184,16 +183,15 @@ fun FinanceListView(
                 modifier = Modifier.weight(0.2f)
             ) {
                 Row(
-                    horizontalArrangement = Arrangement.End
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     IconButton(
                         onClick = {
                             onAction(FinanceListActions.OnFilterClicked)
                         },
-                        modifier = Modifier.weight(0.10f)
                     ) {
                         Icon(
-                            imageVector = Icons.Outlined.FilterList,
+                            imageVector = Icons.AutoMirrored.Outlined.Sort,
                             contentDescription = null,
                             tint = Color(0xFFFFFFFF)
                         )
@@ -203,7 +201,6 @@ fun FinanceListView(
                         onClick = {
                             onAction(FinanceListActions.OnAddFinanceClicked)
                         },
-                        modifier = Modifier.weight(0.10f)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,
