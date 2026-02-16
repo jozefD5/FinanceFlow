@@ -1,5 +1,6 @@
 package com.jd.financeflow.features.finance.presentation.financeList
 
+import android.util.Log
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.SharingStarted
@@ -98,6 +99,24 @@ class FinanceListViewModel(
                 refreshFinanceList(query = state.value.searchQuery)
             }
 
+            is FinanceListActions.OnRefresh -> {
+                val currentState = state.value
+
+                // Refresh with current search query if any is available else refresh with current
+                // filter configuration
+                if (currentState.searchQuery.isNotBlank()) {
+                    refreshFinanceList(
+                        refresh = true,
+                        query = currentState.searchQuery,
+                    )
+                } else {
+                    refreshFinanceList(
+                        refresh = true,
+                        filterConfiguration = currentState.filterConfiguration
+                    )
+                }
+            }
+
             is FinanceListActions.OnUpdateFilterConfiguration -> {}
 
         }
@@ -130,7 +149,6 @@ class FinanceListViewModel(
      * @param config new filter configuration
      */
     private fun applyFilterConfiguration(config: FilterConfiguration?) = viewModelScope.launch {
-
         // Get maximum value of finances (+10%) or set to default value
         val highestAmount: Double = runCatching {
             when (val result = repository.getFinances()) {
@@ -214,6 +232,7 @@ class FinanceListViewModel(
 
         runCatching {
             val items = if (refresh) {
+                Log.i("FinanceListViewModel", "Refreshing finance list: refresh = true")
                 when (val result = repository.getFinances()) {
                     is Result.Success -> {
                         cachedFinances = result.data
@@ -231,17 +250,26 @@ class FinanceListViewModel(
                     }
                 }
             } else {
+                Log.i("FinanceListViewModel", "Refreshing finance list: refresh = false")
                 cachedFinances
             }
 
             // Filter items by query or filter configuration. If none are provided, use all items.
-            val filteredItems = if (query != null) {
+            val filteredItems = if (!query.isNullOrBlank()) {
+                Log.i("FinanceListViewModel", "Filtering finance list: query = $query")
                 filterItemsByQuery(items, query)
             } else if (filterConfiguration != null) {
+                Log.i(
+                    "FinanceListViewModel",
+                    "Filtering finance list: filterConfiguration = $filterConfiguration"
+                )
                 filterItemsByFilter(items, filterConfiguration)
             } else {
+                Log.i("FinanceListViewModel", "Filtering finance list: no filter")
                 items
             }
+
+            Log.i("FinanceListViewModel", "Filtered finance list: ${filteredItems.size}")
 
             _state.update {
                 it.copy(
@@ -257,6 +285,24 @@ class FinanceListViewModel(
                     error = DataError.Local.UNKNOWN.toUiText()
                 )
             }
+        }
+    }
+
+    /**
+     * Filters the items by the provided query.
+     *
+     * @param items the list of items to be filtered
+     * @param query the query to be used for filtering
+     * @return the filtered list of items
+     */
+    private fun filterItemsByQuery(items: List<Finance>, query: String?): List<Finance> {
+        if (query.isNullOrBlank()) {
+            return items
+        }
+
+        return items.filter { finance ->
+            finance.title.contains(query, ignoreCase = true) ||
+                    finance.description?.contains(query, ignoreCase = true) == true
         }
     }
 
@@ -334,28 +380,10 @@ class FinanceListViewModel(
 
         // Sort items by sort order
         return when (filterConfiguration.sortOrder) {
-            SortOrder.AMOUNT_ASCENDING -> filteredItems.sortedBy { it.amount }
-            SortOrder.AMOUNT_DESCENDING -> filteredItems.sortedByDescending { it.amount }
-            SortOrder.NEWEST_FIRST -> filteredItems.sortedByDescending { it.createdAt }
-            SortOrder.OLDEST_FIRST -> filteredItems.sortedBy { it.createdAt }
-        }
-    }
-
-    /**
-     * Filters the items by the provided query.
-     *
-     * @param items the list of items to be filtered
-     * @param query the query to be used for filtering
-     * @return the filtered list of items
-     */
-    private fun filterItemsByQuery(items: List<Finance>, query: String?): List<Finance> {
-        if (query.isNullOrBlank()) {
-            return items
-        }
-
-        return items.filter { finance ->
-            finance.title.contains(query, ignoreCase = true) ||
-                    finance.description?.contains(query, ignoreCase = true) == true
+            SortOrder.AMOUNT_ASCENDING -> filteredItems.sortedWith(compareBy({ it.amount }, { it.id }))
+            SortOrder.AMOUNT_DESCENDING -> filteredItems.sortedWith(compareByDescending<Finance> { it.amount }.thenBy { it.id })
+            SortOrder.NEWEST_FIRST -> filteredItems.sortedWith(compareByDescending<Finance> { it.createdAt }.thenBy { it.id })
+            SortOrder.OLDEST_FIRST -> filteredItems.sortedWith(compareBy<Finance> { it.createdAt }.thenBy { it.id })
         }
     }
 
@@ -366,6 +394,8 @@ class FinanceListViewModel(
      */
     private fun deleteFinance(finance: Finance) = viewModelScope.launch {
         _state.update { it.copy(isLoading = true) }
+
+        val currentState = state.value
 
         runCatching {
             when (val result = repository.deleteFinance(finance)) {
@@ -379,7 +409,7 @@ class FinanceListViewModel(
 
                     refreshFinanceList(
                         refresh = true,
-                        filterConfiguration = state.value.filterConfiguration
+                        filterConfiguration = currentState.filterConfiguration
                     )
                 }
 

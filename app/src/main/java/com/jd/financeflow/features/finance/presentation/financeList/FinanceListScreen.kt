@@ -1,5 +1,6 @@
 package com.jd.financeflow.features.finance.presentation.financeList
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
@@ -34,6 +35,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -42,11 +44,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import org.koin.androidx.compose.koinViewModel
 
 import com.jd.financeflow.R
+import com.jd.financeflow.features.core.domain.DataError
 import com.jd.financeflow.features.core.presentation.components.ErrorDialog
+import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
 import com.jd.financeflow.features.finance.domain.models.Finance
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
@@ -74,6 +82,11 @@ fun FinanceListScreen(
     viewModel: FinanceListViewModel = koinViewModel()
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
+
+    LifecycleResumeEffect(Unit) {
+        viewModel.onAction(FinanceListActions.OnRefresh)
+        onPauseOrDispose {  }
+    }
 
     FinanceListView(
         state = state.value,
@@ -343,7 +356,8 @@ fun FinanceListViewPreview() {
             FinanceListView(
                 state = FinanceListState(
                     finances = finances,
-                    searchQuery = "abc123"
+                    searchQuery = "abc123",
+                    //error = DataError.Local.UNKNOWN.toUiText()
                 ),
                 onAction = {},
                 modifier = Modifier.padding(innerPadding)
