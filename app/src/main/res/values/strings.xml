@@ -43,10 +43,10 @@
     <string name="finance_category_education">Education</string>
     <string name="finance_category_other">Other</string>
 
-    <string name="sort_order_amount_ascending">Amount ascending</string>
-    <string name="sort_order_amount_descending">Amount descending</string>
     <string name="sort_order_newest_first">Newest first</string>
     <string name="sort_order_oldest_first">Oldest first</string>
+    <string name="sort_order_amount_ascending">Lowest amount first</string>
+    <string name="sort_order_amount_descending">Highest amount first</string>
 
     <string name="add_finance_title_label">Title/Name</string>
     <string name="add_finance_title_description">Description</string>

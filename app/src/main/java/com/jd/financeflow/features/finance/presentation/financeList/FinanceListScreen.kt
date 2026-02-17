@@ -1,6 +1,5 @@
 package com.jd.financeflow.features.finance.presentation.financeList
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
@@ -33,9 +32,9 @@ import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SearchBarState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -44,17 +43,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import org.koin.androidx.compose.koinViewModel
 
 import com.jd.financeflow.R
-import com.jd.financeflow.features.core.domain.DataError
 import com.jd.financeflow.features.core.presentation.components.ErrorDialog
-import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
 import com.jd.financeflow.features.finance.domain.models.Finance
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
@@ -85,7 +79,7 @@ fun FinanceListScreen(
 
     LifecycleResumeEffect(Unit) {
         viewModel.onAction(FinanceListActions.OnRefresh)
-        onPauseOrDispose {  }
+        onPauseOrDispose { }
     }
 
     FinanceListView(
@@ -118,144 +112,151 @@ fun FinanceListView(
     modifier: Modifier = Modifier,
     searchBarState: SearchBarState = rememberSearchBarState()
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
+    PullToRefreshBox(
+        isRefreshing = state.isLoading,
+        onRefresh = { onAction(FinanceListActions.OnRefresh) },
         modifier = modifier
             .background(primaryLightMediumContrast)
             .fillMaxWidth()
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
-            modifier = Modifier
+        Column(
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
+            modifier = modifier
                 .fillMaxWidth()
-                .padding(
-                    vertical = dimensionResource(R.dimen.padding_large),
-                    horizontal = dimensionResource(R.dimen.padding_medium),
-                )
         ) {
-            SearchBar(
-                state = searchBarState,
-                inputField = {
-                    SearchBarDefaults.InputField(
-                        query = state.searchQuery,
-                        onQueryChange = {
-                            onAction(FinanceListActions.OnUpdateSearchQuery(it))
-                        },
-                        onSearch = {
-                            onAction(FinanceListActions.OnSearch)
-                        },
-                        leadingIcon = {
-                            if (state.isSearching) {
-                                IconButton(onClick = {
-                                    onAction(
-                                        FinanceListActions.OnEnableSearch(
-                                            false
-                                        )
-                                    )
-                                }) {
-                                    Icon(
-                                        Icons.AutoMirrored.Filled.ArrowBackIos,
-                                        contentDescription = null
-                                    )
-                                }
-                            } else {
-                                Icon(Icons.Default.Search, contentDescription = null)
-                            }
-                        },
-                        trailingIcon = {
-                            if (state.searchQuery.isNotBlank()) {
-                                IconButton(
-                                    onClick = {
-                                        onAction(FinanceListActions.OnUpdateSearchQuery(""))
-                                    }
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Clear,
-                                        contentDescription = null,
-                                    )
-                                }
-                            }
-                        },
-                        expanded = state.isSearching,
-                        onExpandedChange = { toggle ->
-                            onAction(FinanceListActions.OnEnableSearch(toggle))
-                        },
-                        placeholder = { Text(stringResource(R.string.search_query_placeholder)) }
-                    )
-                },
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
                 modifier = Modifier
-                    .weight(0.8f)
-                    .alpha(0.85f)
-            )
-
-            AnimatedVisibility(
-                visible = !state.isSearching,
-                enter = fadeIn() + expandHorizontally(),
-                exit = fadeOut() + shrinkVertically(),
-                modifier = Modifier.weight(0.2f)
+                    .fillMaxWidth()
+                    .padding(
+                        vertical = dimensionResource(R.dimen.padding_large),
+                        horizontal = dimensionResource(R.dimen.padding_medium),
+                    )
             ) {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    IconButton(
-                        onClick = {
-                            onAction(FinanceListActions.OnFilterClicked)
-                        },
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.Sort,
-                            contentDescription = null,
-                            tint = Color(0xFFFFFFFF)
+                SearchBar(
+                    state = searchBarState,
+                    inputField = {
+                        SearchBarDefaults.InputField(
+                            query = state.searchQuery,
+                            onQueryChange = {
+                                onAction(FinanceListActions.OnUpdateSearchQuery(it))
+                            },
+                            onSearch = {
+                                onAction(FinanceListActions.OnSearch)
+                            },
+                            leadingIcon = {
+                                if (state.isSearching) {
+                                    IconButton(onClick = {
+                                        onAction(
+                                            FinanceListActions.OnEnableSearch(
+                                                false
+                                            )
+                                        )
+                                    }) {
+                                        Icon(
+                                            Icons.AutoMirrored.Filled.ArrowBackIos,
+                                            contentDescription = null
+                                        )
+                                    }
+                                } else {
+                                    Icon(Icons.Default.Search, contentDescription = null)
+                                }
+                            },
+                            trailingIcon = {
+                                if (state.searchQuery.isNotBlank()) {
+                                    IconButton(
+                                        onClick = {
+                                            onAction(FinanceListActions.OnUpdateSearchQuery(""))
+                                        }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Clear,
+                                            contentDescription = null,
+                                        )
+                                    }
+                                }
+                            },
+                            expanded = state.isSearching,
+                            onExpandedChange = { toggle ->
+                                onAction(FinanceListActions.OnEnableSearch(toggle))
+                            },
+                            placeholder = { Text(stringResource(R.string.search_query_placeholder)) }
                         )
-                    }
+                    },
+                    modifier = Modifier
+                        .weight(0.8f)
+                        .alpha(0.85f)
+                )
 
-                    IconButton(
-                        onClick = {
-                            onAction(FinanceListActions.OnAddFinanceClicked)
-                        },
+                AnimatedVisibility(
+                    visible = !state.isSearching,
+                    enter = fadeIn() + expandHorizontally(),
+                    exit = fadeOut() + shrinkVertically(),
+                    modifier = Modifier.weight(0.2f)
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = null,
-                            tint = Color(0xFFFFFFFF)
-                        )
+                        IconButton(
+                            onClick = {
+                                onAction(FinanceListActions.OnFilterClicked)
+                            },
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Outlined.Sort,
+                                contentDescription = null,
+                                tint = Color(0xFFFFFFFF)
+                            )
+                        }
+
+                        IconButton(
+                            onClick = {
+                                onAction(FinanceListActions.OnAddFinanceClicked)
+                            },
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = null,
+                                tint = Color(0xFFFFFFFF)
+                            )
+                        }
                     }
                 }
             }
-        }
 
-        Surface(
-            shape = RoundedCornerShape(
-                topStart = dimensionResource(R.dimen.padding_extra_extra_large),
-                topEnd = dimensionResource(R.dimen.padding_extra_extra_large)
-            ),
-            modifier = Modifier
-                .fillMaxSize()
-                .onFocusEvent { focusState ->
-                    if (focusState.isFocused) {
-                        onAction(FinanceListActions.OnEnableSearch(false))
-                    }
-                }
-        ) {
-            FinanceList(
-                finances = state.finances,
-                currencyCode = state.currencyCode,
-                onItemClick = {
-                    onAction(FinanceListActions.OnFinanceItemClicked(it.id))
-                },
-                onItemLongClick = {
-                    onAction(
-                        FinanceListActions.OnSelectedDeleteFinanceItem(
-                            shoeDialog = true,
-                            finance = it
-                        )
-                    )
-                },
+            Surface(
+                shape = RoundedCornerShape(
+                    topStart = dimensionResource(R.dimen.padding_extra_extra_large),
+                    topEnd = dimensionResource(R.dimen.padding_extra_extra_large)
+                ),
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(dimensionResource(R.dimen.padding_large))
-            )
+                    .fillMaxSize()
+                    .onFocusEvent { focusState ->
+                        if (focusState.isFocused) {
+                            onAction(FinanceListActions.OnEnableSearch(false))
+                        }
+                    }
+            ) {
+                FinanceList(
+                    finances = state.finances,
+                    currencyCode = state.currencyCode,
+                    onItemClick = {
+                        onAction(FinanceListActions.OnFinanceItemClicked(it.id))
+                    },
+                    onItemLongClick = {
+                        onAction(
+                            FinanceListActions.OnSelectedDeleteFinanceItem(
+                                shoeDialog = true,
+                                finance = it
+                            )
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(dimensionResource(R.dimen.padding_large))
+                )
+            }
         }
     }
 
@@ -355,6 +356,8 @@ fun FinanceListViewPreview() {
         Scaffold { innerPadding ->
             FinanceListView(
                 state = FinanceListState(
+                    isLoading = true,
+                    currencyCode = "EUR",
                     finances = finances,
                     searchQuery = "abc123",
                     //error = DataError.Local.UNKNOWN.toUiText()

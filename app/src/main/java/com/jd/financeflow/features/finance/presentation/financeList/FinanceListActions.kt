@@ -16,9 +16,9 @@ sealed interface FinanceListActions {
         val shoeDialog: Boolean,
         val finance: Finance?
     ) : FinanceListActions
+
     data class OnEnableSearch(val value: Boolean) : FinanceListActions
     data class OnUpdateSearchQuery(val value: String) : FinanceListActions
     data object OnSearch : FinanceListActions
     data object OnRefresh : FinanceListActions
-    data class OnUpdateFilterConfiguration(val value: FilterConfiguration?) : FinanceListActions
 }

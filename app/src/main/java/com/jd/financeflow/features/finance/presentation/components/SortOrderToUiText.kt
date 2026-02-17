@@ -22,9 +22,9 @@ fun SortOrder.toUiText(): UiText {
  */
 fun SortOrder.toStringResourceId(): Int {
     return when (this) {
-        SortOrder.AMOUNT_ASCENDING -> R.string.sort_order_amount_ascending
-        SortOrder.AMOUNT_DESCENDING -> R.string.sort_order_amount_descending
         SortOrder.NEWEST_FIRST -> R.string.sort_order_newest_first
         SortOrder.OLDEST_FIRST -> R.string.sort_order_oldest_first
+        SortOrder.AMOUNT_ASCENDING -> R.string.sort_order_amount_ascending
+        SortOrder.AMOUNT_DESCENDING -> R.string.sort_order_amount_descending
     }
 }
