@@ -55,11 +55,14 @@ fun FinanceList(
 @Preview
 @Composable
 fun FinanceListPreview() {
+    val currentUnixTime = System.currentTimeMillis()
+
     val finances = listOf(
         Finance(
             title = "Salary",
             description = "Monthly salary",
             amount = 10_000.0,
+            startDate = currentUnixTime,
             interval = FinanceInterval.Monthly,
             category = FinanceCategory.Income(IncomeCategory.Salary),
         ),
@@ -67,6 +70,7 @@ fun FinanceListPreview() {
             title = "Bonus",
             description = "Work bonus",
             amount = 5_000.0,
+            startDate = currentUnixTime,
             interval = FinanceInterval.Quarterly,
             category = FinanceCategory.Income(IncomeCategory.Bonus)
         ),
@@ -74,6 +78,7 @@ fun FinanceListPreview() {
             title = "Investment",
             description = "",
             amount = 1000.0,
+            startDate = currentUnixTime,
             interval = FinanceInterval.Quarterly,
             category = FinanceCategory.Income(IncomeCategory.Investment)
         ),
@@ -81,6 +86,7 @@ fun FinanceListPreview() {
             title = "Housing",
             description = "Rent",
             amount = 500.0,
+            startDate = currentUnixTime,
             interval = FinanceInterval.Monthly,
             category = FinanceCategory.Expense(ExpenseCategory.Housing)
         )

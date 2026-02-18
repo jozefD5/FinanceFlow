@@ -15,6 +15,7 @@ data class FinanceDetailsState(
     val title: String = "",
     val description: String = "",
     val amount: String = "",
+    val startDate: Long = System.currentTimeMillis(),
     val financeIntervalIndex: Int = 0,
     val financeTypeIndex: Int = 0,
     val financeCategoryIndex: Int = 0,

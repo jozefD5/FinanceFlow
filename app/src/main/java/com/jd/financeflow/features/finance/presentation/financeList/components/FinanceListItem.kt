@@ -17,6 +17,7 @@ import com.jd.financeflow.features.finance.domain.models.Finance
 import com.jd.financeflow.features.finance.domain.models.FinanceInterval
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
+import java.lang.System
 
 /**
  * Displays a finance item with the given information as list item.
@@ -88,6 +89,7 @@ fun FinanceListItemPreview() {
                 description = "Monthly salary",
                 amount = 1000.0,
                 interval = FinanceInterval.Monthly,
+                startDate = System.currentTimeMillis(),
                 category = FinanceCategory.Income(IncomeCategory.Salary)
             ),
             onClicked = {},

@@ -53,6 +53,8 @@
     <string name="add_finance_title_amount">Amount</string>
     <string name="add_finance_title_interval">Interval</string>
     <string name="add_finance_title_category">Category</string>
+    <string name="add_finance_title_start_date">Date</string>
+    <string name="add_finance_title_start_date_placeholder">Select date</string>
 
     <string name="finance_interval_once">Once</string>
     <string name="finance_interval_daily">Daily"</string>
@@ -72,7 +74,6 @@
     <string name="filter_max_range_label">Max</string>
     <string name="filter_reset_button_label">Reset</string>
     <string name="filter_apply_button_label">Apply filter</string>
-
 
 
 </resources>

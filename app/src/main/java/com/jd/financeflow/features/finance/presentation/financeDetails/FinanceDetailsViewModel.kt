@@ -89,6 +89,14 @@ class FinanceDetailsViewModel(
                 validateAmount(action.amount)
             }
 
+            is FinanceDetailsActions.OnUpdateStartDate -> {
+                _state.update {
+                    it.copy(
+                        startDate = action.startDate
+                    )
+                }
+            }
+
             is FinanceDetailsActions.OnUpdateFinanceInterval -> {
                 _state.update {
                     it.copy(
@@ -282,16 +290,18 @@ class FinanceDetailsViewModel(
      * @param onSuccessAction action to be performed on success if not null
      */
     private fun saveFinance(onSuccessAction: (() -> Unit)? = null) = viewModelScope.launch {
+        val currentState = _state.value
+
         var invalidTitle = false
         var invalidAmount = false
 
         _state.update { it.copy(isLoading = true) }
 
         // Verify values
-        if (_state.value.title.isBlank()) {
+        if (currentState.title.isBlank()) {
             invalidTitle = true
         }
-        if (_state.value.amount.isBlank()) {
+        if (currentState.amount.isBlank()) {
             invalidAmount = true
         }
 
@@ -308,23 +318,25 @@ class FinanceDetailsViewModel(
         }
 
         runCatching {
-            val category = if (_state.value.financeTypeIndex == FinanceType.INCOME.ordinal) {
+            val category = if (currentState.financeTypeIndex == FinanceType.INCOME.ordinal) {
                 FinanceCategory.Income(
-                    IncomeCategory.entries[_state.value.financeCategoryIndex]
+                    IncomeCategory.entries[currentState.financeCategoryIndex]
                 )
             } else {
                 FinanceCategory.Expense(
-                    ExpenseCategory.entries[_state.value.financeCategoryIndex]
+                    ExpenseCategory.entries[currentState.financeCategoryIndex]
                 )
             }
 
             val finance = Finance(
                 id = financeId ?: UUID.randomUUID().hashCode(),
-                title = _state.value.title,
-                description = _state.value.description,
-                amount = _state.value.amount.toDouble(),
-                interval = FinanceInterval.entries[_state.value.financeIntervalIndex],
-                category = category
+                title = currentState.title,
+                description = currentState.description,
+                amount = currentState.amount.toDouble(),
+                startDate = currentState.startDate,
+                interval = FinanceInterval.entries[currentState.financeIntervalIndex],
+                category = category,
+                createdAt = System.currentTimeMillis()
             )
 
             val result = if (financeId == null) {

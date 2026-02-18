@@ -14,6 +14,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -25,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalFocusManager
@@ -45,6 +47,7 @@ import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceType
+import com.jd.financeflow.features.finance.presentation.financeDetails.components.DataPickerField
 
 /**
  * Screen for adding or modifying finance transaction.
@@ -59,9 +62,13 @@ fun FinanceDetailsScreen(
     viewModel: FinanceDetailsViewModel = koinViewModel(),
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = state.value.startDate
+    )
 
     FinanceDetailsView(
         state = state.value,
+        datePickerState = datePickerState,
         onAction = { action ->
             val actualAction = when (action) {
                 is FinanceDetailsActions.OnSaveFinance -> action
@@ -80,6 +87,7 @@ fun FinanceDetailsScreen(
  * View for adding or modifying finance transaction.
  *
  * @param state state to be displayed
+ * @param datePickerState date picker state to be used
  * @param onAction action to be performed
  * @param modifier modifier to be applied
  * @param focusManager focus manager to be used
@@ -88,6 +96,7 @@ fun FinanceDetailsScreen(
 @Composable
 fun FinanceDetailsView(
     state: FinanceDetailsState,
+    datePickerState: DatePickerState,
     onAction: (FinanceDetailsActions) -> Unit,
     modifier: Modifier = Modifier,
     focusManager: FocusManager = LocalFocusManager.current,
@@ -178,6 +187,19 @@ fun FinanceDetailsView(
                     .fillMaxWidth()
             )
 
+
+            DataPickerField(
+                onValueChange = { selectedDate ->
+                    if (selectedDate != null) {
+                        onAction(FinanceDetailsActions.OnUpdateStartDate(selectedDate))
+                    }
+                },
+                label = stringResource(R.string.add_finance_title_start_date),
+                placeholder = stringResource(R.string.add_finance_title_start_date_placeholder),
+                datePickerState = datePickerState
+            )
+
+
             LargeDropdownMenu(
                 label = stringResource(R.string.add_finance_title_interval),
                 selectedIndex = state.financeIntervalIndex,
@@ -234,6 +256,7 @@ fun FinanceDetailsViewPreview() {
                 state = FinanceDetailsState(
                     error = DataError.Local.UNKNOWN.toUiText(),
                 ),
+                datePickerState = rememberDatePickerState(),
                 onAction = {},
                 modifier = Modifier
                     .fillMaxSize()

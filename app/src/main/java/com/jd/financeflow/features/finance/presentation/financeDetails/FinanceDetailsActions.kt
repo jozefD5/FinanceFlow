@@ -9,6 +9,7 @@ sealed interface FinanceDetailsActions {
     data class OnUpdateTitle(val title: String) : FinanceDetailsActions
     data class OnUpdateDescription(val description: String) : FinanceDetailsActions
     data class OnUpdateAmount(val amount: String) : FinanceDetailsActions
+    data class OnUpdateStartDate(val startDate: Long) : FinanceDetailsActions
     data class OnUpdateFinanceInterval(val financeIntervalIndex: Int) : FinanceDetailsActions
     data class OnUpdateFinanceType(val financeTypeIndex: Int) : FinanceDetailsActions
     data class OnUpdateFinanceCategory(val financeCategoryIndex: Int) : FinanceDetailsActions
