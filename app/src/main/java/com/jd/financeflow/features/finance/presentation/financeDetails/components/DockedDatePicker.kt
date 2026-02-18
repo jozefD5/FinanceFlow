@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
@@ -28,8 +29,10 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.Popup
 import com.jd.financeflow.R
+import com.jd.financeflow.ui.theme.FinanceFlowTheme
 
 /**
  * A composable that displays a date picker field.
@@ -49,7 +52,7 @@ fun DataPickerField(
     placeholder: String? = null,
     datePickerState: DatePickerState = rememberDatePickerState()
 ) {
-    var showDatePicker by remember { mutableStateOf(false) }
+    var showDatePicker by remember { mutableStateOf(true) }
 
     val selectedDate = datePickerState.selectedDateMillis?.let {
         convertMillisToDate(it)
@@ -80,22 +83,18 @@ fun DataPickerField(
         )
 
         if (showDatePicker) {
-            Popup(
-                onDismissRequest = { showDatePicker = true },
-                alignment = Alignment.TopStart
+            Dialog(
+                onDismissRequest = { showDatePicker = false },
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .offset(y = 64.dp)
-                        .shadow(elevation = 4.dp)
-                        .background(MaterialTheme.colorScheme.surface)
-                        .padding(16.dp)
-                ) {
-                    DatePicker(
-                        state = datePickerState,
-                        showModeToggle = false,
-                    )
+                FinanceFlowTheme {
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                    ) {
+                        DatePicker(
+                            state = datePickerState,
+                            showModeToggle = false,
+                        )
+                    }
                 }
             }
         }
