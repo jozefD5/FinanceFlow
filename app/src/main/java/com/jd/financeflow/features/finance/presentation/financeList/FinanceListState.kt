@@ -10,12 +10,14 @@ import com.jd.financeflow.features.finance.domain.models.Finance
 data class FinanceListState(
     val isLoading: Boolean = false,
     val error: UiText? = null,
+
     val currencyCode: String = "EUR",
     val filterConfiguration: FilterConfiguration? = null,
 
     val showDeleteDialog: Boolean = false,
     val selectedDeleteFinance: Finance? = null,
 
+    val isSearching: Boolean = false,
     val searchQuery: String = "",
-    val finances: List<Finance> = emptyList(),
+    val finances: List<Finance> = emptyList()
 )

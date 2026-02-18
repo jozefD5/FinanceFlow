@@ -1,9 +1,7 @@
 package com.jd.financeflow.features.finance.presentation.financeList.components
 
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Image
-import androidx.compose.material3.Icon
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -11,17 +9,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 
+import com.jd.financeflow.features.core.presentation.components.CircleInitialAvatar
 import com.jd.financeflow.features.core.presentation.components.formatCurrency
 import com.jd.financeflow.features.finance.domain.models.Finance
 import com.jd.financeflow.features.finance.domain.models.FinanceInterval
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
-
-private val incomeColors = Color(0xFF308C30)
-private val expenseColors = Color(0xFFAF2222)
 
 /**
  * Displays a finance item with the given information as list item.
@@ -32,6 +27,7 @@ private val expenseColors = Color(0xFFAF2222)
  * @param modifier the modifier to apply to the item
  * @param currencyCode the currency code to use e.g. EUR for Euro or USD for US Dollar
  */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun FinanceListItem(
     finance: Finance,
@@ -46,8 +42,8 @@ fun FinanceListItem(
     }
 
     val amountColor = when (finance.category) {
-        is FinanceCategory.Income -> incomeColors
-        is FinanceCategory.Expense -> expenseColors
+        is FinanceCategory.Income -> MaterialTheme.colorScheme.primary
+        is FinanceCategory.Expense -> MaterialTheme.colorScheme.error
     }
 
     ListItem(
@@ -55,9 +51,7 @@ fun FinanceListItem(
         headlineContent = {
             Text(
                 text = finance.title,
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    fontWeight = FontWeight.Bold
-                )
+                style = MaterialTheme.typography.titleMediumEmphasized
             )
         },
         supportingContent = {
@@ -67,16 +61,12 @@ fun FinanceListItem(
             )
         },
         leadingContent = {
-            Icon(
-                imageVector = Icons.Default.Image,
-                contentDescription = null,
-            )
+            CircleInitialAvatar(name = finance.title)
         },
         trailingContent = {
             Text(
                 text = "$amountSign ${formatCurrency(value = finance.amount, code = currencyCode)}",
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleMediumEmphasized.copy(
                     color = amountColor
                 )
             )

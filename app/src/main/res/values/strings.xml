@@ -43,10 +43,10 @@
     <string name="finance_category_education">Education</string>
     <string name="finance_category_other">Other</string>
 
-    <string name="sort_order_ascending">Ascending</string>
-    <string name="sort_order_descending">Descending</string>
     <string name="sort_order_newest_first">Newest first</string>
     <string name="sort_order_oldest_first">Oldest first</string>
+    <string name="sort_order_amount_ascending">Lowest amount first</string>
+    <string name="sort_order_amount_descending">Highest amount first</string>
 
     <string name="add_finance_title_label">Title/Name</string>
     <string name="add_finance_title_description">Description</string>
@@ -66,7 +66,6 @@
 
     <string name="filter_type_both_note">Select Income or Expense to filter by specific categories</string>
     <string name="filter_sort_switch_label">Sort by</string>
-    <string name="filter_type_button_both_label">Both</string>
     <string name="filter_category_switch_label">Category</string>
     <string name="filter_amount_switch_label">Amount</string>
     <string name="filter_mini_range_label">Mini</string>

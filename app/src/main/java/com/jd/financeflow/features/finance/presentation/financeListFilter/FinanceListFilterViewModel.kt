@@ -1,5 +1,6 @@
 package com.jd.financeflow.features.finance.presentation.financeListFilter
 
+import android.util.Log
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.SharingStarted
@@ -16,6 +17,8 @@ import com.jd.financeflow.features.finance.domain.models.FinanceType
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
 import com.jd.financeflow.features.finance.domain.models.SortOrder
 
+private const val TAG = "FinanceListFilterViewModel"
+
 /**
  * View model for the finance list filter screen.
  *
@@ -26,9 +29,7 @@ class FinanceListFilterViewModel(
     private val configuration: FilterConfiguration? = null
 ) : ViewModel() {
     private val _state = MutableStateFlow(
-        FinanceListFilterState(
-            currencyCode = currencyCode,
-        )
+        FinanceListFilterState(currencyCode = currencyCode)
     )
     val state = _state
         .onStart {
@@ -69,14 +70,14 @@ class FinanceListFilterViewModel(
                 }
             }
 
-            is FinanceListFilterActions.OnUpdateType -> {
-                updateSelectedType(action.index)
-            }
-
             is FinanceListFilterActions.OnEnableCategories -> {
                 _state.update {
                     it.copy(enableCategories = action.enable)
                 }
+            }
+
+            is FinanceListFilterActions.OnUpdateType -> {
+                updateSelectedType(action.index)
             }
 
             is FinanceListFilterActions.OnCategorySelected -> {
@@ -103,77 +104,6 @@ class FinanceListFilterViewModel(
         }
     }
 
-
-    /**
-     * Updates the selected type in the state.
-     *
-     * @param index The index of the selected type.
-     */
-    private fun updateSelectedType(index: Int) {
-        try {
-            if (index >= 0 && index <= FinanceType.entries.size + 1) {
-                val selectedType = try {
-                    FinanceType.entries[index - 1]
-                } catch (_: IndexOutOfBoundsException) {
-                    null
-                }
-
-                _state.update {
-                    it.copy(
-                        selectedTypeIndex = index,
-                        selectedType = selectedType
-                    )
-                }
-            } else {
-                _state.update {
-                    it.copy(
-                        error = DataError.Local.INVALID_ARGUMENT.toUiText()
-                    )
-                }
-            }
-        } catch (_: Exception) {
-            _state.update {
-                it.copy(
-                    error = DataError.Local.UNKNOWN.toUiText()
-                )
-            }
-        }
-    }
-
-    private fun updateSelectedCategory(
-        financeType: FinanceType,
-        index: Int
-    ) {
-        try {
-            when (financeType) {
-                FinanceType.INCOME -> {
-                    val selectedOptions = _state.value.selectedIncomeCategories.toMutableList()
-                    selectedOptions[index] = !selectedOptions[index]
-
-                    _state.update {
-                        it.copy(selectedIncomeCategories = selectedOptions)
-                    }
-                }
-
-                FinanceType.EXPENSE -> {
-                    val selectedOptions =
-                        _state.value.selectedExpenseCategories.toMutableList()
-                    selectedOptions[index] = !selectedOptions[index]
-
-                    _state.update {
-                        it.copy(selectedExpenseCategories = selectedOptions)
-                    }
-                }
-            }
-        } catch (_: Exception) {
-            _state.update {
-                it.copy(
-                    error = DataError.Local.UNKNOWN.toUiText()
-                )
-            }
-        }
-    }
-
     /**
      * Applies the initial configuration to the state.
      *
@@ -184,20 +114,12 @@ class FinanceListFilterViewModel(
         currencyCode: String,
         config: FilterConfiguration
     ) {
-        val currentState = state.value
-
-        val (selectedType, selectedTypeIndex) = if (config.type != null) {
-            Pair(
-                config.type,
-                config.type.ordinal + 1
-            )
-        } else {
-            Pair(null, 0)
-        }
-
+        val currentState = _state.value
+        val selectedTypeIndex = config.type?.ordinal ?: 0
 
         val selectedIncomeCategories =
             config.selectedIncomeIndexes ?: currentState.selectedIncomeCategories
+
         val selectedExpenseCategories =
             config.selectedExpenseIndexes ?: currentState.selectedExpenseCategories
 
@@ -213,7 +135,6 @@ class FinanceListFilterViewModel(
 
                 // Selected type and categories
                 enableCategories = config.enableCategoryFilter,
-                selectedType = selectedType,
                 selectedTypeIndex = selectedTypeIndex,
                 selectedIncomeCategories = selectedIncomeCategories,
                 selectedExpenseCategories = selectedExpenseCategories,
@@ -229,53 +150,107 @@ class FinanceListFilterViewModel(
     }
 
     /**
+     * Updates the selected type in the state.
+     *
+     * @param index The index of the selected type.
+     */
+    private fun updateSelectedType(index: Int) {
+        val finalIndex = index.coerceIn(0, FinanceType.entries.size - 1)
+
+        try {
+            _state.update { it.copy(selectedTypeIndex = finalIndex) }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error updating selected type", e)
+            _state.update { it.copy(error = DataError.Local.UNKNOWN.toUiText()) }
+        }
+    }
+
+    /**
+     * Updates the selected category (enable/disable) in the state. This changes state of category
+     * (income or expense) depending on the selected type.
+     *
+     * @param financeType The type of finance.
+     */
+    private fun updateSelectedCategory(
+        financeType: FinanceType,
+        index: Int
+    ) {
+        try {
+            when (financeType) {
+                FinanceType.INCOME -> {
+                    val selectedOptions = _state.value.selectedIncomeCategories.toMutableList()
+                    selectedOptions[index] = !selectedOptions[index]
+                    _state.update { it.copy(selectedIncomeCategories = selectedOptions) }
+                }
+
+                FinanceType.EXPENSE -> {
+                    val selectedOptions = _state.value.selectedExpenseCategories.toMutableList()
+                    selectedOptions[index] = !selectedOptions[index]
+                    _state.update { it.copy(selectedExpenseCategories = selectedOptions) }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error updating selected category", e)
+            _state.update { it.copy(error = DataError.Local.UNKNOWN.toUiText()) }
+        }
+    }
+
+    /**
      * Applies the filter configuration to the data.
      *
      * @param callback The callback to be invoked with the filter configuration.
      */
     private fun applyFilter(callback: ((FilterConfiguration) -> Unit)?) {
-        callback ?: return
+        try {
+            callback ?: return
 
-        // Extract the current state
-        val currentState = state.value
+            // Extract the current state
+            val currentState = _state.value
 
-        // Extract the values from the current state
-        val sortOrder = SortOrder.entries[currentState.selectedSortIndex]
-        val type = currentState.selectedType
+            // Extract the values from the current state
+            val sortOrder = SortOrder.entries[currentState.selectedSortIndex]
+            val (miniAmount, maxAmount) = if (currentState.enableAmountRange) {
+                Pair(
+                    currentState.selectedAmountRangeMini.toDouble(),
+                    currentState.selectedAmountRangeMax.toDouble()
+                )
+            } else {
+                Pair(null, null)
+            }
 
-        val (miniAmount, maxAmount) = if (currentState.enableAmountRange) {
-            Pair(
-                currentState.selectedAmountRangeMini.toDouble(),
-                currentState.selectedAmountRangeMax.toDouble()
+            val financeType = if (currentState.enableCategories) {
+                FinanceType.entries[currentState.selectedTypeIndex]
+            } else {
+                null
+            }
+
+            callback.invoke(
+                FilterConfiguration(
+                    sortOrder = sortOrder,
+                    enableCategoryFilter = currentState.enableCategories,
+                    selectedIncomeIndexes = currentState.selectedIncomeCategories,
+                    selectedExpenseIndexes = currentState.selectedExpenseCategories,
+                    type = financeType,
+                    enableAmountFilter = currentState.enableAmountRange,
+                    miniSetAmount = miniAmount,
+                    maxSetAmount = maxAmount
+                )
             )
-        } else {
-            Pair(null, null)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error applying filter", e)
+            _state.update { it.copy(error = DataError.Local.UNKNOWN.toUiText()) }
         }
-
-        callback.invoke(
-            FilterConfiguration(
-                sortOrder = sortOrder,
-                type = type,
-                enableCategoryFilter = currentState.enableCategories,
-                selectedIncomeIndexes = currentState.selectedIncomeCategories,
-                selectedExpenseIndexes = currentState.selectedExpenseCategories,
-                enableAmountFilter = currentState.enableAmountRange,
-                miniSetAmount = miniAmount,
-                maxSetAmount = maxAmount
-            )
-        )
     }
 
     /**
      * Resets the filter to its initial state.
      */
     private fun resetFilter() {
-        val currentState = state.value
+        val currentState = _state.value
         _state.update {
             it.copy(
                 selectedSortIndex = 0,
                 selectedTypeIndex = 0,
-                selectedType = null,
                 enableCategories = false,
                 selectedIncomeCategories = IncomeCategory.entries.map { true },
                 selectedExpenseCategories = IncomeCategory.entries.map { true },

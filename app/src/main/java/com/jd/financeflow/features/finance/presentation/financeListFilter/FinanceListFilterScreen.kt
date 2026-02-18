@@ -1,6 +1,7 @@
 package com.jd.financeflow.features.finance.presentation.financeListFilter
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,10 +15,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -36,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import org.koin.androidx.compose.koinViewModel
@@ -43,8 +47,11 @@ import org.koin.androidx.compose.koinViewModel
 import com.jd.financeflow.R
 import com.jd.financeflow.features.core.presentation.components.LargeDropdownMenu
 import com.jd.financeflow.features.core.presentation.components.formatCurrency
+import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
 import com.jd.financeflow.features.finance.domain.models.FilterConfiguration
+import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceType
+import com.jd.financeflow.features.finance.domain.models.IncomeCategory
 import com.jd.financeflow.features.finance.domain.models.SortOrder
 import com.jd.financeflow.features.finance.presentation.components.toUiText
 
@@ -113,15 +120,22 @@ fun FinanceListFilterView(
                 shape = RoundedCornerShape(
                     dimensionResource(R.dimen.padding_medium)
                 ),
+                border = BorderStroke(width = 0.dp, color = Color.Transparent),
+                colors = CardDefaults.outlinedCardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                ),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 ListItem(
+                    colors = ListItemDefaults.colors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    ),
                     headlineContent = {
                         Text(
                             text = stringResource(R.string.filter_sort_switch_label),
                             style = MaterialTheme.typography.titleMedium
                         )
-                    },
+                    }
                 )
 
                 Column {
@@ -154,12 +168,19 @@ fun FinanceListFilterView(
             // Type and category selection
             OutlinedCard(
                 shape = RoundedCornerShape(dimensionResource(R.dimen.padding_medium)),
+                border = BorderStroke(width = 0.dp, color = Color.Transparent),
+                colors = CardDefaults.outlinedCardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                ),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(
                     modifier = Modifier.padding(bottom = dimensionResource(R.dimen.padding_small))
                 ) {
                     ListItem(
+                        colors = ListItemDefaults.colors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                        ),
                         headlineContent = {
                             Text(
                                 text = stringResource(R.string.filter_category_switch_label),
@@ -188,32 +209,16 @@ fun FinanceListFilterView(
                                         vertical = dimensionResource(R.dimen.padding_small)
                                     )
                             ) {
-                                val totalButtons = FinanceType.entries.size + 1
-
-                                // "Both" Option
-                                SegmentedButton(
-                                    shape = SegmentedButtonDefaults.itemShape(
-                                        index = 0,
-                                        count = totalButtons
-                                    ),
-                                    selected = state.selectedTypeIndex == 0,
-                                    onClick = { onAction(FinanceListFilterActions.OnUpdateType(0)) },
-                                    label = { Text(stringResource(R.string.filter_type_button_both_label)) }
-                                )
-
                                 FinanceType.entries.forEachIndexed { index, value ->
-                                    val actualIndex = index + 1
                                     SegmentedButton(
                                         shape = SegmentedButtonDefaults.itemShape(
-                                            index = actualIndex,
-                                            count = totalButtons
+                                            index = index,
+                                            count = FinanceType.entries.size
                                         ),
-                                        selected = state.selectedTypeIndex == actualIndex,
+                                        selected = state.selectedTypeIndex == index,
                                         onClick = {
                                             onAction(
-                                                FinanceListFilterActions.OnUpdateType(
-                                                    actualIndex
-                                                )
+                                                FinanceListFilterActions.OnUpdateType(index)
                                             )
                                         },
                                         label = { Text(value.toUiText().asString()) }
@@ -222,7 +227,7 @@ fun FinanceListFilterView(
                             }
 
                             // Conditional Category List
-                            if (state.selectedTypeIndex > 0) {
+                            if (state.enableCategories) {
                                 HorizontalDivider(
                                     modifier = Modifier.padding(
                                         top = dimensionResource(R.dimen.padding_small),
@@ -230,10 +235,18 @@ fun FinanceListFilterView(
                                         end = dimensionResource(R.dimen.padding_large)
                                     )
                                 )
+                                val currentType = FinanceType.entries[state.selectedTypeIndex]
 
-                                val currentType = state.selectedType ?: FinanceType.EXPENSE
-                                val categories = if (currentType == FinanceType.INCOME)
-                                    state.categoryIncomeOptions else state.categoryExpenseOptions
+                                val categories = if (currentType == FinanceType.INCOME) {
+                                    IncomeCategory.entries.map { category ->
+                                        FinanceCategory.Income(category)
+                                    }
+                                } else {
+                                    ExpenseCategory.entries.map { category ->
+                                        FinanceCategory.Expense(category)
+                                    }
+                                }
+
                                 val selections = if (currentType == FinanceType.INCOME)
                                     state.selectedIncomeCategories else state.selectedExpenseCategories
 
@@ -244,6 +257,9 @@ fun FinanceListFilterView(
                                             index
                                         )
                                     ListItem(
+                                        colors = ListItemDefaults.colors(
+                                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                                        ),
                                         headlineContent = { Text(category.toUiText().asString()) },
                                         trailingContent = {
                                             Checkbox(
@@ -271,8 +287,17 @@ fun FinanceListFilterView(
             }
 
             // Amount section
-            OutlinedCard(modifier = Modifier.fillMaxWidth()) {
+            OutlinedCard(
+                border = BorderStroke(width = 0.dp, color = Color.Transparent),
+                colors = CardDefaults.outlinedCardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                ),
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 ListItem(
+                    colors = ListItemDefaults.colors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    ),
                     headlineContent = {
                         Text(
                             text = stringResource(R.string.filter_amount_switch_label),
@@ -371,7 +396,7 @@ fun FinanceListFilterView(
                         text = stringResource(R.string.filter_apply_button_label),
                         modifier = Modifier.padding(
                             vertical = dimensionResource(R.dimen.padding_small),
-                            horizontal = dimensionResource(R.dimen.padding_extra_large)
+                            horizontal = dimensionResource(R.dimen.padding_small)
                         )
                     )
                 }
@@ -401,9 +426,8 @@ fun FinanceListFilterViewPreview() {
         Scaffold { innerPadding ->
             FinanceListFilterView(
                 state = FinanceListFilterState(
-                    selectedTypeIndex = 1,
-                    selectedType = FinanceType.INCOME,
-                    enableCategories = false,
+                    selectedTypeIndex = 0,
+                    enableCategories = true,
                     enableAmountRange = true
                 ),
                 onAction = {},

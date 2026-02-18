@@ -8,10 +8,8 @@ import com.jd.financeflow.features.finance.domain.models.Finance
  */
 sealed interface FinanceListActions {
     data object OnClearError : FinanceListActions
-
     data object OnAddFinanceClicked : FinanceListActions
     data object OnFilterClicked : FinanceListActions
-
     data class OnFinanceItemClicked(val id: Int) : FinanceListActions
     data class OnFinanceItemDelete(val finance: Finance) : FinanceListActions
     data class OnSelectedDeleteFinanceItem(
@@ -19,7 +17,8 @@ sealed interface FinanceListActions {
         val finance: Finance?
     ) : FinanceListActions
 
+    data class OnEnableSearch(val value: Boolean) : FinanceListActions
     data class OnUpdateSearchQuery(val value: String) : FinanceListActions
     data object OnSearch : FinanceListActions
-    data class OnUpdateFilterConfiguration(val value: FilterConfiguration?) : FinanceListActions
+    data object OnRefresh : FinanceListActions
 }
