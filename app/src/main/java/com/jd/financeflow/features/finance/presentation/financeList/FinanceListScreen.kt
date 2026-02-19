@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -104,7 +105,7 @@ fun FinanceListScreen(
  * @param onAction action to be performed when item is clicked
  * @param modifier modifier to be applied
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun FinanceListView(
     state: FinanceListState,
@@ -265,12 +266,19 @@ fun FinanceListView(
             icon = {},
             title = { Text(text = stringResource(R.string.delete_finance_item_title)) },
             text = {
-                Text(
-                    """
-                        ${stringResource(R.string.delete_finance_item_text)}
-                        ${state.selectedDeleteFinance?.title}
-                    """.trimIndent()
-                )
+                Column {
+                    Text(
+                        text = stringResource(R.string.delete_finance_item_text),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    state.selectedDeleteFinance?.title?.let {
+                        Text(
+                            text = it,
+                            style = MaterialTheme.typography.bodyMediumEmphasized,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
             },
             onDismissRequest = {
                 onAction(

@@ -1,6 +1,5 @@
 package com.jd.financeflow.features.finance.presentation.financeList
 
-import android.util.Log
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,6 +16,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
@@ -332,8 +332,8 @@ class FinanceListViewModel(
             )
 
             SortOrder.AMOUNT_DESCENDING -> filteredItems.sortedWith(compareByDescending<Finance> { it.amount }.thenBy { it.id })
-            SortOrder.NEWEST_FIRST -> filteredItems.sortedWith(compareByDescending<Finance> { it.createdAt }.thenBy { it.id })
-            SortOrder.OLDEST_FIRST -> filteredItems.sortedWith(compareBy<Finance> { it.createdAt }.thenBy { it.id })
+            SortOrder.NEWEST_FIRST -> filteredItems.sortedWith(compareByDescending<Finance> { it.startDate }.thenBy { it.id })
+            SortOrder.OLDEST_FIRST -> filteredItems.sortedWith(compareBy<Finance> { it.startDate }.thenBy { it.id })
         }
     }
 

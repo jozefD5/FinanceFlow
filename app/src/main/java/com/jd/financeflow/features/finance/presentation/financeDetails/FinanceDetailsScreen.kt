@@ -191,7 +191,6 @@ fun FinanceDetailsView(
                     .fillMaxWidth()
             )
 
-
             DataPickerField(
                 onValueChange = { selectedDate ->
                     if (selectedDate != null) {
@@ -202,9 +201,10 @@ fun FinanceDetailsView(
                 placeholder = stringResource(R.string.add_finance_title_start_date_placeholder),
                 shape = RoundedCornerShape(dimensionResource(R.dimen.round_corner_size_medium)),
                 datePickerState = datePickerState,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding()
             )
-
 
             LargeDropdownMenu(
                 label = stringResource(R.string.add_finance_title_interval),
@@ -214,7 +214,9 @@ fun FinanceDetailsView(
                     onAction(FinanceDetailsActions.OnUpdateFinanceInterval(index))
                 },
                 shape = RoundedCornerShape(dimensionResource(R.dimen.round_corner_size_medium)),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = dimensionResource(R.dimen.padding_small))
             )
 
             LargeDropdownMenu(
@@ -233,7 +235,9 @@ fun FinanceDetailsView(
                     onAction(FinanceDetailsActions.OnUpdateFinanceCategory(index))
                 },
                 shape = RoundedCornerShape(dimensionResource(R.dimen.round_corner_size_medium)),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = dimensionResource(R.dimen.padding_small))
             )
         }
 
