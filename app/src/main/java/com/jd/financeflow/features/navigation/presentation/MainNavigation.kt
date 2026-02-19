@@ -40,7 +40,11 @@ import com.jd.financeflow.features.finance.presentation.financeDetails.FinanceDe
 import com.jd.financeflow.features.finance.presentation.financeListFilter.FinanceListFilterScreen
 import com.jd.financeflow.features.finance.presentation.financeListFilter.FinanceListFilterViewModel
 
-
+/**
+ * Main navigation for the application.
+ *
+ * @param modifier modifier to be applied
+ */
 @Composable
 fun MainNavigation(
     modifier: Modifier = Modifier
@@ -136,7 +140,7 @@ fun MainNavigation(
                         is HomeRootKey.FinanceDetailsScreen -> {
                             NavEntry(key = key) {
                                 val viewModel: FinanceDetailsViewModel = koinViewModel(
-                                    parameters = { parametersOf(null) }
+                                    parameters = { parametersOf(null, currencyCode) }
                                 )
 
                                 FinanceDetailsScreen(
@@ -193,7 +197,7 @@ fun MainNavigation(
                         is FinanceRootKey.FinanceDetailsScreen -> {
                             NavEntry(key = key) {
                                 val viewModel: FinanceDetailsViewModel = koinViewModel(
-                                    parameters = { parametersOf(key.financeId) }
+                                    parameters = { parametersOf(key.financeId, currencyCode) }
                                 )
 
                                 FinanceDetailsScreen(

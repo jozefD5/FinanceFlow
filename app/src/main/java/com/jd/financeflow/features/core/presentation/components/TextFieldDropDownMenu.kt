@@ -2,13 +2,9 @@ package com.jd.financeflow.features.core.presentation.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -64,6 +60,8 @@ fun <T> LargeDropdownMenu(
     label: String? = null,
     enabled: Boolean = true,
     notSetLabel: String? = null,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
     selectedIndex: Int = -1,
     selectedItemToString: (T) -> String = { it.toString() },
     shape: Shape = OutlinedTextFieldDefaults.shape,
@@ -86,18 +84,15 @@ fun <T> LargeDropdownMenu(
             },
             value = items.getOrNull(selectedIndex)?.let { selectedItemToString(it) } ?: "",
             enabled = enabled,
-            trailingIcon = {
-                if (expanded) {
-                    Icons.Filled.KeyboardArrowUp
-                } else {
-                    Icons.Filled.KeyboardArrowDown
-                }
-            },
+            leadingIcon = { leadingIcon?.invoke() },
+            trailingIcon = { trailingIcon?.invoke() },
             onValueChange = { },
             shape = shape,
             readOnly = true,
             colors = colors,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(0.dp)
         )
 
         // Transparent clickable surface on top of OutlinedTextField
@@ -108,8 +103,7 @@ fun <T> LargeDropdownMenu(
                 .padding(top = 8.dp)
                 .clip(MaterialTheme.shapes.extraSmall)
                 .clickable(enabled = enabled) { expanded = true },
-
-            ) {}
+        ) {}
     }
 
     if (expanded) {
@@ -208,17 +202,14 @@ private fun LargeDropdownMenuItem(
 fun TextFieldDropDownMenuPreview() {
     var selectedIndex by remember { mutableIntStateOf(0) }
     FinanceFlowTheme {
-        Column {
-            Spacer(modifier = Modifier.padding(34.dp))
-            LargeDropdownMenu(
-                label = "Label",
-                items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5"),
-                onItemSelected = { index, _ ->
-                    selectedIndex = index
-                },
-                selectedIndex = selectedIndex,
-                modifier = Modifier.padding(16.dp),
-            )
-        }
+        LargeDropdownMenu(
+            label = "Label",
+            items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5"),
+            onItemSelected = { index, _ ->
+                selectedIndex = index
+            },
+            selectedIndex = selectedIndex,
+            modifier = Modifier.padding(16.dp),
+        )
     }
 }

@@ -36,10 +36,11 @@ val appModule = module {
 
     viewModel { HomeViewModel(get()) }
 
-    viewModel { (financeId: Int?) ->
+    viewModel { (financeId: Int?, currencyCode: String) ->
         FinanceDetailsViewModel(
             financeRepository = get(),
-            financeId = financeId
+            financeId = financeId,
+            currencyCode = currencyCode
         )
     }
 

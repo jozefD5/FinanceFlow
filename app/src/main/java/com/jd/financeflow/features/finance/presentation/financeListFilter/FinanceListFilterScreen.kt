@@ -102,6 +102,7 @@ fun FinanceListFilterView(
 ) {
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(scrollState)

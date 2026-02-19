@@ -1,5 +1,6 @@
 package com.jd.financeflow.features.finance.presentation.financeDetails
 
+import android.icu.util.Currency
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -174,6 +175,9 @@ fun FinanceDetailsView(
                 value = state.amount,
                 onValueChange = { onAction(FinanceDetailsActions.OnUpdateAmount(it)) },
                 label = { Text(stringResource(R.string.add_finance_title_amount)) },
+                leadingIcon = {
+                    Text(Currency.getInstance(state.currencyCode).symbol.toString())
+                },
                 isError = state.invalidAmount,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,

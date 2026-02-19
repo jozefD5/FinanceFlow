@@ -8,6 +8,7 @@ import com.jd.financeflow.features.core.presentation.UiText
 data class FinanceDetailsState(
     val isLoading: Boolean = false,
     val error: UiText? = null,
+    val currencyCode: String = "EUR",
 
     val invalidTitle: Boolean = false,
     val invalidAmount: Boolean = false,

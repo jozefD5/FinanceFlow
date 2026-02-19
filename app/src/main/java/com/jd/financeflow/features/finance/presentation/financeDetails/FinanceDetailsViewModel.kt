@@ -35,9 +35,10 @@ import com.jd.financeflow.features.finance.domain.models.FinanceType
  */
 class FinanceDetailsViewModel(
     private val financeRepository: FinanceRepository,
-    private val financeId: Int? = null
+    private val financeId: Int? = null,
+    private val currencyCode: String = "EUR"
 ) : ViewModel() {
-    private val _state = MutableStateFlow(FinanceDetailsState())
+    private val _state = MutableStateFlow(FinanceDetailsState(currencyCode = currencyCode))
     val state = _state
         .onStart {
             if (financeId != null) {
@@ -47,7 +48,7 @@ class FinanceDetailsViewModel(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = FinanceDetailsState()
+            initialValue = FinanceDetailsState(currencyCode = currencyCode)
         )
 
     /**
