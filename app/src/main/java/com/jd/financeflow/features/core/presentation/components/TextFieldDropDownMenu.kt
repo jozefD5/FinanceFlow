@@ -86,7 +86,6 @@ fun <T> LargeDropdownMenu(
             },
             value = items.getOrNull(selectedIndex)?.let { selectedItemToString(it) } ?: "",
             enabled = enabled,
-            modifier = Modifier.fillMaxWidth(),
             trailingIcon = {
                 if (expanded) {
                     Icons.Filled.KeyboardArrowUp
@@ -97,18 +96,20 @@ fun <T> LargeDropdownMenu(
             onValueChange = { },
             shape = shape,
             readOnly = true,
-            colors = colors
+            colors = colors,
+            modifier = Modifier.fillMaxWidth()
         )
 
         // Transparent clickable surface on top of OutlinedTextField
         Surface(
+            color = Color.Transparent,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = 8.dp)
                 .clip(MaterialTheme.shapes.extraSmall)
                 .clickable(enabled = enabled) { expanded = true },
-            color = Color.Transparent,
-        ) {}
+
+            ) {}
     }
 
     if (expanded) {

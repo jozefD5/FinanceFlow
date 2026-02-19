@@ -196,7 +196,9 @@ fun FinanceDetailsView(
                 },
                 label = stringResource(R.string.add_finance_title_start_date),
                 placeholder = stringResource(R.string.add_finance_title_start_date_placeholder),
-                datePickerState = datePickerState
+                shape = RoundedCornerShape(dimensionResource(R.dimen.round_corner_size_medium)),
+                datePickerState = datePickerState,
+                modifier = Modifier.fillMaxWidth()
             )
 
 
