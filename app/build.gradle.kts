@@ -87,4 +87,7 @@ dependencies {
     implementation(libs.koin.androidx.compose)
     implementation(libs.koin.android)
     implementation(libs.kotlinx.sterialization.json)
+
+    // Charts
+    implementation(libs.compose.charts)
 }
