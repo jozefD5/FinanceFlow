@@ -3,7 +3,6 @@ package com.jd.financeflow.features.finance.presentation.charts.components
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -24,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 import ir.ehsannarmani.compose_charts.ColumnChart
-import ir.ehsannarmani.compose_charts.extensions.format
 import ir.ehsannarmani.compose_charts.models.BarProperties
 import ir.ehsannarmani.compose_charts.models.Bars
 import ir.ehsannarmani.compose_charts.models.DividerProperties
@@ -32,10 +30,12 @@ import ir.ehsannarmani.compose_charts.models.GridProperties
 import ir.ehsannarmani.compose_charts.models.HorizontalIndicatorProperties
 import ir.ehsannarmani.compose_charts.models.LabelHelperProperties
 import ir.ehsannarmani.compose_charts.models.LabelProperties
+import ir.ehsannarmani.compose_charts.models.GridProperties.AxisProperties
 
 import com.jd.financeflow.R
 import com.jd.financeflow.features.core.presentation.components.formatCurrency
 import com.jd.financeflow.features.finance.domain.models.chart.ChartData
+
 
 // Color palette
 private val green = Color(0xFF689F38)
@@ -63,7 +63,7 @@ fun FinanceCategoryBarChart(
 ) {
     OutlinedCard(
         shape = RoundedCornerShape(
-            dimensionResource(R.dimen.padding_medium)
+            dimensionResource(R.dimen.padding_small)
         ),
         border = BorderStroke(width = 0.dp, color = Color.Transparent),
         colors = CardDefaults.outlinedCardColors(
@@ -72,10 +72,9 @@ fun FinanceCategoryBarChart(
         modifier = modifier
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.list_items_spacing_medium)),
             modifier = modifier
                 .fillMaxSize()
-                .padding(dimensionResource(R.dimen.padding_large))
+                .padding(dimensionResource(R.dimen.padding_medium))
         ) {
             ListItem(
                 colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
@@ -86,6 +85,7 @@ fun FinanceCategoryBarChart(
                     )
                 }
             )
+
             ColumnChart(
                 data = items.map { item ->
                     val fraction: Float = if (maxValue > 0) (item.value / maxValue) else 0f
@@ -94,7 +94,7 @@ fun FinanceCategoryBarChart(
                             fraction > 0.75f -> listOf(red, orange, yellowGreen, green)
                             fraction > 0.50f -> listOf(orange, yellowGreen, green)
                             fraction > 0.25f -> listOf(yellowGreen, green)
-                            else -> listOf(green, green.copy(alpha = 0.8f))
+                            else -> listOf(green, green)
                         }
                     )
                     Bars(
@@ -109,36 +109,41 @@ fun FinanceCategoryBarChart(
                 },
                 barProperties = BarProperties(
                     thickness = 32.dp,
-                    cornerRadius = Bars.Data.Radius.Rectangle(topLeft = 12.dp, topRight = 12.dp),
+                    cornerRadius = Bars.Data.Radius.Rectangle(topLeft = 14.dp, topRight = 14.dp),
                     spacing = 1.dp,
                 ),
                 labelProperties = LabelProperties(
                     enabled = true,
-                    padding = 6.dp,
-                    rotation = LabelProperties.Rotation(degree = 0f)
+                    builder = { _, label, _, _ ->
+                        Text(
+                            text = label.substring(0, 3),
+                            style = TextStyle.Default.copy(
+                                fontSize = 12.sp,
+                            ),
+                        )
+                    }
                 ),
                 indicatorProperties = HorizontalIndicatorProperties(
-                    padding = 6.dp,
+                    padding = 2.dp,
                     textStyle = TextStyle.Default.copy(fontSize = 12.sp),
                     contentBuilder = { value ->
-                        //"£${value.format(0)}"
                         formatCurrency(value, currencyCode, 0)
                     }
                 ),
                 dividerProperties = DividerProperties(enabled = false),
                 labelHelperProperties = LabelHelperProperties(enabled = false),
-                gridProperties = GridProperties(enabled = true),
+                gridProperties = GridProperties(
+                    xAxisProperties = AxisProperties(lineCount = 7),
+                    yAxisProperties = AxisProperties(lineCount = 7)
+                ),
                 animationSpec = spring(
                     dampingRatio = Spring.DampingRatioMediumBouncy,
                     stiffness = Spring.StiffnessLow
                 ),
-                maxValue = maxValue + (maxValue * 0.1),
+                maxValue = maxValue + (maxValue * 0.05),
                 minValue = miniValue.toDouble(),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(bottom = 6.dp)
+                modifier = Modifier.fillMaxSize()
             )
         }
     }
-
 }
