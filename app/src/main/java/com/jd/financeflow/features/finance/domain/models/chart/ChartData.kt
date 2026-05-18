@@ -8,3 +8,11 @@ data class ChartData(
     val value: Float,
 )
 
+/**
+ * Line chart data representing grouped sequence of data
+ */
+data class LineChartData(
+    val label: String,
+    val values: List<Float> = emptyList(),
+)
+
