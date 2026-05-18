@@ -17,10 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.jd.financeflow.R
 
+import com.jd.financeflow.R
 import com.jd.financeflow.features.finance.domain.models.chart.ChartData
-import com.jd.financeflow.features.finance.presentation.charts.components.FinanceCategoryBarChart
+import com.jd.financeflow.features.finance.presentation.charts.components.FinanceBarChart
 
 @Composable
 fun FinanceChartsView(
@@ -30,12 +30,12 @@ fun FinanceChartsView(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
         modifier = modifier
             .fillMaxWidth()
             .verticalScroll(verticalScrollState)
     ) {
-        FinanceCategoryBarChart(
+        FinanceBarChart(
             title = "Income",
             items = state.incomeChartData,
             maxValue = state.incomeMax,
@@ -46,7 +46,7 @@ fun FinanceChartsView(
                 .fillMaxWidth()
         )
 
-        FinanceCategoryBarChart(
+        FinanceBarChart(
             title = "Expenses",
             items = state.expenseChartData,
             maxValue = state.expenseMax,
@@ -64,9 +64,7 @@ fun FinanceChartsView(
 @Composable
 fun FinanceChartsViewPreview() {
     MaterialTheme {
-        Scaffold(
-            modifier = Modifier.fillMaxSize()
-        ) { innerPadding ->
+        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             FinanceChartsView(
                 state = FinanceChartsState(
                     incomeMax = 5_000f,

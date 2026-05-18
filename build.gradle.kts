@@ -5,3 +5,4 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.serialization) apply false
     alias(libs.plugins.ksp) apply false
 }
+val ndkVersion by extra("29.0.14206865")

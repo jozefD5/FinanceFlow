@@ -12,6 +12,7 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,6 +20,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -44,7 +46,7 @@ private val orange = Color(0xFFFFA000)
 private val red = Color(0xFFD32F2F)
 
 /**
- * Finance category bar chart
+ * Finance bar chart
  * @param title Title
  * @param items List of data to be presented
  * @param maxValue Maximum value available in the list of items. used for y-axis value indication
@@ -53,7 +55,7 @@ private val red = Color(0xFFD32F2F)
  * @param modifier Compose modifier
  */
 @Composable
-fun FinanceCategoryBarChart(
+fun FinanceBarChart(
     title: String,
     items: List<ChartData>,
     maxValue: Float,
@@ -63,7 +65,7 @@ fun FinanceCategoryBarChart(
 ) {
     OutlinedCard(
         shape = RoundedCornerShape(
-            dimensionResource(R.dimen.padding_small)
+            dimensionResource(R.dimen.round_corner_size_small)
         ),
         border = BorderStroke(width = 0.dp, color = Color.Transparent),
         colors = CardDefaults.outlinedCardColors(
@@ -72,9 +74,9 @@ fun FinanceCategoryBarChart(
         modifier = modifier
     ) {
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
-                .padding(dimensionResource(R.dimen.padding_medium))
+                .padding(dimensionResource(R.dimen.chart_padding_medium))
         ) {
             ListItem(
                 colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
@@ -143,6 +145,30 @@ fun FinanceCategoryBarChart(
                 maxValue = maxValue + (maxValue * 0.05),
                 minValue = miniValue.toDouble(),
                 modifier = Modifier.fillMaxSize()
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun FinanceBarChartPreview() {
+    MaterialTheme {
+        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+            FinanceBarChart(
+                title = "Demo",
+                items = listOf(
+                    ChartData("Salary", 5_000f),
+                    ChartData("Bonus", 4_000f),
+                    ChartData("Commission", 3_000f),
+                    ChartData("Benefit", 2_000f),
+                    ChartData("Investment", 1_000f),
+                    ChartData("Other", 500f),
+                ),
+                maxValue = 5_000f,
+                miniValue = 0f,
+                currencyCode = "EUR",
+                modifier = Modifier.padding(innerPadding)
             )
         }
     }
