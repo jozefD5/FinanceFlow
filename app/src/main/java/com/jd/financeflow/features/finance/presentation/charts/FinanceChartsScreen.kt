@@ -20,7 +20,9 @@ import androidx.compose.ui.unit.dp
 
 import com.jd.financeflow.R
 import com.jd.financeflow.features.finance.domain.models.chart.ChartData
+import com.jd.financeflow.features.finance.domain.models.chart.LineChartData
 import com.jd.financeflow.features.finance.presentation.charts.components.FinanceBarChart
+import com.jd.financeflow.features.finance.presentation.charts.components.FinanceLineChart
 
 @Composable
 fun FinanceChartsView(
@@ -37,7 +39,7 @@ fun FinanceChartsView(
     ) {
         FinanceBarChart(
             title = "Income",
-            items = state.incomeChartData,
+            items = state.incomeCategoryChartData,
             maxValue = state.incomeMax,
             miniValue = 0f,
             currencyCode = state.currencyCode,
@@ -48,8 +50,26 @@ fun FinanceChartsView(
 
         FinanceBarChart(
             title = "Expenses",
-            items = state.expenseChartData,
+            items = state.expenseCategoryChartData,
             maxValue = state.expenseMax,
+            miniValue = 0f,
+            currencyCode = state.currencyCode,
+            modifier = Modifier
+                .height(300.dp)
+                .fillMaxWidth()
+        )
+
+        FinanceLineChart(
+            "Cash Flow",
+            incomes = LineChartData(
+                label = "Income",
+                values = state.incomeCashFlow
+            ),
+            expenses = LineChartData(
+                label = "Expenses",
+                values = state.expensesCashFlow
+            ),
+            maxValue = 100f,
             miniValue = 0f,
             currencyCode = state.currencyCode,
             modifier = Modifier
@@ -68,7 +88,7 @@ fun FinanceChartsViewPreview() {
             FinanceChartsView(
                 state = FinanceChartsState(
                     incomeMax = 5_000f,
-                    incomeChartData = listOf(
+                    incomeCategoryChartData = listOf(
                         ChartData("Salary", 5_000f),
                         ChartData("Bonus", 4_000f),
                         ChartData("Commission", 3_000f),
@@ -77,7 +97,7 @@ fun FinanceChartsViewPreview() {
                         ChartData("Other", 500f),
                     ),
                     expenseMax = 2_000f,
-                    expenseChartData = listOf(
+                    expenseCategoryChartData = listOf(
                         ChartData("Housing", 2_000f),
                         ChartData("Utility", 250f),
                         ChartData("Food", 1_000f),
@@ -86,7 +106,9 @@ fun FinanceChartsViewPreview() {
                         ChartData("Education", 100f),
                         ChartData("Entertainment", 30f),
                         ChartData("Other", 100f),
-                    )
+                    ),
+                    incomeCashFlow = listOf(340f, 208f, 3000f, 500f, 8000f, 200f),
+                    expensesCashFlow = listOf(30f, 250f, 1500f, 100f, 3000f, 150f)
                 ),
                 modifier = Modifier.padding(innerPadding)
             )

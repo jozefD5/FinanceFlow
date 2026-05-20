@@ -135,8 +135,8 @@ fun FinanceBarChart(
                 dividerProperties = DividerProperties(enabled = false),
                 labelHelperProperties = LabelHelperProperties(enabled = false),
                 gridProperties = GridProperties(
-                    xAxisProperties = AxisProperties(lineCount = 7),
-                    yAxisProperties = AxisProperties(lineCount = 7)
+                    xAxisProperties = AxisProperties(lineCount = 50),
+                    yAxisProperties = AxisProperties(lineCount = 20)
                 ),
                 animationSpec = spring(
                     dampingRatio = Spring.DampingRatioMediumBouncy,
