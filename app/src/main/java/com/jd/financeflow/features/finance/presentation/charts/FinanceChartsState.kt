@@ -11,10 +11,8 @@ data class FinanceChartsState(
     // Income
     val incomeMax: Float = 0f,
     val incomeCategoryChartData: List<ChartData> = emptyList(),
-    val incomeCashFlow: List<Float> = emptyList(),
 
     // Expenses
     val expenseMax: Float = 0f,
     val expenseCategoryChartData: List<ChartData> = emptyList(),
-    val expensesCashFlow: List<Float> = emptyList(),
 )

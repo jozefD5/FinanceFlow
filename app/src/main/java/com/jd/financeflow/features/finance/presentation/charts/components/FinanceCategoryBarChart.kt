@@ -1,26 +1,38 @@
 package com.jd.financeflow.features.finance.presentation.charts.components
 
+import android.content.res.Configuration
+import android.icu.util.Currency
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,11 +41,9 @@ import ir.ehsannarmani.compose_charts.ColumnChart
 import ir.ehsannarmani.compose_charts.models.BarProperties
 import ir.ehsannarmani.compose_charts.models.Bars
 import ir.ehsannarmani.compose_charts.models.DividerProperties
-import ir.ehsannarmani.compose_charts.models.GridProperties
 import ir.ehsannarmani.compose_charts.models.HorizontalIndicatorProperties
 import ir.ehsannarmani.compose_charts.models.LabelHelperProperties
 import ir.ehsannarmani.compose_charts.models.LabelProperties
-import ir.ehsannarmani.compose_charts.models.GridProperties.AxisProperties
 
 import com.jd.financeflow.R
 import com.jd.financeflow.features.core.presentation.components.formatCurrency
@@ -48,11 +58,9 @@ private val red = Color(0xFFD32F2F)
 
 /**
  * Finance bar chart
- * @param title Title
  * @param items List of data to be presented
  * @param maxValue Maximum value available in the list of items. used for y-axis value indication
  * @param miniValue Minimum value for the y-axis value indication
- * @param currencyCode Currency format by y-axis, e.g. EUR for euro
  * @param modifier Compose modifier
  */
 @Composable
@@ -61,8 +69,9 @@ fun FinanceBarChart(
     items: List<ChartData>,
     maxValue: Float,
     miniValue: Float,
-    currencyCode: String,
+    avgValue: Float,
     modifier: Modifier = Modifier,
+    currencyCode: String = "EUR"
 ) {
     OutlinedCard(
         shape = RoundedCornerShape(
@@ -74,20 +83,53 @@ fun FinanceBarChart(
         ),
         modifier = modifier
     ) {
+        val formatter = Currency.getInstance(currencyCode)
         Column(
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.chart_item_arrangement_spacing)),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(dimensionResource(R.dimen.chart_padding_medium))
         ) {
-            ListItem(
-                colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-                headlineContent = {
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                }
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.chart_item_arrangement_spacing))
+            ) {
+                Text(
+                    text = formatter.symbol,
+                    color = Color.White,
+                    style = TextStyle.Default.copy(fontWeight = FontWeight.Bold),
+                    modifier = Modifier
+                        .size(dimensionResource(R.dimen.chart_symbol_size))
+                        .clip(CircleShape)
+                        .background(
+                            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+                        )
+                        .wrapContentSize(Alignment.Center)
+                )
+                Text(
+                    text = title,
+                    style = TextStyle.Default.copy(fontWeight = FontWeight.Bold)
+                )
+            }
+
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.chart_item_arrangement_spacing))
+            ) {
+                Text(
+                    text = stringResource(R.string.chart_average_value_label),
+                    style = TextStyle.Default.copy(fontWeight = FontWeight.Medium)
+                )
+
+                Text(
+                    text = formatCurrency(avgValue, currencyCode),
+                    style = TextStyle.Default.copy(fontWeight = FontWeight.Medium)
+                )
+            }
+
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
             ColumnChart(
                 data = items.map { item ->
@@ -111,34 +153,27 @@ fun FinanceBarChart(
                     )
                 },
                 barProperties = BarProperties(
-                    thickness = 32.dp,
-                    cornerRadius = Bars.Data.Radius.Rectangle(topLeft = 14.dp, topRight = 14.dp),
-                    spacing = 1.dp,
+                    thickness = dimensionResource(R.dimen.chart_bar_thickness),
+                    cornerRadius = Bars.Data.Radius.Rectangle(
+                        topLeft = dimensionResource(R.dimen.chart_bar_radius),
+                        topRight = dimensionResource(R.dimen.chart_bar_radius)
+                    ),
                 ),
                 labelProperties = LabelProperties(
                     enabled = true,
                     builder = { _, label, _, _ ->
                         Text(
                             text = label.substring(0, 3),
-                            style = TextStyle.Default.copy(
-                                fontSize = 12.sp,
-                            ),
+                            style = TextStyle.Default.copy(fontSize = 12.sp),
                         )
                     }
                 ),
                 indicatorProperties = HorizontalIndicatorProperties(
-                    padding = 2.dp,
                     textStyle = TextStyle.Default.copy(fontSize = 12.sp),
-                    contentBuilder = { value ->
-                        formatCurrency(value, currencyCode, 0)
-                    }
+                    contentBuilder = { value -> value.toInt().toString() }
                 ),
                 dividerProperties = DividerProperties(enabled = false),
                 labelHelperProperties = LabelHelperProperties(enabled = false),
-                gridProperties = GridProperties(
-                    xAxisProperties = AxisProperties(lineCount = 20),
-                    yAxisProperties = AxisProperties(lineCount = 20)
-                ),
                 animationSpec = spring(
                     dampingRatio = Spring.DampingRatioMediumBouncy,
                     stiffness = Spring.StiffnessLow
@@ -151,13 +186,16 @@ fun FinanceBarChart(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+)
 @Composable
 fun FinanceBarChartPreview() {
     MaterialTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             FinanceBarChart(
-                title = "Demo",
+                title = "Income",
                 items = listOf(
                     ChartData("Salary", 5_000f),
                     ChartData("Bonus", 4_000f),
@@ -168,8 +206,11 @@ fun FinanceBarChartPreview() {
                 ),
                 maxValue = 5_000f,
                 miniValue = 0f,
-                currencyCode = "EUR",
-                modifier = Modifier.padding(innerPadding)
+                avgValue = 2_500f,
+                modifier = Modifier
+                    .height(400.dp)
+                    .fillMaxWidth()
+                    .padding(innerPadding)
             )
         }
     }
