@@ -22,7 +22,7 @@ import com.jd.financeflow.R
 import com.jd.financeflow.features.finance.domain.models.chart.ChartData
 import com.jd.financeflow.features.finance.domain.models.chart.LineChartData
 import com.jd.financeflow.features.finance.presentation.charts.components.FinanceBarChart
-import com.jd.financeflow.features.finance.presentation.charts.components.FinanceLineChart
+import com.jd.financeflow.features.finance.presentation.charts.components.CashFlowLineChart
 
 @Composable
 fun FinanceChartsView(
@@ -32,7 +32,7 @@ fun FinanceChartsView(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.chart_padding_height)),
         modifier = modifier
             .fillMaxWidth()
             .verticalScroll(verticalScrollState)
@@ -46,6 +46,7 @@ fun FinanceChartsView(
             modifier = Modifier
                 .height(300.dp)
                 .fillMaxWidth()
+                .padding(horizontal = dimensionResource(R.dimen.chart_padding_height))
         )
 
         FinanceBarChart(
@@ -57,9 +58,11 @@ fun FinanceChartsView(
             modifier = Modifier
                 .height(300.dp)
                 .fillMaxWidth()
+                .padding(horizontal = dimensionResource(R.dimen.chart_padding_height))
         )
 
-        FinanceLineChart(
+        val cashFlowMax = (state.incomeCashFlow + state.expensesCashFlow).maxOrNull() ?: 0f
+        CashFlowLineChart(
             "Cash Flow",
             incomes = LineChartData(
                 label = "Income",
@@ -69,12 +72,12 @@ fun FinanceChartsView(
                 label = "Expenses",
                 values = state.expensesCashFlow
             ),
-            maxValue = 100f,
             miniValue = 0f,
             currencyCode = state.currencyCode,
             modifier = Modifier
                 .height(300.dp)
                 .fillMaxWidth()
+                .padding(horizontal = dimensionResource(R.dimen.chart_padding_height))
         )
     }
 }

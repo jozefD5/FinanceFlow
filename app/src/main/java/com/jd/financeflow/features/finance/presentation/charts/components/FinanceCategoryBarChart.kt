@@ -5,6 +5,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
@@ -65,7 +66,7 @@ fun FinanceBarChart(
 ) {
     OutlinedCard(
         shape = RoundedCornerShape(
-            dimensionResource(R.dimen.round_corner_size_small)
+            dimensionResource(R.dimen.chart_round_corner_size_small)
         ),
         border = BorderStroke(width = 0.dp, color = Color.Transparent),
         colors = CardDefaults.outlinedCardColors(
@@ -75,7 +76,7 @@ fun FinanceBarChart(
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .padding(dimensionResource(R.dimen.chart_padding_medium))
         ) {
             ListItem(
@@ -135,7 +136,7 @@ fun FinanceBarChart(
                 dividerProperties = DividerProperties(enabled = false),
                 labelHelperProperties = LabelHelperProperties(enabled = false),
                 gridProperties = GridProperties(
-                    xAxisProperties = AxisProperties(lineCount = 50),
+                    xAxisProperties = AxisProperties(lineCount = 20),
                     yAxisProperties = AxisProperties(lineCount = 20)
                 ),
                 animationSpec = spring(

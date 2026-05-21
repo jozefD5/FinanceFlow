@@ -5,6 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
@@ -35,21 +36,25 @@ import ir.ehsannarmani.compose_charts.models.Line
 import com.jd.financeflow.R
 import com.jd.financeflow.features.core.presentation.components.formatCurrency
 import com.jd.financeflow.features.finance.domain.models.chart.LineChartData
+import ir.ehsannarmani.compose_charts.models.LabelProperties
 
-
+/**
+ * Cash flow linear charts for displaying income and expenses
+ * @param title Title of the
+ */
 @Composable
-fun FinanceLineChart(
+fun CashFlowLineChart(
     title: String,
     incomes: LineChartData,
     expenses: LineChartData,
-    maxValue: Float,
     miniValue: Float,
     currencyCode: String,
     modifier: Modifier = Modifier,
+    labels: List<String>? = null
 ) {
     OutlinedCard(
         shape = RoundedCornerShape(
-            dimensionResource(R.dimen.round_corner_size_small)
+            dimensionResource(R.dimen.chart_round_corner_size_small)
         ),
         border = BorderStroke(width = 0.dp, color = Color.Transparent),
         colors = CardDefaults.outlinedCardColors(
@@ -59,10 +64,9 @@ fun FinanceLineChart(
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .padding(dimensionResource(R.dimen.chart_padding_medium))
         ) {
-
             ListItem(
                 colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
                 headlineContent = {
@@ -82,7 +86,6 @@ fun FinanceLineChart(
                         firstGradientFillColor = Color(0xFF078D46).copy(alpha = .5f),
                         secondGradientFillColor = Color.Transparent,
                         strokeAnimationSpec = tween(2000, easing = EaseInOutCubic),
-                        gradientAnimationDelay = 1000,
                         drawStyle = DrawStyle.Stroke(width = 2.dp),
 
                         ),
@@ -94,9 +97,12 @@ fun FinanceLineChart(
                         firstGradientFillColor = Color(0xFF980D05).copy(alpha = .5f),
                         secondGradientFillColor = Color.Transparent,
                         strokeAnimationSpec = tween(2000, easing = EaseInOutCubic),
-                        gradientAnimationDelay = 1000,
                         drawStyle = DrawStyle.Stroke(width = 2.dp),
                     )
+                ),
+                labelProperties = LabelProperties(
+                    enabled = !labels.isNullOrEmpty(),
+                    labels = labels ?: emptyList()
                 ),
                 indicatorProperties = HorizontalIndicatorProperties(
                     padding = 2.dp,
@@ -106,12 +112,11 @@ fun FinanceLineChart(
                     }
                 ),
                 gridProperties = GridProperties(
-                    xAxisProperties = AxisProperties(lineCount = 50),
+                    xAxisProperties = AxisProperties(lineCount = 20),
                     yAxisProperties = AxisProperties(lineCount = 20)
                 ),
                 minValue = miniValue.toDouble(),
-                maxValue = maxValue.toDouble(),
-                animationMode = AnimationMode.Together(delayBuilder = { it * 500L }),
+                //animationMode = AnimationMode.Together(delayBuilder = { it * 500L }),
                 modifier = Modifier.fillMaxSize()
             )
         }
@@ -120,20 +125,33 @@ fun FinanceLineChart(
 
 @Preview(showBackground = true)
 @Composable
-fun FinanceLineChartPReview() {
+fun CashFlowLineChartPReview() {
     MaterialTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            FinanceLineChart(
+            CashFlowLineChart(
                 title = "Demo",
                 incomes = LineChartData(
                     label = "Income",
-                    values = listOf<Float>(50f, 70f, 30f, 4f, 85f, 50f, 30f, 10f, 50f),
+                    values = listOf(50f, 70f, 30f, 4f, 85f, 50f, 30f, 10f, 50f, 40f, 10f),
                 ),
                 expenses = LineChartData(
                     label = "Expense",
-                    values = listOf<Float>(50f, 20f, 30f, 30f, 50f, 30f, 40f, 10f, 30f),
+                    values = listOf(50f, 20f, 30f, 30f, 50f, 30f, 40f, 10f, 30f, 60f, 80f),
                 ),
-                maxValue = 100f,
+                labels = listOf(
+                    "Jan",
+                    "Feb",
+                    "Mar",
+                    "Apr",
+                    "May",
+                    "Jun",
+                    "Jul",
+                    "Aug",
+                    "Sep",
+                    "Oct",
+                    "Nov",
+                    "Dec"
+                ),
                 miniValue = 0f,
                 currencyCode = "EUR",
                 modifier = Modifier.padding(innerPadding)
