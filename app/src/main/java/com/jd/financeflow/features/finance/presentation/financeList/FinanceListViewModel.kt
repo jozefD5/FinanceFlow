@@ -44,9 +44,7 @@ class FinanceListViewModel(
 ) : ViewModel() {
     private var cachedFinances: List<Finance> = emptyList()
 
-    private val _state = MutableStateFlow(
-        FinanceListState(currencyCode = currencyCode)
-    )
+    private val _state = MutableStateFlow(FinanceListState(currencyCode = currencyCode))
     val state = _state
         .onStart {
             applyFilterConfiguration(filterConfiguration)

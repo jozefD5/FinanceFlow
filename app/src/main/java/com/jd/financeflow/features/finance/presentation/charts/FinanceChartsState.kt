@@ -1,18 +1,24 @@
 package com.jd.financeflow.features.finance.presentation.charts
 
 import com.jd.financeflow.features.core.presentation.UiText
-import com.jd.financeflow.features.finance.domain.models.chart.ChartData
+import com.jd.financeflow.features.finance.domain.models.chart.BarChartData
 
+/**
+ * Finance charts view state
+ */
 data class FinanceChartsState(
     // General
+    val isLoading: Boolean = false,
     val error: UiText? = null,
     val currencyCode: String = "EUR",
 
     // Income
-    val incomeMax: Float = 0f,
-    val incomeCategoryChartData: List<ChartData> = emptyList(),
+    val maxIncome: Float = 0f,
+    val averageIncome: Float = 0f,
+    val incomeCategoryChartData: List<BarChartData> = emptyList(),
 
     // Expenses
-    val expenseMax: Float = 0f,
-    val expenseCategoryChartData: List<ChartData> = emptyList(),
+    val maxExpenses: Float = 0f,
+    val averageExpenses: Float = 0f,
+    val expensesCategoryChartData: List<BarChartData> = emptyList()
 )

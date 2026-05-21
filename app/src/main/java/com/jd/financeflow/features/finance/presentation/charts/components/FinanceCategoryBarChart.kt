@@ -47,26 +47,29 @@ import ir.ehsannarmani.compose_charts.models.LabelProperties
 
 import com.jd.financeflow.R
 import com.jd.financeflow.features.core.presentation.components.formatCurrency
-import com.jd.financeflow.features.finance.domain.models.chart.ChartData
+import com.jd.financeflow.features.finance.domain.models.chart.BarChartData
 
 
 // Color palette
-private val green = Color(0xFF689F38)
+private val green = Color(0xFF36AF42)
 private val yellowGreen = Color(0xFF9E9D24)
 private val orange = Color(0xFFFFA000)
 private val red = Color(0xFFD32F2F)
 
 /**
  * Finance bar chart
+ * @param title title
  * @param items List of data to be presented
  * @param maxValue Maximum value available in the list of items. used for y-axis value indication
  * @param miniValue Minimum value for the y-axis value indication
+ * @param avgValue Average value of the items
  * @param modifier Compose modifier
+ * @param currencyCode Currency code for given symbol such as EUR for £
  */
 @Composable
 fun FinanceBarChart(
     title: String,
-    items: List<ChartData>,
+    items: List<BarChartData>,
     maxValue: Float,
     miniValue: Float,
     avgValue: Float,
@@ -143,7 +146,7 @@ fun FinanceBarChart(
                         }
                     )
                     Bars(
-                        label = item.label,
+                        label = item.label.asString(),
                         values = listOf(
                             Bars.Data(
                                 value = item.value.toDouble(),
@@ -197,12 +200,12 @@ fun FinanceBarChartPreview() {
             FinanceBarChart(
                 title = "Income",
                 items = listOf(
-                    ChartData("Salary", 5_000f),
-                    ChartData("Bonus", 4_000f),
-                    ChartData("Commission", 3_000f),
-                    ChartData("Benefit", 2_000f),
-                    ChartData("Investment", 1_000f),
-                    ChartData("Other", 500f),
+                    BarChartData("Salary", 5_000f),
+                    BarChartData("Bonus", 4_000f),
+                    BarChartData("Commission", 3_000f),
+                    BarChartData("Benefit", 2_000f),
+                    BarChartData("Investment", 1_000f),
+                    BarChartData("Other", 500f),
                 ),
                 maxValue = 5_000f,
                 miniValue = 0f,

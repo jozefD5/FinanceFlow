@@ -14,6 +14,7 @@
     <!-- Charts -->
     <dimen name="chart_round_corner_size_small">8.dp</dimen>
     <dimen name="chart_padding_medium">12.dp</dimen>
+    <dimen name="chart_padding_large">16.dp</dimen>
     <dimen name="chart_item_arrangement_spacing">12.dp</dimen>
     <dimen name="chart_symbol_size">40.dp</dimen>
     <dimen name="chart_bar_thickness">24.dp</dimen>
