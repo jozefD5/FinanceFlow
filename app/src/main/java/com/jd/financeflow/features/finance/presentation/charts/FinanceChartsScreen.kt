@@ -18,11 +18,27 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.jd.financeflow.R
 import com.jd.financeflow.features.core.presentation.UiText
 import com.jd.financeflow.features.finance.domain.models.chart.BarChartData
 import com.jd.financeflow.features.finance.presentation.charts.components.FinanceBarChart
+import org.koin.androidx.compose.koinViewModel
+
+
+@Composable
+fun FinanceChartsScreen(
+    modifier: Modifier = Modifier,
+    viewModel: ChartsViewModel = koinViewModel()
+) {
+    val state = viewModel.state.collectAsStateWithLifecycle()
+
+    FinanceChartsView(
+        state = state.value,
+        modifier = modifier
+    )
+}
 
 @Composable
 fun FinanceChartsView(
@@ -62,10 +78,8 @@ fun FinanceChartsView(
                 .fillMaxWidth()
                 .padding(dimensionResource(R.dimen.chart_padding_large))
         )
-
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
@@ -78,23 +92,23 @@ fun FinanceChartsViewPreview() {
                     averageIncome = 2_583.33f,
                     incomeCategoryChartData = listOf(
                         BarChartData(UiText.DynamicString("Salary"), 5_000f),
-                        BarChartData("Bonus", 4_000f),
-                        BarChartData("Commission", 3_000f),
-                        BarChartData("Benefit", 2_000f),
-                        BarChartData("Investment", 1_000f),
-                        BarChartData("Other", 500f),
+                        BarChartData(UiText.DynamicString("Bonus"), 4_000f),
+                        BarChartData(UiText.DynamicString("Commission"), 3_000f),
+                        BarChartData(UiText.DynamicString("Benefit"), 2_000f),
+                        BarChartData(UiText.DynamicString("Investment"), 1_000f),
+                        BarChartData(UiText.DynamicString("Other"), 500f),
                     ),
                     maxExpenses = 2_000f,
                     averageExpenses = 556.25f,
                     expensesCategoryChartData = listOf(
-                        BarChartData("Housing", 2_000f),
-                        BarChartData("Utility", 250f),
-                        BarChartData("Food", 800f),
-                        BarChartData("Transport", 500f),
-                        BarChartData("Health", 100f),
-                        BarChartData("Education", 500f),
-                        BarChartData("Entertainment", 100f),
-                        BarChartData("Other", 200f),
+                        BarChartData(UiText.DynamicString("Housing"), 2_000f),
+                        BarChartData(UiText.DynamicString("Utility"), 250f),
+                        BarChartData(UiText.DynamicString("Food"), 800f),
+                        BarChartData(UiText.DynamicString("Transport"), 500f),
+                        BarChartData(UiText.DynamicString("Health"), 100f),
+                        BarChartData(UiText.DynamicString("Education"), 500f),
+                        BarChartData(UiText.DynamicString("Entertainment"), 100f),
+                        BarChartData(UiText.DynamicString("Other"), 200f),
                     ),
                 ),
                 modifier = Modifier.padding(innerPadding)

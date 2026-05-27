@@ -46,6 +46,7 @@ import ir.ehsannarmani.compose_charts.models.LabelHelperProperties
 import ir.ehsannarmani.compose_charts.models.LabelProperties
 
 import com.jd.financeflow.R
+import com.jd.financeflow.features.core.presentation.UiText
 import com.jd.financeflow.features.core.presentation.components.formatCurrency
 import com.jd.financeflow.features.finance.domain.models.chart.BarChartData
 
@@ -200,12 +201,12 @@ fun FinanceBarChartPreview() {
             FinanceBarChart(
                 title = "Income",
                 items = listOf(
-                    BarChartData("Salary", 5_000f),
-                    BarChartData("Bonus", 4_000f),
-                    BarChartData("Commission", 3_000f),
-                    BarChartData("Benefit", 2_000f),
-                    BarChartData("Investment", 1_000f),
-                    BarChartData("Other", 500f),
+                    BarChartData(UiText.DynamicString("Salary"), 5_000f),
+                    BarChartData(UiText.DynamicString("Bonus"), 4_000f),
+                    BarChartData(UiText.DynamicString("Commission"), 3_000f),
+                    BarChartData(UiText.DynamicString("Benefit"), 2_000f),
+                    BarChartData(UiText.DynamicString("Investment"), 1_000f),
+                    BarChartData(UiText.DynamicString("Other"), 500f),
                 ),
                 maxValue = 5_000f,
                 miniValue = 0f,

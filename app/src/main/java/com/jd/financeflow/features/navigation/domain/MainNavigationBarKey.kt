@@ -6,7 +6,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ViewList
 import androidx.compose.material.icons.automirrored.outlined.ViewList
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.InsertChart
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.InsertChartOutlined
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation3.runtime.NavKey
@@ -33,13 +35,21 @@ sealed interface MainNavigationBarKey : NavKey {
     data object FinanceListTab : MainNavigationBarKey {
         override val icon: ImageVector = Icons.AutoMirrored.Outlined.ViewList
         override val selectedIcon: ImageVector = Icons.AutoMirrored.Filled.ViewList
+        override val labelResourceId = R.string.charts_tab_label
+    }
+
+    @Serializable
+    data object ChartTab : MainNavigationBarKey {
+        override val icon: ImageVector = Icons.Outlined.InsertChartOutlined
+        override val selectedIcon: ImageVector = Icons.Filled.InsertChart
         override val labelResourceId = R.string.finances_tab_label
     }
 
     companion object {
         val items = listOf(
             MainTab,
-            FinanceListTab
+            FinanceListTab,
+            ChartTab
         )
 
         val stateSaver = Saver<MainNavigationBarKey, String>(
@@ -78,4 +88,12 @@ sealed interface FinanceRootKey : NavKey {
     data class FinanceFilterScreen(
         val filterConfiguration: FilterConfiguration? = null
     ) : FinanceRootKey
+}
+
+/**
+ * Sealed interface representing the navigation keys for the charts screen
+ */
+sealed interface ChartsRootKey : NavKey {
+    @Serializable
+    data object Charts : ChartsRootKey
 }
