@@ -1,6 +1,5 @@
 package com.jd.financeflow.features.finance.presentation.charts.components
 
-import android.content.res.Configuration
 import android.icu.util.Currency
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -33,6 +32,8 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextAlign.Companion
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,6 +50,9 @@ import com.jd.financeflow.R
 import com.jd.financeflow.features.core.presentation.UiText
 import com.jd.financeflow.features.core.presentation.components.formatCurrency
 import com.jd.financeflow.features.finance.domain.models.chart.BarChartData
+import ir.ehsannarmani.compose_charts.models.IndicatorCount
+import ir.ehsannarmani.compose_charts.models.IndicatorPosition
+import java.util.Locale
 
 
 // Color palette
@@ -165,16 +169,51 @@ fun FinanceBarChart(
                 ),
                 labelProperties = LabelProperties(
                     enabled = true,
-                    builder = { _, label, _, _ ->
-                        Text(
-                            text = label.substring(0, 3),
-                            style = TextStyle.Default.copy(fontSize = 12.sp),
-                        )
-                    }
+                    textStyle = TextStyle.Default.copy(
+                        fontSize = 10.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.End
+                    ),
+//                    builder = { _, label, _, _ ->
+//                        Text(
+//                            text = label,//.substring(0, 3),
+//                            style = TextStyle.Default.copy(
+//                                fontSize = 10.sp,
+//                                color = MaterialTheme.colorScheme.onSurfaceVariant
+//                            ),
+//                        )
+//                    },
+                    rotation = LabelProperties.Rotation(
+                        mode = LabelProperties.Rotation.Mode.Force,
+                        degree = -45f,
+                        padding = 2.dp
+                    ),
                 ),
                 indicatorProperties = HorizontalIndicatorProperties(
-                    textStyle = TextStyle.Default.copy(fontSize = 12.sp),
-                    contentBuilder = { value -> value.toInt().toString() }
+                    textStyle = TextStyle.Default.copy(
+                        fontSize = 10.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    ),
+                    count = IndicatorCount.CountBased(5),
+                    position = IndicatorPosition.Horizontal.Start,
+                    padding = 24.dp,
+                    contentBuilder = { value ->
+                        when {
+                            value >= 1_000_000 -> String.format(
+                                Locale.getDefault(),
+                                "%.1fM",
+                                value / 1_000_000
+                            ).replace(".0", "")
+
+                            value >= 1_000 -> String.format(
+                                Locale.getDefault(),
+                                "%.1fK",
+                                value / 1_000
+                            ).replace(".0", "")
+
+                            else -> value.toInt().toString()
+                        }
+                    }
                 ),
                 dividerProperties = DividerProperties(enabled = false),
                 labelHelperProperties = LabelHelperProperties(enabled = false),
@@ -184,16 +223,15 @@ fun FinanceBarChart(
                 ),
                 maxValue = maxValue + (maxValue * 0.05),
                 minValue = miniValue.toDouble(),
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(4.dp)
             )
         }
     }
 }
 
-@Preview(
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES,
-)
+@Preview(showBackground = true)
 @Composable
 fun FinanceBarChartPreview() {
     MaterialTheme {

@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 
 import com.jd.financeflow.features.core.presentation.components.CircleInitialAvatar
@@ -68,8 +69,10 @@ fun FinanceListItem(
             Text(
                 text = "$amountSign ${formatCurrency(value = finance.amount, code = currencyCode)}",
                 style = MaterialTheme.typography.titleMediumEmphasized.copy(
+                    textAlign = TextAlign.Start,
                     color = amountColor
-                )
+                ),
+                maxLines = 1
             )
         },
         modifier = modifier.combinedClickable(
