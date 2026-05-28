@@ -35,14 +35,14 @@ sealed interface MainNavigationBarKey : NavKey {
     data object FinanceListTab : MainNavigationBarKey {
         override val icon: ImageVector = Icons.AutoMirrored.Outlined.ViewList
         override val selectedIcon: ImageVector = Icons.AutoMirrored.Filled.ViewList
-        override val labelResourceId = R.string.charts_tab_label
+        override val labelResourceId = R.string.finances_tab_label
     }
 
     @Serializable
     data object ChartTab : MainNavigationBarKey {
         override val icon: ImageVector = Icons.Outlined.InsertChartOutlined
         override val selectedIcon: ImageVector = Icons.Filled.InsertChart
-        override val labelResourceId = R.string.finances_tab_label
+        override val labelResourceId = R.string.charts_tab_label
     }
 
     companion object {

@@ -24,6 +24,8 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import com.jd.financeflow.features.finance.presentation.charts.ChartsViewModel
+import com.jd.financeflow.features.finance.presentation.charts.FinanceChartsScreen
 
 import org.koin.core.parameter.parametersOf
 import org.koin.androidx.compose.koinViewModel
@@ -39,6 +41,7 @@ import com.jd.financeflow.features.finance.presentation.financeDetails.FinanceDe
 import com.jd.financeflow.features.finance.presentation.financeDetails.FinanceDetailsViewModel
 import com.jd.financeflow.features.finance.presentation.financeListFilter.FinanceListFilterScreen
 import com.jd.financeflow.features.finance.presentation.financeListFilter.FinanceListFilterViewModel
+import com.jd.financeflow.features.navigation.domain.ChartsRootKey
 
 /**
  * Main navigation for the application.
@@ -55,6 +58,7 @@ fun MainNavigation(
     // Navigation back stacks for individual tabs
     val homeBackStack = rememberNavBackStack(HomeRootKey.HomeScreen)
     val financeListBackStack = rememberNavBackStack(FinanceRootKey.FinanceListScreen())
+    val chartsBackStack = rememberNavBackStack(ChartsRootKey.Charts)
 
     // Current navigation bar key (selected tab/key)
     var currentBarKey by rememberSaveable(stateSaver = MainNavigationBarKey.stateSaver) {
@@ -65,6 +69,7 @@ fun MainNavigation(
     val currentBackStack = when (currentBarKey) {
         is MainNavigationBarKey.MainTab -> homeBackStack
         is MainNavigationBarKey.FinanceListTab -> financeListBackStack
+        is MainNavigationBarKey.ChartTab -> chartsBackStack
     }
 
     // Content of the main navigation bar
@@ -229,6 +234,24 @@ fun MainNavigation(
                                             FinanceRootKey.FinanceListScreen(config)
                                         )
                                     },
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Chart screen destinations
+                is ChartsRootKey -> {
+                    when (key) {
+                        is ChartsRootKey.Charts -> {
+                            NavEntry(key = key) {
+                                val viewModel: ChartsViewModel = koinViewModel(
+                                    parameters = { parametersOf(currencyCode) }
+                                )
+
+                                FinanceChartsScreen(
+                                    viewModel = viewModel,
                                     modifier = Modifier.fillMaxSize()
                                 )
                             }
