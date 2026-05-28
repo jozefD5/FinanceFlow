@@ -65,7 +65,11 @@ interface FinanceRepository {
         category: FinanceCategory? = null
     ): Result<Double, DataError.Local>
 
-
-
-
+    /**
+     * Retrieve the total financial amount as an average monthly value for given category
+     *
+     * @param category category type use to filter finances
+     * @return Total monthly finance amount
+     */
+    suspend fun totalMonthly(category: FinanceCategory): Result<Double, DataError.Local>
 }

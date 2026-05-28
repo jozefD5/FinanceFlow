@@ -13,12 +13,8 @@ data class FinanceChartsState(
     val currencyCode: String = "EUR",
 
     // Income
-    val maxIncome: Float = 0f,
-    val averageIncome: Float = 0f,
-    val incomeCategoryChartData: List<BarChartData> = emptyList(),
+//    val maxIncome: Float = 0f,
+//    val averageIncome: Float = 0f,
+//    val incomeCategoryChartData: List<BarChartData> = emptyList(),
 
-    // Expenses
-    val maxExpenses: Float = 0f,
-    val averageExpenses: Float = 0f,
-    val expensesCategoryChartData: List<BarChartData> = emptyList()
 )

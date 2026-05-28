@@ -30,7 +30,7 @@ class ChartsViewModel(
     private val _state = MutableStateFlow(FinanceChartsState(currencyCode = currencyCode))
     val state = _state
         .onStart {
-            refreshBarData()
+            // refreshBarData()
         }
         .stateIn(
             scope = viewModelScope,
@@ -50,106 +50,113 @@ class ChartsViewModel(
         }
     }
 
-    /**
-     * Refresh income and expense chart data
-     */
-    private fun refreshBarData() = viewModelScope.launch {
-        _state.update { it.copy(isLoading = true) }
 
-        runCatching {
-            refreshIncomeBarData()
-            refreshExpensesBarData()
-            _state.update { it.copy(isLoading = false) }
-        }.getOrElse {
-            _state.update {
-                it.copy(
-                    isLoading = false,
-                    error = DataError.Local.UNKNOWN.toUiText()
-                )
-            }
-        }
+    private fun calculateMonthlyIncome() {
+
+
     }
 
-    /**
-     * Refresh/Update income state fields representing bar data
-     */
-    private suspend fun refreshIncomeBarData() {
-        val barData = mutableListOf<BarChartData>()
+//    /**
+//     * Refresh income and expense chart data
+//     */
+//    private fun refreshBarData() = viewModelScope.launch {
+//        _state.update { it.copy(isLoading = true) }
+//
+//        runCatching {
+//            refreshIncomeBarData()
+//            refreshExpensesBarData()
+//            _state.update { it.copy(isLoading = false) }
+//        }.getOrElse {
+//            _state.update {
+//                it.copy(
+//                    isLoading = false,
+//                    error = DataError.Local.UNKNOWN.toUiText()
+//                )
+//            }
+//        }
+//    }
+//
+//    /**
+//     * Refresh/Update income state fields representing bar data
+//     */
+//    private suspend fun refreshIncomeBarData() {
+//        val barData = mutableListOf<BarChartData>()
+//
+//        IncomeCategory.entries.forEach { category ->
+//            val incomeCategory = FinanceCategory.Income(category)
+//            repository.getTotal(type = FinanceType.INCOME, category = incomeCategory)
+//                .onSuccess { values ->
+//                    barData.add(
+//                        BarChartData(
+//                            label = incomeCategory.toUiText(),
+//                            value = values.toFloat()
+//                        )
+//                    )
+//                }
+//                .onError { error ->
+//                    _state.update { it.copy(error = error.toUiText()) }
+//                    return@onError
+//                }
+//        }
+//
+//        if (barData.isEmpty()) {
+//            _state.update {
+//                it.copy(
+//                    maxIncome = 0f,
+//                    averageIncome = 0f,
+//                    incomeCategoryChartData = emptyList()
+//                )
+//            }
+//        } else {
+//            _state.update { it ->
+//                it.copy(
+//                    maxIncome = barData.maxBy { item -> item.value }.value,
+//                    averageIncome = barData.map { it.value }.average().toFloat(),
+//                    incomeCategoryChartData = barData
+//                )
+//            }
+//        }
+//    }
+//
+//    /**
+//     * Refresh/Update expenses state fields representing bar data
+//     */
+//    private suspend fun refreshExpensesBarData() {
+//        val barData = mutableListOf<BarChartData>()
+//
+//        ExpenseCategory.entries.forEach { category ->
+//            val expenseCategory = FinanceCategory.Expense(category)
+//            repository.getTotal(type = FinanceType.EXPENSE, category = expenseCategory)
+//                .onSuccess { values ->
+//                    barData.add(
+//                        BarChartData(
+//                            label = expenseCategory.toUiText(),
+//                            value = values.toFloat()
+//                        )
+//                    )
+//                }
+//                .onError { error ->
+//                    _state.update { it.copy(error = error.toUiText()) }
+//                    return@onError
+//                }
+//        }
+//
+//        if (barData.isEmpty()) {
+//            _state.update {
+//                it.copy(
+//                    maxExpenses = 0f,
+//                    averageExpenses = 0f,
+//                    expensesCategoryChartData = emptyList()
+//                )
+//            }
+//        } else
+//            _state.update { it ->
+//                it.copy(
+//                    maxExpenses = barData.maxBy { item -> item.value }.value,
+//                    averageExpenses = barData.map { it.value }.average().toFloat(),
+//                    expensesCategoryChartData = barData
+//                )
+//            }
+//    }
 
-        IncomeCategory.entries.forEach { category ->
-            val incomeCategory = FinanceCategory.Income(category)
-            repository.getTotal(type = FinanceType.INCOME, category = incomeCategory)
-                .onSuccess { values ->
-                    barData.add(
-                        BarChartData(
-                            label = incomeCategory.toUiText(),
-                            value = values.toFloat()
-                        )
-                    )
-                }
-                .onError { error ->
-                    _state.update { it.copy(error = error.toUiText()) }
-                    return@onError
-                }
-        }
-
-        if (barData.isEmpty()) {
-            _state.update {
-                it.copy(
-                    maxIncome = 0f,
-                    averageIncome = 0f,
-                    incomeCategoryChartData = emptyList()
-                )
-            }
-        } else {
-            _state.update { it ->
-                it.copy(
-                    maxIncome = barData.maxBy { item -> item.value }.value,
-                    averageIncome = barData.map { it.value }.average().toFloat(),
-                    incomeCategoryChartData = barData
-                )
-            }
-        }
-    }
-
-    /**
-     * Refresh/Update expenses state fields representing bar data
-     */
-    private suspend fun refreshExpensesBarData() {
-        val barData = mutableListOf<BarChartData>()
-
-        ExpenseCategory.entries.forEach { category ->
-            val expenseCategory = FinanceCategory.Expense(category)
-            repository.getTotal(type = FinanceType.EXPENSE, category = expenseCategory)
-                .onSuccess { values ->
-                    barData.add(
-                        BarChartData(
-                            label = expenseCategory.toUiText(),
-                            value = values.toFloat()
-                        )
-                    )
-                }
-                .onError { error ->
-                    _state.update { it.copy(error = error.toUiText()) }
-                    return@onError
-                }
-        }
-
-        if (barData.isEmpty()) {
-            _state.update {
-                it.copy(
-                    maxExpenses = 0f,
-                    averageExpenses = 0f,
-                    expensesCategoryChartData = emptyList()
-                )
-            }
-        } else
-            _state.update { it ->
-                it.copy(
-                    maxExpenses = barData.maxBy { item -> item.value }.value,
-                    averageExpenses = barData.map { it.value }.average().toFloat(),
-                    expensesCategoryChartData = barData
-                )
-            }
-    }
 }

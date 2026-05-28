@@ -54,76 +54,58 @@ fun FinanceChartsView(
             .fillMaxWidth()
             .verticalScroll(verticalScrollState)
     ) {
-        FinanceBarChart(
-            title = stringResource(R.string.finance_type_income),
-            items = state.incomeCategoryChartData,
-            maxValue = state.maxIncome,
-            miniValue = 0f,
-            currencyCode = state.currencyCode,
-            subTitle = "${stringResource(R.string.chart_average_value_label)}: ${
-                formatCurrency(
-                    state.averageIncome,
-                    state.currencyCode
-                )
-            }",
-            modifier = Modifier
-                .height(400.dp)
-                .fillMaxWidth()
-                .padding(dimensionResource(R.dimen.chart_padding_large))
-        )
-
-        FinanceBarChart(
-            title = stringResource(R.string.finance_type_expense),
-            items = state.expensesCategoryChartData,
-            maxValue = state.maxExpenses,
-            miniValue = 0f,
-            subTitle = "${stringResource(R.string.chart_average_value_label)}: ${
-                formatCurrency(
-                    state.averageIncome,
-                    state.currencyCode
-                )
-            }",
-            currencyCode = state.currencyCode,
-            modifier = Modifier
-                .height(400.dp)
-                .fillMaxWidth()
-                .padding(dimensionResource(R.dimen.chart_padding_large))
-        )
+//        FinanceBarChart(
+//            title = stringResource(R.string.finance_type_income),
+//            items = state.incomeCategoryChartData,
+//            maxValue = state.maxIncome,
+//            miniValue = 0f,
+//            currencyCode = state.currencyCode,
+//            subTitle = "${stringResource(R.string.chart_average_value_label)}: ${
+//                formatCurrency(
+//                    state.averageIncome,
+//                    state.currencyCode
+//                )
+//            }",
+//            modifier = Modifier
+//                .height(400.dp)
+//                .fillMaxWidth()
+//                .padding(dimensionResource(R.dimen.chart_padding_large))
+//        )
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun FinanceChartsViewPreview() {
-    MaterialTheme {
-        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            FinanceChartsView(
-                state = FinanceChartsState(
-                    maxIncome = 5_000f,
-                    averageIncome = 2_583.33f,
-                    incomeCategoryChartData = listOf(
-                        BarChartData(UiText.DynamicString("Salary"), 5_000f),
-                        BarChartData(UiText.DynamicString("Bonus"), 4_000f),
-                        BarChartData(UiText.DynamicString("Commission"), 3_000f),
-                        BarChartData(UiText.DynamicString("Benefit"), 2_000f),
-                        BarChartData(UiText.DynamicString("Investment"), 1_000f),
-                        BarChartData(UiText.DynamicString("Other"), 500f),
-                    ),
-                    maxExpenses = 2_000f,
-                    averageExpenses = 556.25f,
-                    expensesCategoryChartData = listOf(
-                        BarChartData(UiText.DynamicString("Housing"), 2_000f),
-                        BarChartData(UiText.DynamicString("Utility"), 250f),
-                        BarChartData(UiText.DynamicString("Food"), 800f),
-                        BarChartData(UiText.DynamicString("Transport"), 500f),
-                        BarChartData(UiText.DynamicString("Health"), 100f),
-                        BarChartData(UiText.DynamicString("Education"), 500f),
-                        BarChartData(UiText.DynamicString("Entertainment"), 100f),
-                        BarChartData(UiText.DynamicString("Other"), 200f),
-                    ),
-                ),
-                modifier = Modifier.padding(innerPadding)
-            )
-        }
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun FinanceChartsViewPreview() {
+//    MaterialTheme {
+//        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+//            FinanceChartsView(
+////                state = FinanceChartsState(
+////                    maxIncome = 5_000f,
+////                    averageIncome = 2_583.33f,
+////                    incomeCategoryChartData = listOf(
+////                        BarChartData(UiText.DynamicString("Salary"), 5_000f),
+////                        BarChartData(UiText.DynamicString("Bonus"), 4_000f),
+////                        BarChartData(UiText.DynamicString("Commission"), 3_000f),
+////                        BarChartData(UiText.DynamicString("Benefit"), 2_000f),
+////                        BarChartData(UiText.DynamicString("Investment"), 1_000f),
+////                        BarChartData(UiText.DynamicString("Other"), 500f),
+////                    ),
+////                    maxExpenses = 2_000f,
+////                    averageExpenses = 556.25f,
+////                    expensesCategoryChartData = listOf(
+////                        BarChartData(UiText.DynamicString("Housing"), 2_000f),
+////                        BarChartData(UiText.DynamicString("Utility"), 250f),
+////                        BarChartData(UiText.DynamicString("Food"), 800f),
+////                        BarChartData(UiText.DynamicString("Transport"), 500f),
+////                        BarChartData(UiText.DynamicString("Health"), 100f),
+////                        BarChartData(UiText.DynamicString("Education"), 500f),
+////                        BarChartData(UiText.DynamicString("Entertainment"), 100f),
+////                        BarChartData(UiText.DynamicString("Other"), 200f),
+////                    ),
+////                ),
+////                modifier = Modifier.padding(innerPadding)
+////            )
+//        }
+//    }
+//}
