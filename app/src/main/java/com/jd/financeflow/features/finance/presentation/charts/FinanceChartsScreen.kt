@@ -22,6 +22,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.jd.financeflow.R
 import com.jd.financeflow.features.core.presentation.UiText
+import com.jd.financeflow.features.core.presentation.components.formatCurrency
 import com.jd.financeflow.features.finance.domain.models.chart.BarChartData
 import com.jd.financeflow.features.finance.presentation.charts.components.FinanceBarChart
 import org.koin.androidx.compose.koinViewModel
@@ -58,8 +59,13 @@ fun FinanceChartsView(
             items = state.incomeCategoryChartData,
             maxValue = state.maxIncome,
             miniValue = 0f,
-            avgValue = state.averageIncome,
             currencyCode = state.currencyCode,
+            subTitle = "${stringResource(R.string.chart_average_value_label)}: ${
+                formatCurrency(
+                    state.averageIncome,
+                    state.currencyCode
+                )
+            }",
             modifier = Modifier
                 .height(400.dp)
                 .fillMaxWidth()
@@ -71,7 +77,12 @@ fun FinanceChartsView(
             items = state.expensesCategoryChartData,
             maxValue = state.maxExpenses,
             miniValue = 0f,
-            avgValue = state.averageExpenses,
+            subTitle = "${stringResource(R.string.chart_average_value_label)}: ${
+                formatCurrency(
+                    state.averageIncome,
+                    state.currencyCode
+                )
+            }",
             currencyCode = state.currencyCode,
             modifier = Modifier
                 .height(400.dp)

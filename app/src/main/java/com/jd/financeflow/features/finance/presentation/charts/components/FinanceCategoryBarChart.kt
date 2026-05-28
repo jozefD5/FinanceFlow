@@ -67,7 +67,6 @@ private val red = Color(0xFFD32F2F)
  * @param items List of data to be presented
  * @param maxValue Maximum value available in the list of items. used for y-axis value indication
  * @param miniValue Minimum value for the y-axis value indication
- * @param avgValue Average value of the items
  * @param modifier Compose modifier
  * @param currencyCode Currency code for given symbol such as EUR for £
  */
@@ -77,9 +76,9 @@ fun FinanceBarChart(
     items: List<BarChartData>,
     maxValue: Float,
     miniValue: Float,
-    avgValue: Float,
     modifier: Modifier = Modifier,
-    currencyCode: String = "EUR"
+    currencyCode: String = "EUR",
+    subTitle: String? = null,
 ) {
     OutlinedCard(
         shape = RoundedCornerShape(
@@ -122,17 +121,9 @@ fun FinanceBarChart(
 
             HorizontalDivider(modifier = Modifier.fillMaxWidth())
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.chart_item_arrangement_spacing))
-            ) {
+            subTitle?.let {
                 Text(
-                    text = stringResource(R.string.chart_average_value_label),
-                    style = TextStyle.Default.copy(fontWeight = FontWeight.Medium)
-                )
-
-                Text(
-                    text = formatCurrency(avgValue, currencyCode),
+                    text = subTitle,
                     style = TextStyle.Default.copy(fontWeight = FontWeight.Medium)
                 )
             }
@@ -172,21 +163,12 @@ fun FinanceBarChart(
                     textStyle = TextStyle.Default.copy(
                         fontSize = 10.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.End
+                        textAlign = TextAlign.Start
                     ),
-//                    builder = { _, label, _, _ ->
-//                        Text(
-//                            text = label,//.substring(0, 3),
-//                            style = TextStyle.Default.copy(
-//                                fontSize = 10.sp,
-//                                color = MaterialTheme.colorScheme.onSurfaceVariant
-//                            ),
-//                        )
-//                    },
                     rotation = LabelProperties.Rotation(
                         mode = LabelProperties.Rotation.Mode.Force,
-                        degree = -45f,
-                        padding = 2.dp
+                        degree = -25f,
+                        padding = 0.dp
                     ),
                 ),
                 indicatorProperties = HorizontalIndicatorProperties(
@@ -225,7 +207,7 @@ fun FinanceBarChart(
                 minValue = miniValue.toDouble(),
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(4.dp)
+                    .padding(bottom = 16.dp)
             )
         }
     }
@@ -248,7 +230,7 @@ fun FinanceBarChartPreview() {
                 ),
                 maxValue = 5_000f,
                 miniValue = 0f,
-                avgValue = 2_500f,
+                subTitle = "Avg: ${formatCurrency(2_500f, "EUR")}",
                 modifier = Modifier
                     .height(400.dp)
                     .fillMaxWidth()
