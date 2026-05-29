@@ -334,7 +334,7 @@ class FinanceDetailsViewModel(
                 title = currentState.title,
                 description = currentState.description,
                 amount = currentState.amount.toDouble(),
-                startDate = currentState.startDate,
+                timeStampMs = currentState.startDate,
                 interval = FinanceInterval.entries[currentState.financeIntervalIndex],
                 category = category,
                 createdAt = System.currentTimeMillis()

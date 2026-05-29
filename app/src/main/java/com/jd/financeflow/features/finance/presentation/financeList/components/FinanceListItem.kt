@@ -92,7 +92,7 @@ fun FinanceListItemPreview() {
                 description = "Monthly salary",
                 amount = 1000.0,
                 interval = FinanceInterval.Monthly,
-                startDate = System.currentTimeMillis(),
+                timeStampMs = System.currentTimeMillis(),
                 category = FinanceCategory.Income(IncomeCategory.Salary)
             ),
             onClicked = {},

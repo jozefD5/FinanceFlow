@@ -335,7 +335,7 @@ fun FinanceListViewPreview() {
             title = "Salary",
             description = "Monthly salary",
             amount = 10_000.0,
-            startDate = currentUnixTime,
+            timeStampMs = currentUnixTime,
             interval = FinanceInterval.Monthly,
             category = FinanceCategory.Income(IncomeCategory.Salary),
         ),
@@ -343,7 +343,7 @@ fun FinanceListViewPreview() {
             title = "Bonus",
             description = "Work bonus",
             amount = 5_000.0,
-            startDate = currentUnixTime,
+            timeStampMs = currentUnixTime,
             interval = FinanceInterval.Quarterly,
             category = FinanceCategory.Income(IncomeCategory.Bonus)
         ),
@@ -351,7 +351,7 @@ fun FinanceListViewPreview() {
             title = "Investment",
             description = "",
             amount = 1000.0,
-            startDate = currentUnixTime,
+            timeStampMs = currentUnixTime,
             interval = FinanceInterval.Quarterly,
             category = FinanceCategory.Income(IncomeCategory.Investment)
         ),
@@ -359,7 +359,7 @@ fun FinanceListViewPreview() {
             title = "Housing",
             description = "Rent",
             amount = 500.0,
-            startDate = currentUnixTime,
+            timeStampMs = currentUnixTime,
             interval = FinanceInterval.Monthly,
             category = FinanceCategory.Expense(ExpenseCategory.Housing)
         )

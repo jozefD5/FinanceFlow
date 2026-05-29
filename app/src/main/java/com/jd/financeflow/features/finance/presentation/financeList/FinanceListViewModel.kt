@@ -330,8 +330,8 @@ class FinanceListViewModel(
             )
 
             SortOrder.AMOUNT_DESCENDING -> filteredItems.sortedWith(compareByDescending<Finance> { it.amount }.thenBy { it.id })
-            SortOrder.NEWEST_FIRST -> filteredItems.sortedWith(compareByDescending<Finance> { it.startDate }.thenBy { it.id })
-            SortOrder.OLDEST_FIRST -> filteredItems.sortedWith(compareBy<Finance> { it.startDate }.thenBy { it.id })
+            SortOrder.NEWEST_FIRST -> filteredItems.sortedWith(compareByDescending<Finance> { it.timeStampMs }.thenBy { it.id })
+            SortOrder.OLDEST_FIRST -> filteredItems.sortedWith(compareBy<Finance> { it.timeStampMs }.thenBy { it.id })
         }
     }
 
