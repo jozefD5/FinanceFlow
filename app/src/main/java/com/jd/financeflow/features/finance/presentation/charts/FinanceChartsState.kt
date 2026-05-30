@@ -12,6 +12,10 @@ data class FinanceChartsState(
     val error: UiText? = null,
     val currencyCode: String = "EUR",
 
+    val incomeCashFlow: List<Double> = emptyList(),
+    val expensesCashFlow: List<Double> = emptyList(),
+
+
     // Income
 //    val maxIncome: Float = 0f,
 //    val averageIncome: Float = 0f,

@@ -45,16 +45,13 @@ enum class ExpenseCategory {
  * @see Income
  * @see Expense
  */
-sealed class FinanceCategory {
+sealed class FinanceCategory(val type: FinanceType) {
     /**
      * Represents a category for income transactions.
      *
      * @param category The specific income category.
      */
-    data class Income(
-        val category: IncomeCategory,
-        var type: FinanceType = FinanceType.INCOME
-    ) : FinanceCategory()
+    data class Income(val category: IncomeCategory) : FinanceCategory(FinanceType.INCOME)
 
     /**
      * Represents a category for expense transactions.
@@ -62,7 +59,6 @@ sealed class FinanceCategory {
      * @param category The specific expense category.
      */
     data class Expense(
-        val category: ExpenseCategory,
-        var type: FinanceType = FinanceType.EXPENSE
-    ) : FinanceCategory()
+        val category: ExpenseCategory
+    ) : FinanceCategory(FinanceType.EXPENSE)
 }
