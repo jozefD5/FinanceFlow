@@ -1,5 +1,6 @@
 package com.jd.financeflow.features.finance.domain.models.chart
 
+import androidx.compose.ui.graphics.Color
 import com.jd.financeflow.features.core.presentation.UiText
 
 /**
@@ -15,6 +16,7 @@ data class BarChartData(
  */
 data class LineChartData(
     val label: String,
-    val values: List<Float> = emptyList(),
+    val color: Color,
+    val values: List<Double> = emptyList(),
 )
 

@@ -77,6 +77,7 @@
     <string name="filter_apply_button_label">Apply filter</string>
 
     <string name="chart_average_value_label">Average</string>
+    <string name="chart_average_net_value_label">Avg Net Value</string>
 
 
 </resources>
