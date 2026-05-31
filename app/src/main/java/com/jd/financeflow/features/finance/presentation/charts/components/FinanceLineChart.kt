@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
@@ -44,7 +45,7 @@ import com.jd.financeflow.features.finance.domain.models.chart.LineChartData
 
 
 /**
- * Cash flow linear charts for displaying income and expenses
+ * Finance linear charts for displaying different finance data such as income and expenses
  * @param title Title
  * @param items Items (chart data) to display, each item represents single line of data
  * @param miniValue minimum value of an Y-axis
@@ -55,7 +56,7 @@ import com.jd.financeflow.features.finance.domain.models.chart.LineChartData
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun CashFlowLineChart(
+fun FinanceLineChart(
     title: String,
     items: List<LineChartData>,
     miniValue: Double,
@@ -152,9 +153,7 @@ fun CashFlowLineChart(
                 ),
                 minValue = miniValue,
                 animationMode = AnimationMode.Together(delayBuilder = { it * 500L }),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(250.dp)
+                modifier = Modifier.fillMaxWidth()
             )
         }
     }
@@ -162,10 +161,10 @@ fun CashFlowLineChart(
 
 @Preview(showBackground = true)
 @Composable
-fun CashFlowLineChartPReview() {
+fun FinanceLineChartPReview() {
     MaterialTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            CashFlowLineChart(
+            FinanceLineChart(
                 title = "Monthly Cash Flow",
                 items = listOf(
                     LineChartData(
@@ -187,7 +186,9 @@ fun CashFlowLineChartPReview() {
                 averageValue = 826.82,
                 miniValue = 0.0,
                 currencyCode = "EUR",
-                modifier = Modifier.padding(innerPadding)
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .heightIn(max = 350.dp)
             )
         }
     }

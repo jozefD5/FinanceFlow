@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -14,6 +15,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -24,7 +26,9 @@ import com.jd.financeflow.R
 import com.jd.financeflow.features.core.presentation.UiText
 import com.jd.financeflow.features.core.presentation.components.formatCurrency
 import com.jd.financeflow.features.finance.domain.models.chart.BarChartData
+import com.jd.financeflow.features.finance.domain.models.chart.LineChartData
 import com.jd.financeflow.features.finance.presentation.charts.components.FinanceBarChart
+import com.jd.financeflow.features.finance.presentation.charts.components.FinanceLineChart
 import org.koin.androidx.compose.koinViewModel
 
 
@@ -54,6 +58,27 @@ fun FinanceChartsView(
             .fillMaxWidth()
             .verticalScroll(verticalScrollState)
     ) {
+        FinanceLineChart(
+            title = "Monthly Cash Flow",
+            items = listOf(
+                LineChartData(
+                    label = "Income",
+                    color = Color(0xFF12C51A),
+                    values = state.incomeCashFlow
+                ),
+                LineChartData(
+                    label = "Expense",
+                    color = Color(0xFFBE0E1F),
+                    values = state.expensesCashFlow
+                )
+            ),
+            miniValue = 0.0,
+            currencyCode = state.currencyCode,
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = 350.dp)
+        )
+
 //        FinanceBarChart(
 //            title = stringResource(R.string.finance_type_income),
 //            items = state.incomeCategoryChartData,
@@ -74,38 +99,15 @@ fun FinanceChartsView(
     }
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//fun FinanceChartsViewPreview() {
-//    MaterialTheme {
-//        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-//            FinanceChartsView(
-////                state = FinanceChartsState(
-////                    maxIncome = 5_000f,
-////                    averageIncome = 2_583.33f,
-////                    incomeCategoryChartData = listOf(
-////                        BarChartData(UiText.DynamicString("Salary"), 5_000f),
-////                        BarChartData(UiText.DynamicString("Bonus"), 4_000f),
-////                        BarChartData(UiText.DynamicString("Commission"), 3_000f),
-////                        BarChartData(UiText.DynamicString("Benefit"), 2_000f),
-////                        BarChartData(UiText.DynamicString("Investment"), 1_000f),
-////                        BarChartData(UiText.DynamicString("Other"), 500f),
-////                    ),
-////                    maxExpenses = 2_000f,
-////                    averageExpenses = 556.25f,
-////                    expensesCategoryChartData = listOf(
-////                        BarChartData(UiText.DynamicString("Housing"), 2_000f),
-////                        BarChartData(UiText.DynamicString("Utility"), 250f),
-////                        BarChartData(UiText.DynamicString("Food"), 800f),
-////                        BarChartData(UiText.DynamicString("Transport"), 500f),
-////                        BarChartData(UiText.DynamicString("Health"), 100f),
-////                        BarChartData(UiText.DynamicString("Education"), 500f),
-////                        BarChartData(UiText.DynamicString("Entertainment"), 100f),
-////                        BarChartData(UiText.DynamicString("Other"), 200f),
-////                    ),
-////                ),
-////                modifier = Modifier.padding(innerPadding)
-////            )
-//        }
-//    }
-//}
+@Preview(showBackground = true)
+@Composable
+fun FinanceChartsViewPreview() {
+    MaterialTheme {
+        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+            FinanceChartsView(
+                state = FinanceChartsState(),
+                modifier = Modifier.padding(innerPadding)
+            )
+        }
+    }
+}
