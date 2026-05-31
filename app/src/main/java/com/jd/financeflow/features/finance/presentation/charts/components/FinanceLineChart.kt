@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
@@ -24,11 +26,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 import ir.ehsannarmani.compose_charts.LineChart
 import ir.ehsannarmani.compose_charts.models.AnimationMode
@@ -45,7 +45,13 @@ import com.jd.financeflow.features.finance.domain.models.chart.LineChartData
 
 /**
  * Cash flow linear charts for displaying income and expenses
- * @param title Title of the
+ * @param title Title
+ * @param items Items (chart data) to display, each item represents single line of data
+ * @param miniValue minimum value of an Y-axis
+ * @param modifier composable modifier
+ * @param currencyCode currency code, e.g. "EUR" for Euro
+ * @param averageValue optional average net value
+ * @param labels optional X-axis labels
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -62,9 +68,9 @@ fun CashFlowLineChart(
         shape = RoundedCornerShape(
             dimensionResource(R.dimen.chart_round_corner_size_small)
         ),
-        border = BorderStroke(width = 0.dp, color = Color.Transparent),
+        border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.outlineVariant),
         colors = CardDefaults.outlinedCardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
         ),
         modifier = modifier
     ) {
@@ -75,62 +81,80 @@ fun CashFlowLineChart(
         ) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleLargeEmphasized
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             averageValue?.let {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.padding(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(top = 4.dp, bottom = 12.dp)
                 ) {
                     Text(
                         text = stringResource(R.string.chart_average_net_value_label),
-                        style = MaterialTheme.typography.titleMediumEmphasized.copy(
-                            fontWeight = FontWeight.Bold
-                        )
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
                     Text(
                         text = formatCurrency(averageValue, currencyCode),
-                        style = MaterialTheme.typography.titleMediumEmphasized.copy(
-                            fontWeight = FontWeight.Bold
-                        )
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.ExtraBold
+                        ),
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
+
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    color = MaterialTheme.colorScheme.outlineVariant,
+                    modifier = Modifier.padding(bottom = 12.dp)
+                )
             }
 
-            averageValue?.let {
-                HorizontalDivider(thickness = 2.dp, modifier = Modifier.padding(bottom = 12.dp))
-            }
+            Spacer(modifier = Modifier.height(16.dp))
 
             LineChart(
                 data = items.map { item ->
                     Line(
                         label = item.label,
-                        values = item.values.map { it },
+                        values = item.values,
                         color = SolidColor(item.color),
-                        firstGradientFillColor = item.color.copy(alpha = .5f),
+                        firstGradientFillColor = item.color.copy(alpha = 0.3f),
                         secondGradientFillColor = Color.Transparent,
                         strokeAnimationSpec = tween(2000, easing = EaseInOutCubic),
-                        drawStyle = DrawStyle.Stroke(width = 2.dp),
-
-                        )
+                        drawStyle = DrawStyle.Stroke(width = 3.dp),
+                        curvedEdges = true,
+                    )
                 },
-
                 labelProperties = LabelProperties(
-                    enabled = !labels.isNullOrEmpty(), labels = labels ?: emptyList()
+                    enabled = !labels.isNullOrEmpty(),
+                    labels = labels ?: emptyList(),
+                    textStyle = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+                    rotation = LabelProperties.Rotation(degree = 45f)
                 ),
                 indicatorProperties = HorizontalIndicatorProperties(
-                    padding = 2.dp,
-                    textStyle = TextStyle.Default.copy(fontSize = 12.sp),
+                    padding = 12.dp,
+                    textStyle = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
                     contentBuilder = { value ->
                         formatCurrency(value, currencyCode, 0)
                     }),
-                gridProperties = GridProperties(enabled = false),
+                gridProperties = GridProperties(
+                    enabled = true,
+                    xAxisProperties = GridProperties.AxisProperties(
+                        enabled = true,
+                        color = SolidColor(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                    ),
+                    yAxisProperties = GridProperties.AxisProperties(
+                        enabled = false
+                    )
+                ),
                 minValue = miniValue,
                 animationMode = AnimationMode.Together(delayBuilder = { it * 500L }),
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(250.dp)
             )
         }
     }
@@ -142,7 +166,7 @@ fun CashFlowLineChartPReview() {
     MaterialTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             CashFlowLineChart(
-                title = "Monthly Cache Flow",
+                title = "Monthly Cash Flow",
                 items = listOf(
                     LineChartData(
                         label = "Income",
