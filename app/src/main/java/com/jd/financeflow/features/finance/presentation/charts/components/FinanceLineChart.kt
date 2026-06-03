@@ -152,7 +152,7 @@ fun FinanceLineChart(
                     )
                 ),
                 minValue = miniValue,
-                animationMode = AnimationMode.Together(delayBuilder = { it * 500L }),
+                animationMode = AnimationMode.Together(delayBuilder = { it * 200L }),
                 modifier = Modifier.fillMaxWidth()
             )
         }

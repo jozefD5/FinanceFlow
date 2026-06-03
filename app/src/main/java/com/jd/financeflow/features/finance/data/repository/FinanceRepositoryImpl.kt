@@ -102,12 +102,12 @@ class FinanceRepositoryImpl(
                 if (typeMatch && categoryMatch) {
                     // Scale amount to a Yearly Total based on interval
                     when (item.interval) {
-                        FinanceInterval.Yearly, FinanceInterval.Once -> item.amount
                         FinanceInterval.HalfYearly -> item.amount * 2
                         FinanceInterval.Quarterly -> item.amount * 4
                         FinanceInterval.Monthly -> item.amount * 12
                         FinanceInterval.Weekly -> item.amount * 52
                         FinanceInterval.Daily -> item.amount * 365
+                        FinanceInterval.Yearly -> item.amount
                     }
                 } else {
                     0.0
@@ -135,12 +135,12 @@ class FinanceRepositoryImpl(
                 val total = groupedFinances.entries.sumOf { (interval, items) ->
                     val sum = items.sumOf { it.amount }
                     when (interval) {
-                        FinanceInterval.Once, FinanceInterval.Yearly -> sum / 12.0
                         FinanceInterval.Daily -> (sum * 365.0) / 12.0
                         FinanceInterval.Weekly -> sum * 4.34524
                         FinanceInterval.Monthly -> sum
                         FinanceInterval.Quarterly -> sum / 3.0
                         FinanceInterval.HalfYearly -> sum / 6.0
+                        FinanceInterval.Yearly -> sum / 12.0
                     }
                 }
                 Result.Success(total)

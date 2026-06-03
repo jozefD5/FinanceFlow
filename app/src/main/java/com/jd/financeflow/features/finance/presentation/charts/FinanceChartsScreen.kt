@@ -59,13 +59,25 @@ fun FinanceChartsView(
             .verticalScroll(verticalScrollState)
     ) {
         FinanceLineChart(
-            title = "Monthly Cash Flow",
+            title = "Monthly Income",
             items = listOf(
                 LineChartData(
                     label = "Income",
                     color = Color(0xFF12C51A),
                     values = state.incomeCashFlow
-                ),
+                )
+            ),
+            miniValue = 0.0,
+            labels = listOf("1", "6", "11", "16", "21", "26", "31"),
+            currencyCode = state.currencyCode,
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = 350.dp)
+        )
+
+        FinanceLineChart(
+            title = "Monthly Expenses",
+            items = listOf(
                 LineChartData(
                     label = "Expense",
                     color = Color(0xFFBE0E1F),
@@ -73,6 +85,7 @@ fun FinanceChartsView(
                 )
             ),
             miniValue = 0.0,
+            labels = listOf("1", "6", "11", "16", "21", "26", "31"),
             currencyCode = state.currencyCode,
             modifier = Modifier
                 .fillMaxWidth()
