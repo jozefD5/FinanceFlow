@@ -78,6 +78,8 @@
 
     <string name="chart_average_value_label">Average</string>
     <string name="chart_average_net_value_label">Avg Net Value</string>
+    <string name="chart_monthly_income_title">Monthly Income</string>
+    <string name="chart_monthly_expenses_title">Monthly Expenses</string>
 
 
 </resources>

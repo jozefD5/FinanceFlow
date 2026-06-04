@@ -25,7 +25,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import com.jd.financeflow.features.finance.presentation.charts.ChartsViewModel
-import com.jd.financeflow.features.finance.presentation.charts.FinanceChartsScreen
+import com.jd.financeflow.features.finance.presentation.charts.ChartsScreen
 
 import org.koin.core.parameter.parametersOf
 import org.koin.androidx.compose.koinViewModel
@@ -250,7 +250,7 @@ fun MainNavigation(
                                     parameters = { parametersOf(currencyCode) }
                                 )
 
-                                FinanceChartsScreen(
+                                ChartsScreen(
                                     viewModel = viewModel,
                                     modifier = Modifier.fillMaxSize()
                                 )

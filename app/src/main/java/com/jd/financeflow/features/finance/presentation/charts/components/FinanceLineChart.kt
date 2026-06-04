@@ -42,6 +42,7 @@ import ir.ehsannarmani.compose_charts.models.LabelProperties
 import com.jd.financeflow.R
 import com.jd.financeflow.features.core.presentation.components.formatCurrency
 import com.jd.financeflow.features.finance.domain.models.chart.LineChartData
+import ir.ehsannarmani.compose_charts.models.LabelHelperProperties
 
 
 /**
@@ -53,6 +54,7 @@ import com.jd.financeflow.features.finance.domain.models.chart.LineChartData
  * @param currencyCode currency code, e.g. "EUR" for Euro
  * @param averageValue optional average net value
  * @param labels optional X-axis labels
+ * @param enableLabelHelperProperties or disable label helper properties
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -63,7 +65,8 @@ fun FinanceLineChart(
     modifier: Modifier = Modifier,
     currencyCode: String = "EUR",
     averageValue: Double? = null,
-    labels: List<String>? = null
+    labels: List<String>? = null,
+    enableLabelHelperProperties: Boolean = false
 ) {
     OutlinedCard(
         shape = RoundedCornerShape(
@@ -129,18 +132,24 @@ fun FinanceLineChart(
                         curvedEdges = true,
                     )
                 },
-                labelProperties = LabelProperties(
-                    enabled = !labels.isNullOrEmpty(),
-                    labels = labels ?: emptyList(),
-                    textStyle = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
-                    rotation = LabelProperties.Rotation(degree = 45f)
-                ),
                 indicatorProperties = HorizontalIndicatorProperties(
                     padding = 12.dp,
                     textStyle = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
                     contentBuilder = { value ->
                         formatCurrency(value, currencyCode, 0)
                     }),
+                labelProperties = LabelProperties(
+                    enabled = !labels.isNullOrEmpty(),
+                    labels = labels ?: emptyList(),
+                    textStyle = MaterialTheme.typography.labelSmall.copy(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    ),
+                    rotation = LabelProperties.Rotation(degree = 45f)
+                ),
+                labelHelperProperties = LabelHelperProperties(
+                    enabled = enableLabelHelperProperties,
+                    textStyle = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+                ),
                 gridProperties = GridProperties(
                     enabled = true,
                     xAxisProperties = GridProperties.AxisProperties(

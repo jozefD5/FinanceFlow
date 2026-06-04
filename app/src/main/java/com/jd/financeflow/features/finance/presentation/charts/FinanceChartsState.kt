@@ -1,7 +1,6 @@
 package com.jd.financeflow.features.finance.presentation.charts
 
 import com.jd.financeflow.features.core.presentation.UiText
-import com.jd.financeflow.features.finance.domain.models.chart.BarChartData
 
 /**
  * Finance charts view state
@@ -13,12 +12,8 @@ data class FinanceChartsState(
     val currencyCode: String = "EUR",
 
     val incomeCashFlow: List<Double> = emptyList(),
-    val expensesCashFlow: List<Double> = emptyList(),
+    val averageMonthlyIncome: Double? = null,
 
-
-    // Income
-//    val maxIncome: Float = 0f,
-//    val averageIncome: Float = 0f,
-//    val incomeCategoryChartData: List<BarChartData> = emptyList(),
-
+    val expenseCashFlow: List<Double> = emptyList(),
+    val averageExpenseIncome: Double? = null
 )

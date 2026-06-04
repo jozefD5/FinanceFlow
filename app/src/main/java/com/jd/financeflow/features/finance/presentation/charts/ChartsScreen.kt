@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -23,30 +22,26 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.jd.financeflow.R
-import com.jd.financeflow.features.core.presentation.UiText
-import com.jd.financeflow.features.core.presentation.components.formatCurrency
-import com.jd.financeflow.features.finance.domain.models.chart.BarChartData
 import com.jd.financeflow.features.finance.domain.models.chart.LineChartData
-import com.jd.financeflow.features.finance.presentation.charts.components.FinanceBarChart
 import com.jd.financeflow.features.finance.presentation.charts.components.FinanceLineChart
 import org.koin.androidx.compose.koinViewModel
 
 
 @Composable
-fun FinanceChartsScreen(
+fun ChartsScreen(
     modifier: Modifier = Modifier,
     viewModel: ChartsViewModel = koinViewModel()
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
 
-    FinanceChartsView(
+    ChartsView(
         state = state.value,
         modifier = modifier
     )
 }
 
 @Composable
-fun FinanceChartsView(
+fun ChartsView(
     state: FinanceChartsState,
     modifier: Modifier = Modifier,
     verticalScrollState: ScrollState = rememberScrollState()
@@ -59,10 +54,10 @@ fun FinanceChartsView(
             .verticalScroll(verticalScrollState)
     ) {
         FinanceLineChart(
-            title = "Monthly Income",
+            title = stringResource(R.string.chart_monthly_income_title),
             items = listOf(
                 LineChartData(
-                    label = "Income",
+                    label = stringResource(R.string.finance_type_income),
                     color = Color(0xFF12C51A),
                     values = state.incomeCashFlow
                 )
@@ -76,12 +71,12 @@ fun FinanceChartsView(
         )
 
         FinanceLineChart(
-            title = "Monthly Expenses",
+            title = stringResource(R.string.chart_monthly_expenses_title),
             items = listOf(
                 LineChartData(
-                    label = "Expense",
+                    label = stringResource(R.string.finance_type_expense),
                     color = Color(0xFFBE0E1F),
-                    values = state.expensesCashFlow
+                    values = state.expenseCashFlow
                 )
             ),
             miniValue = 0.0,
@@ -91,33 +86,15 @@ fun FinanceChartsView(
                 .fillMaxWidth()
                 .heightIn(max = 350.dp)
         )
-
-//        FinanceBarChart(
-//            title = stringResource(R.string.finance_type_income),
-//            items = state.incomeCategoryChartData,
-//            maxValue = state.maxIncome,
-//            miniValue = 0f,
-//            currencyCode = state.currencyCode,
-//            subTitle = "${stringResource(R.string.chart_average_value_label)}: ${
-//                formatCurrency(
-//                    state.averageIncome,
-//                    state.currencyCode
-//                )
-//            }",
-//            modifier = Modifier
-//                .height(400.dp)
-//                .fillMaxWidth()
-//                .padding(dimensionResource(R.dimen.chart_padding_large))
-//        )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun FinanceChartsViewPreview() {
+fun ChartsViewPreview() {
     MaterialTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            FinanceChartsView(
+            ChartsView(
                 state = FinanceChartsState(),
                 modifier = Modifier.padding(innerPadding)
             )

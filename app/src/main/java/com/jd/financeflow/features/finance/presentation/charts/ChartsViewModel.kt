@@ -1,6 +1,5 @@
 package com.jd.financeflow.features.finance.presentation.charts
 
-import android.util.Log
 import java.time.Instant
 import java.time.ZoneId
 
@@ -43,9 +42,9 @@ class ChartsViewModel(
      * On action handler
      * @param action Action to be handled
      */
-    fun onAction(action: FinanceChartsActions) {
+    fun onAction(action: ChartsActions) {
         when (action) {
-            is FinanceChartsActions.OnClearError -> {
+            is ChartsActions.OnClearError -> {
                 _state.update { it.copy(error = null) }
             }
         }
@@ -84,65 +83,9 @@ class ChartsViewModel(
             it.copy(
                 isLoading = false,
                 incomeCashFlow = incomeCashFlow,
-                expensesCashFlow = expenseCashFlow
+                expenseCashFlow = expenseCashFlow,
             )
         }
-    }
-
-    private fun calculateAveragePerMonthDay1(finances: List<Finance>): List<Double> {
-        val daysInMonth = 31
-        val dailyAverages = MutableList(daysInMonth) { 0.0 }
-        if (finances.isEmpty()) return dailyAverages
-
-        // Calculate the number of distinct months represented in the data
-        val distinctMonths = finances.map {
-            val date = Instant.ofEpochMilli(it.timeStampMs).atZone(ZoneId.systemDefault())
-            date.year to date.monthValue
-        }.distinct().size.coerceAtLeast(1)
-
-        finances.forEach { finance ->
-            val date = Instant.ofEpochMilli(finance.timeStampMs).atZone(ZoneId.systemDefault())
-            val dayOfRecord = date.dayOfMonth
-            val amount = finance.amount
-
-            when (finance.interval) {
-                FinanceInterval.Daily -> {
-                    for (i in 0 until daysInMonth) dailyAverages[i] += amount
-                }
-
-                FinanceInterval.Weekly -> {
-                    var day = dayOfRecord
-                    while (day <= daysInMonth) {
-                        dailyAverages[day - 1] += amount
-                        day += 7
-                    }
-                    day = dayOfRecord - 7
-                    while (day >= 1) {
-                        dailyAverages[day - 1] += amount
-                        day -= 7
-                    }
-                }
-
-                FinanceInterval.Monthly -> {
-                    if (dayOfRecord in 1..daysInMonth) dailyAverages[dayOfRecord - 1] += amount
-                }
-
-                FinanceInterval.Quarterly -> {
-                    if (dayOfRecord in 1..daysInMonth) dailyAverages[dayOfRecord - 1] += amount / 3.0
-                }
-
-                FinanceInterval.HalfYearly -> {
-                    if (dayOfRecord in 1..daysInMonth) dailyAverages[dayOfRecord - 1] += amount / 6.0
-                }
-
-                FinanceInterval.Yearly -> {
-                    if (dayOfRecord in 1..daysInMonth) dailyAverages[dayOfRecord - 1] += amount / 12.0
-                }
-            }
-        }
-
-        // Divide by the number of months to get the average typical month
-        return dailyAverages.map { it / distinctMonths }
     }
 
     private fun calculateAveragePerMonthDay(finances: List<Finance>): List<Double> {
