@@ -1,113 +1,116 @@
 package com.jd.financeflow.features.finance.presentation.financeDetails.components
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerState
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 
-import com.jd.financeflow.ui.theme.FinanceFlowTheme
+import com.jd.financeflow.R
+
 
 /**
  * A composable that displays a date picker field.
- *
- * @param modifier Modifier to be applied to the composable.
+ * @param value Value (date) to display
  * @param onValueChange Callback function to be invoked when the selected date changes. Allows to
  * retrieve the selected date.
+ * @param modifier Modifier to be applied to the composable.
  * @param label Label to be displayed above the date picker field.
  * @param placeholder Placeholder to be displayed when the date picker field is empty.
  * @param shape Shape of the date picker field.
  * @param colors Colors to be used for the date picker field.
- * @param datePickerState State object that holds the state of the date picker.
  */
 @Composable
 fun DataPickerField(
+    value: Long?,
+    onValueChange: (Long?) -> Unit,
     modifier: Modifier = Modifier,
-    onValueChange: (Long?) -> Unit = {},
     label: String? = null,
     placeholder: String? = null,
     shape: Shape = OutlinedTextFieldDefaults.shape,
-    colors: TextFieldColors = OutlinedTextFieldDefaults.colors(),
-    datePickerState: DatePickerState = rememberDatePickerState()
+    colors: TextFieldColors = OutlinedTextFieldDefaults.colors()
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
 
-    val selectedDate = datePickerState.selectedDateMillis?.let {
-        convertMillisToDate(it)
-    } ?: ""
+    // Internal state synchronized with the external value
+    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = value)
 
-    Box(modifier = modifier.height(IntrinsicSize.Min)) {
+    // Format the timestamp for display
+    val formattedDate = remember(value) {
+        value?.let { convertMillisToDate(it) } ?: ""
+    }
+
+    Box(modifier = modifier) {
         OutlinedTextField(
-            value = selectedDate,
-            onValueChange = {
-                onValueChange(datePickerState.selectedDateMillis)
-            },
-            label = { if (label != null) Text(label) },
-            placeholder = { if (placeholder != null) Text(placeholder) },
+            value = formattedDate,
+            onValueChange = {},
+            label = { label?.let { Text(it) } },
+            placeholder = { placeholder?.let { Text(it) } },
             readOnly = true,
             shape = shape,
             colors = colors,
             trailingIcon = {
-                IconButton(
-                    onClick = { showDatePicker = !showDatePicker }
-                ) {
-                    Icon(Icons.Default.DateRange, contentDescription = null)
+                IconButton(onClick = { showDatePicker = true }) {
+                    Icon(Icons.Default.DateRange, contentDescription = "Select date")
                 }
             },
+            // Use interactionSource to capture clicks cleanly without an overlay hack
+            interactionSource = remember { MutableInteractionSource() }
+                .also { interactionSource ->
+                    LaunchedEffect(interactionSource) {
+                        interactionSource.interactions.collect { interaction ->
+                            if (interaction is PressInteraction.Release) {
+                                showDatePicker = true
+                            }
+                        }
+                    }
+                },
             modifier = Modifier.fillMaxWidth()
         )
 
-        Surface(
-            color = Color.Transparent,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 8.dp)
-                .clip(MaterialTheme.shapes.extraSmall)
-                .clickable { showDatePicker = true },
-        ) { }
-
         if (showDatePicker) {
-            Dialog(
+            DatePickerDialog(
                 onDismissRequest = { showDatePicker = false },
-            ) {
-                FinanceFlowTheme {
-                    Surface(
-                        shape = RoundedCornerShape(12.dp),
-                    ) {
-                        DatePicker(
-                            state = datePickerState,
-                            showModeToggle = true,
-                        )
+                confirmButton = {
+                    TextButton(onClick = {
+                        onValueChange(datePickerState.selectedDateMillis)
+                        showDatePicker = false
+                    }) {
+                        Text(stringResource(R.string.save_title))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDatePicker = false }) {
+                        Text(stringResource(R.string.cancel_title))
                     }
                 }
+            ) {
+                DatePicker(
+                    state = datePickerState,
+                    showModeToggle = true
+                )
             }
         }
     }
@@ -116,15 +119,12 @@ fun DataPickerField(
 @Preview(showBackground = true)
 @Composable
 fun DataPickerFieldPreview() {
-    val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = System.currentTimeMillis()
-    )
-
     MaterialTheme {
         DataPickerField(
+            value = System.currentTimeMillis(),
             label = "Date",
+            onValueChange = {},
             placeholder = "Select date",
-            datePickerState = datePickerState
         )
     }
 }

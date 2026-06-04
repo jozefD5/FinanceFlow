@@ -168,6 +168,7 @@ class FinanceDetailsViewModel(
                                 "%.2f",
                                 result.data.amount
                             ),
+                            startDate = result.data.timeStampMs,
                             financeIntervalIndex = result.data.interval.ordinal,
                             financeTypeIndex = typeIndex,
                             financeCategoryIndex = categoryIndex
