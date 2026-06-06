@@ -90,8 +90,7 @@ fun HomeView(
                 bottomStart = dimensionResource(R.dimen.padding_extra_extra_large),
                 bottomEnd = dimensionResource(R.dimen.padding_extra_extra_large)
             ),
-            modifier = Modifier
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -106,8 +105,7 @@ fun HomeView(
                     currencyCode = state.currencyCode,
                     color = Color.Transparent,
                     textColor = Color.White,
-                    modifier = Modifier
-                        .fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth()
                 )
 
                 Row(

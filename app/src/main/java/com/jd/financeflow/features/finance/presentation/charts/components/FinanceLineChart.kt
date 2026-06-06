@@ -1,5 +1,9 @@
 package com.jd.financeflow.features.finance.presentation.charts.components
 
+import java.util.Locale
+
+import android.icu.text.NumberFormat
+import android.icu.util.Currency
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
@@ -38,11 +42,11 @@ import ir.ehsannarmani.compose_charts.models.GridProperties
 import ir.ehsannarmani.compose_charts.models.HorizontalIndicatorProperties
 import ir.ehsannarmani.compose_charts.models.Line
 import ir.ehsannarmani.compose_charts.models.LabelProperties
+import ir.ehsannarmani.compose_charts.models.LabelHelperProperties
 
 import com.jd.financeflow.R
 import com.jd.financeflow.features.core.presentation.components.formatCurrency
 import com.jd.financeflow.features.finance.domain.models.chart.LineChartData
-import ir.ehsannarmani.compose_charts.models.LabelHelperProperties
 
 
 /**
@@ -68,6 +72,9 @@ fun FinanceLineChart(
     labels: List<String>? = null,
     enableLabelHelperProperties: Boolean = false
 ) {
+    val formatter = NumberFormat.getCurrencyInstance()
+    formatter.currency = Currency.getInstance(currencyCode)
+
     OutlinedCard(
         shape = RoundedCornerShape(
             dimensionResource(R.dimen.chart_round_corner_size_small)
@@ -85,7 +92,7 @@ fun FinanceLineChart(
         ) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.headlineSmall,
+                style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface
             )
 
@@ -136,7 +143,22 @@ fun FinanceLineChart(
                     padding = 12.dp,
                     textStyle = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
                     contentBuilder = { value ->
-                        formatCurrency(value, currencyCode, 0)
+                        val preFormatedValue = when {
+                            value >= 1_000_000 -> String.format(
+                                Locale.getDefault(),
+                                "%.1fM",
+                                value / 1_000_000
+                            ).replace(".0", "")
+
+                            value >= 1_000 -> String.format(
+                                Locale.getDefault(),
+                                "%.1fK",
+                                value / 1_000
+                            ).replace(".0", "")
+
+                            else -> value.toInt().toString()
+                        }
+                        "${formatter.currency.symbol} $preFormatedValue"
                     }),
                 labelProperties = LabelProperties(
                     enabled = !labels.isNullOrEmpty(),

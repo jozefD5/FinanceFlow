@@ -51,6 +51,7 @@ fun ChartsView(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.chart_padding_medium)),
         modifier = modifier
             .fillMaxWidth()
+            .padding(dimensionResource(R.dimen.padding_medium))
             .verticalScroll(verticalScrollState)
     ) {
         FinanceLineChart(
@@ -67,7 +68,7 @@ fun ChartsView(
             currencyCode = state.currencyCode,
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(max = 350.dp)
+                .heightIn(max = 250.dp)
         )
 
         FinanceLineChart(
@@ -84,7 +85,7 @@ fun ChartsView(
             currencyCode = state.currencyCode,
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(max = 350.dp)
+                .heightIn(max = 250.dp)
         )
     }
 }
