@@ -141,7 +141,7 @@ fun FinanceLineChart(
                 },
                 indicatorProperties = HorizontalIndicatorProperties(
                     padding = 12.dp,
-                    textStyle = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+                    textStyle = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
                     contentBuilder = { value ->
                         val preFormatedValue = when {
                             value >= 1_000_000 -> String.format(
@@ -158,7 +158,7 @@ fun FinanceLineChart(
 
                             else -> value.toInt().toString()
                         }
-                        "${formatter.currency.symbol} $preFormatedValue"
+                        "${formatter.currency.symbol}$preFormatedValue"
                     }),
                 labelProperties = LabelProperties(
                     enabled = !labels.isNullOrEmpty(),
@@ -166,7 +166,11 @@ fun FinanceLineChart(
                     textStyle = MaterialTheme.typography.labelSmall.copy(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     ),
-                    rotation = LabelProperties.Rotation(degree = 45f)
+                    rotation = LabelProperties.Rotation(
+                        mode = LabelProperties.Rotation.Mode.Force,
+                        degree = -25f,
+                        padding = 0.dp
+                    )
                 ),
                 labelHelperProperties = LabelHelperProperties(
                     enabled = enableLabelHelperProperties,
@@ -192,7 +196,7 @@ fun FinanceLineChart(
 
 @Preview(showBackground = true)
 @Composable
-fun FinanceLineChartPReview() {
+fun FinanceLineChartPreview() {
     MaterialTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             FinanceLineChart(

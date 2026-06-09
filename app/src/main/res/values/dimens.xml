@@ -17,6 +17,6 @@
     <dimen name="chart_padding_large">16.dp</dimen>
     <dimen name="chart_item_arrangement_spacing">12.dp</dimen>
     <dimen name="chart_symbol_size">40.dp</dimen>
-    <dimen name="chart_bar_thickness">12.dp</dimen>
+    <dimen name="chart_bar_thickness">8.dp</dimen>
     <dimen name="chart_bar_radius">12.dp</dimen>
 </resources>

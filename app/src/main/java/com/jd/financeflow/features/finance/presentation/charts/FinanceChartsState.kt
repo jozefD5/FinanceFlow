@@ -12,8 +12,8 @@ data class FinanceChartsState(
     val currencyCode: String = "EUR",
 
     val incomeCashFlow: List<Double> = emptyList(),
-    val averageMonthlyIncome: Double? = null,
-
     val expenseCashFlow: List<Double> = emptyList(),
-    val averageExpenseIncome: Double? = null
+
+    val monthlyIncome: List<Double> = emptyList(),
+    val monthlyExpense: List<Double> = emptyList()
 )

@@ -24,7 +24,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -35,6 +37,7 @@ import ir.ehsannarmani.compose_charts.models.DividerProperties
 import ir.ehsannarmani.compose_charts.models.HorizontalIndicatorProperties
 import ir.ehsannarmani.compose_charts.models.LabelHelperProperties
 import ir.ehsannarmani.compose_charts.models.LabelProperties
+import ir.ehsannarmani.compose_charts.models.GridProperties
 
 import com.jd.financeflow.R
 
@@ -91,7 +94,7 @@ fun MonthlyFinanceBarChart(
                         label = month.name.substring(0, 3),
                         values = listOf(
                             Bars.Data(
-                                label = "Income",
+                                label = stringResource(R.string.balance_card_label_income),
                                 value = incomeValue,
                                 color = Brush.verticalGradient(
                                     listOf(
@@ -102,7 +105,7 @@ fun MonthlyFinanceBarChart(
                                 )
                             ),
                             Bars.Data(
-                                label = "Expense",
+                                label = stringResource(R.string.balance_card_label_expense),
                                 value = expenseValue,
                                 color = Brush.verticalGradient(
                                     listOf(
@@ -115,29 +118,10 @@ fun MonthlyFinanceBarChart(
                         ),
                     )
                 },
-                barProperties = BarProperties(
-                    thickness = dimensionResource(R.dimen.chart_bar_thickness),
-                    cornerRadius = Bars.Data.Radius.Rectangle(
-                        topLeft = dimensionResource(R.dimen.chart_bar_radius),
-                        topRight = dimensionResource(R.dimen.chart_bar_radius)
-                    ),
-                    spacing = 0.dp
-                ),
-                labelProperties = LabelProperties(
-                    enabled = true,
-                    textStyle = MaterialTheme.typography.labelSmall.copy(
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    ),
-                    rotation = LabelProperties.Rotation(
-                        mode = LabelProperties.Rotation.Mode.Force,
-                        degree = -25f,
-                        padding = 0.dp
-                    ),
-                ),
                 indicatorProperties = HorizontalIndicatorProperties(
-                    padding = 12.dp,
-                    textStyle = MaterialTheme.typography.labelSmall.copy(
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    padding = 16.dp,
+                    textStyle = MaterialTheme.typography.bodySmall.copy(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     ),
                     contentBuilder = { value ->
                         val preFormatedValue = when {
@@ -155,11 +139,40 @@ fun MonthlyFinanceBarChart(
 
                             else -> value.toInt().toString()
                         }
-                        "${formatter.currency.symbol} $preFormatedValue"
+                        "${formatter.currency.symbol}$preFormatedValue"
                     }
                 ),
-                dividerProperties = DividerProperties(enabled = false),
+                labelProperties = LabelProperties(
+                    enabled = true,
+                    textStyle = MaterialTheme.typography.labelSmall.copy(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    ),
+                    rotation = LabelProperties.Rotation(
+                        mode = LabelProperties.Rotation.Mode.Force,
+                        degree = -25f,
+                        padding = 0.dp
+                    ),
+                ),
                 labelHelperProperties = LabelHelperProperties(enabled = false),
+                barProperties = BarProperties(
+                    thickness = dimensionResource(R.dimen.chart_bar_thickness),
+                    cornerRadius = Bars.Data.Radius.Rectangle(
+                        topLeft = dimensionResource(R.dimen.chart_bar_radius),
+                        topRight = dimensionResource(R.dimen.chart_bar_radius)
+                    ),
+                    spacing = 0.dp
+                ),
+                gridProperties = GridProperties(
+                    enabled = true,
+                    xAxisProperties = GridProperties.AxisProperties(
+                        enabled = true,
+                        color = SolidColor(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                    ),
+                    yAxisProperties = GridProperties.AxisProperties(
+                        enabled = false
+                    )
+                ),
+                dividerProperties = DividerProperties(enabled = false),
                 minValue = miniValue,
                 animationSpec = spring(
                     dampingRatio = Spring.DampingRatioMediumBouncy,

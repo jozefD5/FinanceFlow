@@ -24,6 +24,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jd.financeflow.R
 import com.jd.financeflow.features.finance.domain.models.chart.LineChartData
 import com.jd.financeflow.features.finance.presentation.charts.components.FinanceLineChart
+import com.jd.financeflow.features.finance.presentation.charts.components.MonthlyFinanceBarChart
 import org.koin.androidx.compose.koinViewModel
 
 
@@ -87,6 +88,17 @@ fun ChartsView(
                 .fillMaxWidth()
                 .heightIn(max = 250.dp)
         )
+
+        MonthlyFinanceBarChart(
+            title = "Income vs Expense",
+            income = state.monthlyIncome,
+            expense = state.monthlyExpense,
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = 250.dp)
+        )
+
+
     }
 }
 
