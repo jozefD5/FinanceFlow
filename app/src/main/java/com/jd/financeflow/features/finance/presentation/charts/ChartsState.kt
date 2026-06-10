@@ -10,9 +10,11 @@ data class ChartsState(
     val isLoading: Boolean = false,
     val error: UiText? = null,
     val currencyCode: String = "EUR",
+    val selectedChartOptions: List<Boolean> = listOf(true, true, true),
 
     val avgMonthlyIncome: List<Double> = emptyList(),
     val avgMonthlyExpense: List<Double> = emptyList(),
+    val avgMonthlyBalance: List<Double> = emptyList(),
 
     val yearlyCashFlowIncome: List<Double> = emptyList(),
     val yearlyCashFlowExpense: List<Double> = emptyList(),

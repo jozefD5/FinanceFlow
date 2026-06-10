@@ -9,5 +9,6 @@ data class LineChartData(
     val label: String,
     val color: Color,
     val values: List<Double> = emptyList(),
+    val enable: Boolean = true
 )
 

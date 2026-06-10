@@ -127,17 +127,21 @@ fun FinanceLineChart(
             Spacer(modifier = Modifier.height(16.dp))
 
             LineChart(
-                data = items.map { item ->
-                    Line(
-                        label = item.label,
-                        values = item.values,
-                        color = SolidColor(item.color),
-                        firstGradientFillColor = item.color.copy(alpha = 0.5f),
-                        secondGradientFillColor = item.color.copy(alpha = 0.1f),
-                        strokeAnimationSpec = tween(2000, easing = EaseInOutCubic),
-                        drawStyle = DrawStyle.Stroke(width = 3.dp),
-                        curvedEdges = true,
-                    )
+                data = items.mapNotNull { item ->
+                    if (item.enable) {
+                        Line(
+                            label = item.label,
+                            values = item.values,
+                            color = SolidColor(item.color),
+                            firstGradientFillColor = item.color.copy(alpha = 0.5f),
+                            secondGradientFillColor = item.color.copy(alpha = 0.1f),
+                            strokeAnimationSpec = tween(2000, easing = EaseInOutCubic),
+                            drawStyle = DrawStyle.Stroke(width = 3.dp),
+                            curvedEdges = true,
+                        )
+                    } else {
+                        null
+                    }
                 },
                 indicatorProperties = HorizontalIndicatorProperties(
                     padding = 12.dp,
@@ -187,7 +191,8 @@ fun FinanceLineChart(
                     )
                 ),
                 minValue = miniValue,
-                animationMode = AnimationMode.Together(),
+                animationDelay = 0,
+                animationMode = AnimationMode.None,
                 modifier = Modifier.fillMaxWidth()
             )
         }

@@ -53,6 +53,17 @@ class ChartsViewModel(
             is ChartsActions.OnRefresh -> {
                 refreshCashFlow()
             }
+
+            is ChartsActions.OnToggleChartOption -> {
+                val updatedList = state.value.selectedChartOptions
+                    .toMutableList()
+                    .mapIndexed { index, value ->
+                        if (index == action.index) !value else value
+                    }
+                _state.update {
+                    it.copy(selectedChartOptions = updatedList)
+                }
+            }
         }
     }
 
@@ -92,6 +103,9 @@ class ChartsViewModel(
         // Final values
         val avgMonthlyIncome = avgMonthlyIncomeDeferred.await()
         val avgMonthlyExpense = avgMonthlyExpenseDeferred.await()
+        val avgMonthlyBalance = avgMonthlyIncome.mapIndexed { index, value ->
+            value - (avgMonthlyExpense.getOrNull(index) ?: 0.0)
+        }
 
         val annualIncome = annualIncomeDiffered.await()
         val annualExpense = annualExpenseDiffered.await()
@@ -104,6 +118,7 @@ class ChartsViewModel(
                 isLoading = false,
                 avgMonthlyIncome = avgMonthlyIncome,
                 avgMonthlyExpense = avgMonthlyExpense,
+                avgMonthlyBalance = avgMonthlyBalance,
                 yearlyCashFlowIncome = annualIncome,
                 yearlyCashFlowExpense = annualExpense,
                 yearlyCashFlowBalance = annualBalance
