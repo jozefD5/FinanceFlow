@@ -30,6 +30,12 @@ import com.jd.financeflow.R
 import com.jd.financeflow.features.finance.domain.models.chart.LineChartData
 import com.jd.financeflow.features.finance.presentation.charts.components.FinanceLineChart
 
+/**
+ * Finance charts screen
+ *
+ * @param modifier Modifier
+ * @param viewModel View model
+ */
 @Composable
 fun ChartsScreen(
     modifier: Modifier = Modifier,
@@ -44,6 +50,14 @@ fun ChartsScreen(
     )
 }
 
+/**
+ * Finance charts view
+ *
+ * @param state View state
+ * @param onAction Action handler
+ * @param modifier Modifier
+ * @param verticalScrollState Vertical scroll state
+ */
 @Composable
 fun ChartsView(
     state: ChartsState,
@@ -70,7 +84,7 @@ fun ChartsView(
                 title = stringResource(R.string.chart_annual_cash_flow_title),
                 items = listOf(
                     LineChartData(
-                        label = stringResource(R.string.finance_type_expense),
+                        label = stringResource(R.string.finance_type_income),
                         color = Color(0xFF12C51A),
                         values = state.yearlyCashFlowIncome
                     ),
@@ -82,7 +96,7 @@ fun ChartsView(
                     LineChartData(
                         label = stringResource(R.string.finance_balance_title),
                         color = Color(0xFF0C6EE5),
-                        values = state.avgMonthlyExpense
+                        values = state.yearlyCashFlowBalance
                     )
                 ),
                 miniValue = state.yearlyCashFlowBalance.minOrNull() ?: 0.0,

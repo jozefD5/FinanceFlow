@@ -40,7 +40,6 @@ class ChartsViewModel(
             initialValue = ChartsState(currencyCode = currencyCode)
         )
 
-
     /**
      * On action handler
      * @param action Action to be handled
@@ -96,7 +95,9 @@ class ChartsViewModel(
 
         val annualIncome = annualIncomeDiffered.await()
         val annualExpense = annualExpenseDiffered.await()
-        val annualBalance = annualIncome.zip(annualExpense) { a, b -> a - b }
+        val annualBalance = annualIncome.mapIndexed { index, value ->
+            value - (annualExpense.getOrNull(index) ?: 0.0)
+        }
 
         _state.update {
             it.copy(
@@ -109,6 +110,4 @@ class ChartsViewModel(
             )
         }
     }
-
-
 }
