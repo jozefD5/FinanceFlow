@@ -5,4 +5,5 @@ package com.jd.financeflow.features.finance.presentation.charts
  */
 sealed interface ChartsActions {
     data object OnClearError : ChartsActions
+    data object OnRefresh : ChartsActions
 }

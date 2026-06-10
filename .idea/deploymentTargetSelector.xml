@@ -10,10 +10,6 @@
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="FinanceLineChartPReview">
-        <option name="selectionMode" value="DROPDOWN" />
-        <DialogSelection />
-      </SelectionState>
       <SelectionState runConfigName="CashFlowLineChartPReview">
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection />

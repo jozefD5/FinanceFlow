@@ -132,8 +132,8 @@ fun FinanceLineChart(
                         label = item.label,
                         values = item.values,
                         color = SolidColor(item.color),
-                        firstGradientFillColor = item.color.copy(alpha = 0.3f),
-                        secondGradientFillColor = Color.Transparent,
+                        firstGradientFillColor = item.color.copy(alpha = 0.5f),
+                        secondGradientFillColor = item.color.copy(alpha = 0.1f),
                         strokeAnimationSpec = tween(2000, easing = EaseInOutCubic),
                         drawStyle = DrawStyle.Stroke(width = 3.dp),
                         curvedEdges = true,
@@ -187,7 +187,7 @@ fun FinanceLineChart(
                     )
                 ),
                 minValue = miniValue,
-                animationMode = AnimationMode.Together(delayBuilder = { it * 200L }),
+                animationMode = AnimationMode.Together(),
                 modifier = Modifier.fillMaxWidth()
             )
         }
