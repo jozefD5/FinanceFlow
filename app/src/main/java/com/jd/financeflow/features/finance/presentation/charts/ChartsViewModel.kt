@@ -21,6 +21,7 @@ import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceType
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
 import com.jd.financeflow.features.finance.presentation.components.annualCashFlow
+import com.jd.financeflow.features.finance.presentation.components.annualTotalByCategory
 import com.jd.financeflow.features.finance.presentation.components.avgMonthlyCashFlow
 import com.jd.financeflow.features.finance.presentation.components.toUiText
 
@@ -105,6 +106,10 @@ class ChartsViewModel(
         val annualExpenseDiffered =
             async(Dispatchers.Default) { annualCashFlow(expenses) }
 
+        // Annual total by category
+        val incomeCategoryTotalDeferred = async(Dispatchers.Default) { annualTotalByCategory(incomes)}
+        val expenseCategoryTotalDeferred = async(Dispatchers.Default) { annualTotalByCategory(expenses)}
+
         // Final cash flow values
         val avgMonthlyIncome = avgMonthlyIncomeDeferred.await()
         val avgMonthlyExpense = avgMonthlyExpenseDeferred.await()
@@ -125,7 +130,27 @@ class ChartsViewModel(
         }
 
         // Categories
-        val incomeCategories = filterByCategoriesGetTotal(incomes, FinanceType.INCOME)
+        val incomeCategoryTotal = incomeCategoryTotalDeferred.await()
+        val expenseCategoryTotal = expenseCategoryTotalDeferred.await()
+
+
+
+
+//        val preIncomeProcessedFinances = finances.filter { item ->
+//            val typeCheck = item.category.type == FinanceType.INCOME
+//            val categoryCheck = incomeCategoryTotal.containsKey(item.category.order)
+//            typeCheck && categoryCheck
+//        }
+//
+//        val preExpenseProcessedFinances = finances.filter { item ->
+//            val typeCheck = item.category.type == FinanceType.EXPENSE
+//            val categoryCheck = expenseCategoryTotal.containsKey(item.category.order)
+//            typeCheck && categoryCheck
+//        }
+
+
+
+        val incomeCategories = incomeCategoryTotal
             .map { (order, amount) ->
                 val category = when (order) {
                     IncomeCategory.Salary.ordinal -> IncomeCategory.Salary
@@ -141,7 +166,7 @@ class ChartsViewModel(
                 )
             }
 
-        val expenseCategories = filterByCategoriesGetTotal(expenses, FinanceType.EXPENSE)
+        val expenseCategories = expenseCategoryTotal
             .map { (order, amount) ->
                 val category = when (order) {
                     ExpenseCategory.Housing.ordinal -> ExpenseCategory.Housing
@@ -158,6 +183,15 @@ class ChartsViewModel(
                     amount
                 )
             }
+
+
+
+
+
+
+
+
+
 
         // Update state
         _state.update {
