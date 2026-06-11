@@ -42,6 +42,33 @@ import com.jd.financeflow.features.finance.presentation.charts.components.ChartL
 import com.jd.financeflow.features.finance.presentation.charts.components.FinanceLineChart
 import com.jd.financeflow.features.finance.presentation.charts.components.FinancePieChart
 
+// Monthly finance line chart labels
+private val lineLabels = listOf("1", "6", "11", "16", "21", "26", "31")
+
+// High-contrast colors for Income (Alternating distinct hues: Green, Blue, Lime, Teal)
+private val incomeChartColors = listOf(
+    Color(0xFF2E7D32), // Forest Green
+    Color(0xFF0288D1), // Light Blue
+    Color(0xFF9E9D24), // Olive/Lime
+    Color(0xFF00897B), // Teal
+    Color(0xFF1565C0), // Denim Blue
+    Color(0xFF558B2F), // Light Green
+    Color(0xFF00ACC1), // Cyan
+    Color(0xFF004D40)  // Deep Pine
+)
+
+// High-contrast colors for Expenses (Alternating distinct hues: Red, Purple, Orange, Pink)
+private val expenseChartColors = listOf(
+    Color(0xFFC62828), // Red
+    Color(0xFF6A1B9A), // Purple
+    Color(0xFFEF6C00), // Orange
+    Color(0xFFAD1457), // Pink/Magenta
+    Color(0xFF4527A0), // Deep Indigo
+    Color(0xFFD84315), // Deep Orange/Rust
+    Color(0xFF283593), // Indigo
+    Color(0xFF880E4F)  // Maroon
+)
+
 /**
  * Finance charts screen
  *
@@ -77,13 +104,12 @@ fun ChartsView(
     modifier: Modifier = Modifier,
     verticalScrollState: ScrollState = rememberScrollState()
 ) {
-    val lineLabels = listOf("1", "6", "11", "16", "21", "26", "31")
     val options = listOf(
         stringResource(R.string.finance_type_income),
         stringResource(R.string.finance_type_expense),
         stringResource(R.string.finance_balance_title)
     )
-
+    
     PullToRefreshBox(
         isRefreshing = state.isLoading,
         onRefresh = { onAction(ChartsActions.OnRefresh) },
@@ -216,10 +242,10 @@ fun ChartsView(
 
             FinancePieChart(
                 title = stringResource(R.string.finance_type_income),
-                items = state.incomeCategories.map {
+                items = state.incomeCategories.mapIndexed { index, it ->
                     PieChartData(
                         label = it.first.asString(),
-                        color = Color(0xFF12C51A),
+                        color = incomeChartColors[index % incomeChartColors.size],
                         selectedColor = MaterialTheme.colorScheme.inversePrimary,
                         data = it.second,
                         selected = false
@@ -232,11 +258,11 @@ fun ChartsView(
             )
 
             FinancePieChart(
-                title = stringResource(R.string.finance_type_income),
-                items = state.expenseCategories.map {
+                title = stringResource(R.string.finance_type_expense),
+                items = state.expenseCategories.mapIndexed { index, it ->
                     PieChartData(
                         label = it.first.asString(),
-                        color = Color(0xFFDA2F02),
+                        color = expenseChartColors[index % expenseChartColors.size],
                         selectedColor = MaterialTheme.colorScheme.inversePrimary,
                         data = it.second,
                         selected = false
