@@ -53,7 +53,6 @@ import com.jd.financeflow.features.finance.domain.models.chart.LineChartData
  * Finance linear charts for displaying different finance data such as income and expenses
  * @param title Title
  * @param items Items (chart data) to display, each item represents single line of data
- * @param miniValue minimum value of an Y-axis
  * @param modifier composable modifier
  * @param currencyCode currency code, e.g. "EUR" for Euro
  * @param averageValue optional average net value
@@ -65,7 +64,6 @@ import com.jd.financeflow.features.finance.domain.models.chart.LineChartData
 fun FinanceLineChart(
     title: String,
     items: List<LineChartData>,
-    miniValue: Double,
     modifier: Modifier = Modifier,
     currencyCode: String = "EUR",
     averageValue: Double? = null,
@@ -190,7 +188,6 @@ fun FinanceLineChart(
                         enabled = false
                     )
                 ),
-                minValue = miniValue,
                 animationDelay = 0,
                 animationMode = AnimationMode.None,
                 modifier = Modifier.fillMaxWidth()
@@ -224,7 +221,6 @@ fun FinanceLineChartPreview() {
                 ),
                 labels = listOf("1", "6", "11", "16", "21", "26", "31"),
                 averageValue = 826.82,
-                miniValue = 0.0,
                 currencyCode = "EUR",
                 modifier = Modifier
                     .padding(innerPadding)

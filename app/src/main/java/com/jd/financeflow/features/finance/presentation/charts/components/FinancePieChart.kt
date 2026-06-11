@@ -119,10 +119,10 @@ fun FinancePieChart(
                     colorAnimExitSpec = tween(300),
                     scaleAnimExitSpec = tween(300),
                     spaceDegreeAnimExitSpec = tween(300),
-                    spaceDegree = 1f,
-                    selectedPaddingDegree = 2f,
+                    spaceDegree = 4f,
+                    selectedPaddingDegree = 4f,
                     labelHelperProperties = LabelHelperProperties(enabled = false),
-                    style = Pie.Style.Stroke(width = 12.dp),
+                    style = Pie.Style.Stroke(width = 24.dp),
                     modifier = Modifier.fillMaxSize(),
                 )
 
@@ -160,7 +160,7 @@ fun FinancePieChartPreview() {
                 title = "Income",
                 items = listOf(
                     PieChartData(
-                        label = "Salery",
+                        label = "Salary",
                         color = Color(0xFF12C51A),
                         selectedColor = MaterialTheme.colorScheme.inversePrimary,
                         data = 5000.0,

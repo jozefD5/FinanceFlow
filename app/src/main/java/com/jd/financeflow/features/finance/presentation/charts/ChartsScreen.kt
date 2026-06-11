@@ -198,7 +198,6 @@ fun ChartsView(
                         enable = state.selectedChartOptions[2]
                     )
                 ),
-                miniValue = state.yearlyCashFlowBalance.minOrNull() ?: 0.0,
                 labels = Month.entries.map {
                     it.name.substring(0, 3)
                         .lowercase(LocalLocale.current.platformLocale)
@@ -232,7 +231,6 @@ fun ChartsView(
                         enable = state.selectedChartOptions[2]
                     ),
                 ),
-                miniValue = state.avgMonthlyBalance.minOrNull() ?: 0.0,
                 labels = lineLabels,
                 currencyCode = state.currencyCode,
                 modifier = Modifier
