@@ -12,3 +12,14 @@ data class LineChartData(
     val enable: Boolean = true
 )
 
+/**
+ * Pie chart data representing single piece of data
+ */
+data class PieChartData(
+    val label: String,
+    val color: Color,
+    val selectedColor: Color,
+    val data: Double,
+    val selected: Boolean = false,
+    val enable: Boolean = true
+)

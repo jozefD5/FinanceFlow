@@ -6,7 +6,6 @@ import java.time.Month
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -38,6 +37,7 @@ import org.koin.androidx.compose.koinViewModel
 import com.jd.financeflow.R
 import com.jd.financeflow.features.finance.domain.models.chart.LineChartData
 import com.jd.financeflow.features.finance.presentation.charts.components.ChartLegendItem
+import com.jd.financeflow.features.finance.presentation.charts.components.ChartLegendItemGrid
 import com.jd.financeflow.features.finance.presentation.charts.components.FinanceLineChart
 
 /**
@@ -128,26 +128,25 @@ fun ChartsView(
                 ),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Row(
+                ChartLegendItemGrid(
+                    data = listOf(
+                        ChartLegendItem(
+                            label = stringResource(R.string.finance_type_income),
+                            color = Color(0xFF12C51A)
+                        ),
+                        ChartLegendItem(
+                            label = stringResource(R.string.finance_type_expense),
+                            color = Color(0xFFBE0E1F)
+                        ),
+                        ChartLegendItem(
+                            label = stringResource(R.string.finance_balance_title),
+                            color = Color(0xFF0C6EE5)
+                        )
+                    ),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    ChartLegendItem(
-                        color = Color(0xFF12C51A),
-                        label = "Income"
-                    )
-                    ChartLegendItem(
-                        color = Color(0xFFBE0E1F),
-                        label = "Expense"
-                    )
-                    ChartLegendItem(
-                        color = Color(0xFF0C6EE5),
-                        label = "Balance"
-                    )
-                }
+                        .padding(dimensionResource(R.dimen.chart_padding_medium))
+                )
             }
 
             FinanceLineChart(
@@ -174,7 +173,9 @@ fun ChartsView(
                 ),
                 miniValue = state.yearlyCashFlowBalance.minOrNull() ?: 0.0,
                 labels = Month.entries.map {
-                    it.name.substring(0, 3).lowercase(LocalLocale.current.platformLocale)
+                    it.name.substring(0, 3)
+                        .lowercase(LocalLocale.current.platformLocale)
+                        .replaceFirstChar { char -> char.uppercase() }
                 },
                 currencyCode = state.currencyCode,
                 modifier = Modifier
