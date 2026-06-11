@@ -6,9 +6,17 @@
     <dimen name="padding_extra_large">24.dp</dimen>
     <dimen name="padding_extra_extra_large">32.dp</dimen>
 
+    <dimen name="round_corner_size_small">8.dp</dimen>
     <dimen name="round_corner_size_medium">24.dp</dimen>
-
     <dimen name="list_items_spacing_medium">16.dp</dimen>
-
     <dimen name="horizontal_divider_padding_medium">16.dp</dimen>
+
+    <!-- Charts -->
+    <dimen name="chart_round_corner_size_small">8.dp</dimen>
+    <dimen name="chart_padding_medium">12.dp</dimen>
+    <dimen name="chart_padding_large">16.dp</dimen>
+    <dimen name="chart_item_arrangement_spacing">12.dp</dimen>
+    <dimen name="chart_symbol_size">40.dp</dimen>
+    <dimen name="chart_bar_thickness">8.dp</dimen>
+    <dimen name="chart_bar_radius">12.dp</dimen>
 </resources>

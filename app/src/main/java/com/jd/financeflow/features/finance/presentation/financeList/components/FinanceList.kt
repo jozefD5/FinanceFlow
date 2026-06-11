@@ -1,18 +1,19 @@
 package com.jd.financeflow.features.finance.presentation.financeList.components
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 
-import com.jd.financeflow.R
 import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
 import com.jd.financeflow.features.finance.domain.models.Finance
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
@@ -38,16 +39,27 @@ fun FinanceList(
 ) {
     LazyColumn(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_large)),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        items(finances, key = { it.id }) { item ->
+        itemsIndexed(
+            items = finances,
+            key = { _, item -> item.id }
+        ) { index, item ->
             FinanceListItem(
                 finance = item,
                 onClicked = onItemClick,
                 onLongClicked = onItemLongClick,
                 currencyCode = currencyCode,
             )
+
+            if (index < (finances.size - 1)) {
+                HorizontalDivider(
+                    thickness = 2.dp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .alpha(0.6f)
+                )
+            }
         }
     }
 }
@@ -55,11 +67,14 @@ fun FinanceList(
 @Preview
 @Composable
 fun FinanceListPreview() {
+    val currentUnixTime = System.currentTimeMillis()
+
     val finances = listOf(
         Finance(
             title = "Salary",
             description = "Monthly salary",
             amount = 10_000.0,
+            timeStampMs = currentUnixTime,
             interval = FinanceInterval.Monthly,
             category = FinanceCategory.Income(IncomeCategory.Salary),
         ),
@@ -67,6 +82,7 @@ fun FinanceListPreview() {
             title = "Bonus",
             description = "Work bonus",
             amount = 5_000.0,
+            timeStampMs = currentUnixTime,
             interval = FinanceInterval.Quarterly,
             category = FinanceCategory.Income(IncomeCategory.Bonus)
         ),
@@ -74,6 +90,7 @@ fun FinanceListPreview() {
             title = "Investment",
             description = "",
             amount = 1000.0,
+            timeStampMs = currentUnixTime,
             interval = FinanceInterval.Quarterly,
             category = FinanceCategory.Income(IncomeCategory.Investment)
         ),
@@ -81,6 +98,7 @@ fun FinanceListPreview() {
             title = "Housing",
             description = "Rent",
             amount = 500.0,
+            timeStampMs = currentUnixTime,
             interval = FinanceInterval.Monthly,
             category = FinanceCategory.Expense(ExpenseCategory.Housing)
         )

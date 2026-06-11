@@ -1,10 +1,9 @@
 package com.jd.financeflow.features.finance.presentation.financeList
 
-import com.jd.financeflow.features.finance.domain.models.FilterConfiguration
 import com.jd.financeflow.features.finance.domain.models.Finance
 
 /**
- * Represents actions that can be performed on the FinanceList screen.
+ * Actions that can be performed by the FinanceList screen.
  */
 sealed interface FinanceListActions {
     data object OnClearError : FinanceListActions

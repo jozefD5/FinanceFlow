@@ -8,6 +8,7 @@ import com.jd.financeflow.features.core.presentation.UiText
 data class FinanceDetailsState(
     val isLoading: Boolean = false,
     val error: UiText? = null,
+    val currencyCode: String = "EUR",
 
     val invalidTitle: Boolean = false,
     val invalidAmount: Boolean = false,
@@ -15,6 +16,7 @@ data class FinanceDetailsState(
     val title: String = "",
     val description: String = "",
     val amount: String = "",
+    val startDate: Long = System.currentTimeMillis(),
     val financeIntervalIndex: Int = 0,
     val financeTypeIndex: Int = 0,
     val financeCategoryIndex: Int = 0,

@@ -22,7 +22,6 @@ fun FinanceInterval.toUiText(): UiText {
  */
 private fun FinanceInterval.toStringResourceId(): Int {
     return when (this) {
-        FinanceInterval.Once -> R.string.finance_interval_once
         FinanceInterval.Daily -> R.string.finance_interval_daily
         FinanceInterval.Weekly -> R.string.finance_interval_weekly
         FinanceInterval.Monthly -> R.string.finance_interval_monthly

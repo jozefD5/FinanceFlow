@@ -13,6 +13,7 @@ import com.jd.financeflow.features.finance.domain.models.FinanceInterval
  * @property title The title or description of the transaction.
  * @property description Additional details or notes about the transaction.
  * @property amount The monetary value of the transaction.
+ * @property startDate The timestamp indicating when the transaction started (optional).
  * @property interval The frequency or interval at which the transaction occurs.
  * @property category The category or type of the transaction
  * @property createdAt The timestamp indicating when the transaction was created or updated at last.
@@ -24,6 +25,7 @@ data class FinanceEntity(
     val title: String,
     val description: String?,
     val amount: Double,
+    val startDate: Long,
     val interval: FinanceInterval,
     val category: FinanceCategory,
     val createdAt: Long = System.currentTimeMillis()

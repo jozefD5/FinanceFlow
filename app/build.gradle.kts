@@ -8,16 +8,14 @@ plugins {
 android {
     namespace = "com.jd.financeflow"
     compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
+        version = release(37)
     }
 
     defaultConfig {
         applicationId = "com.jd.financeflow"
         versionName = "1.0.0"
         minSdk = 33
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 1
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -40,8 +38,8 @@ android {
     buildFeatures {
         compose = true
     }
-    buildToolsVersion = "36.1.0"
-    ndkVersion = "29.0.14206865"
+    buildToolsVersion = "37.0.0"
+    ndkVersion = rootProject.extra["ndkVersion"] as String
 }
 
 dependencies {
@@ -87,4 +85,7 @@ dependencies {
     implementation(libs.koin.androidx.compose)
     implementation(libs.koin.android)
     implementation(libs.kotlinx.sterialization.json)
+
+    // Charts
+    implementation(libs.compose.charts)
 }

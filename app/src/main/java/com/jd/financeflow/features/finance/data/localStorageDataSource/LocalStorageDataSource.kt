@@ -83,7 +83,7 @@ class LocalStorageDataSource(
      * Deletes a [Finance] object from the database.
      *
      * @param finance The [Finance] object to delete.
-     * @return A empty [Result] indicating the success, or a [DataError.Local] error otherwise.
+     * @return An empty [Result] indicating the success, or a [DataError.Local] error otherwise.
      */
     suspend fun delete(finance: Finance): Result<Unit, DataError.Local> {
         return runCatching {

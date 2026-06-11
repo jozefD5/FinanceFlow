@@ -1,5 +1,7 @@
 package com.jd.financeflow.features.finance.presentation.financeDetails
 
+import android.icu.util.Currency
+import android.util.Log
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -45,6 +47,7 @@ import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceType
+import com.jd.financeflow.features.finance.presentation.financeDetails.components.DataPickerField
 
 /**
  * Screen for adding or modifying finance transaction.
@@ -143,8 +146,7 @@ fun FinanceDetailsView(
                     onNext = { focusManager.moveFocus(FocusDirection.Down) }
                 ),
                 shape = RoundedCornerShape(dimensionResource(R.dimen.round_corner_size_medium)),
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             )
 
             OutlinedTextField(
@@ -157,14 +159,16 @@ fun FinanceDetailsView(
                 ),
                 shape = RoundedCornerShape(dimensionResource(R.dimen.round_corner_size_medium)),
                 maxLines = 3,
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             )
 
             OutlinedTextField(
                 value = state.amount,
                 onValueChange = { onAction(FinanceDetailsActions.OnUpdateAmount(it)) },
                 label = { Text(stringResource(R.string.add_finance_title_amount)) },
+                prefix = {
+                    Text(Currency.getInstance(state.currencyCode).symbol.toString())
+                },
                 isError = state.invalidAmount,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
@@ -178,6 +182,22 @@ fun FinanceDetailsView(
                     .fillMaxWidth()
             )
 
+            DataPickerField(
+                value = state.startDate,
+                onValueChange = { selectedDate ->
+                    Log.i("FD", "Updating value to: $selectedDate")
+                    if (selectedDate != null) {
+                        onAction(FinanceDetailsActions.OnUpdateStartDate(selectedDate))
+                    }
+                },
+                label = stringResource(R.string.add_finance_title_start_date),
+                placeholder = stringResource(R.string.add_finance_title_start_date_placeholder),
+                shape = RoundedCornerShape(dimensionResource(R.dimen.round_corner_size_medium)),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding()
+            )
+
             LargeDropdownMenu(
                 label = stringResource(R.string.add_finance_title_interval),
                 selectedIndex = state.financeIntervalIndex,
@@ -186,7 +206,9 @@ fun FinanceDetailsView(
                     onAction(FinanceDetailsActions.OnUpdateFinanceInterval(index))
                 },
                 shape = RoundedCornerShape(dimensionResource(R.dimen.round_corner_size_medium)),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = dimensionResource(R.dimen.padding_small))
             )
 
             LargeDropdownMenu(
@@ -205,7 +227,9 @@ fun FinanceDetailsView(
                     onAction(FinanceDetailsActions.OnUpdateFinanceCategory(index))
                 },
                 shape = RoundedCornerShape(dimensionResource(R.dimen.round_corner_size_medium)),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = dimensionResource(R.dimen.padding_small))
             )
         }
 
@@ -216,7 +240,7 @@ fun FinanceDetailsView(
                 .padding(horizontal = dimensionResource(R.dimen.padding_large))
         ) {
             Text(
-                text = stringResource(R.string.save_button),
+                text = stringResource(R.string.save_title),
                 modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
             )
         }

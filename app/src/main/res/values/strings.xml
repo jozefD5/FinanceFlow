@@ -3,11 +3,13 @@
 
     <string name="home_tab_label">Home</string>
     <string name="finances_tab_label">Finances</string>
+    <string name="charts_tab_label">Charts</string>
 
     <string name="income_overview_title">Income overview</string>
     <string name="expense_overview_title">Expense overview</string>
     <string name="add_finance_button_label">Add finance</string>
-    <string name="save_button">Save</string>
+    <string name="save_title">Save</string>
+    <string name="cancel_title">Cancel</string>
     <string name="error_title">Error</string>
     <string name="dismiss_title">Dismiss</string>
     <string name="confirm_title">Confirm</string>
@@ -28,6 +30,7 @@
 
     <string name="finance_type_income">Income</string>
     <string name="finance_type_expense">Expense</string>
+    <string name="finance_balance_title">Balance</string>
 
     <string name="finance_category_salary">Salary</string>
     <string name="finance_category_bonus">Bonus</string>
@@ -53,8 +56,9 @@
     <string name="add_finance_title_amount">Amount</string>
     <string name="add_finance_title_interval">Interval</string>
     <string name="add_finance_title_category">Category</string>
+    <string name="add_finance_title_start_date">Date</string>
+    <string name="add_finance_title_start_date_placeholder">Select date</string>
 
-    <string name="finance_interval_once">Once</string>
     <string name="finance_interval_daily">Daily"</string>
     <string name="finance_interval_weekly">Weekly</string>
     <string name="finance_interval_monthly">Monthly</string>
@@ -73,6 +77,13 @@
     <string name="filter_reset_button_label">Reset</string>
     <string name="filter_apply_button_label">Apply filter</string>
 
+    <string name="chart_total_title">Total</string>
+    <string name="chart_average_value_label">Average</string>
+    <string name="chart_average_net_value_label">Avg Net Value</string>
+    <string name="chart_monthly_cash_flow_title">Monthly Cash Flow</string>
+    <string name="chart_annual_cash_flow_title">Annual Cash Flow</string>
+    <string name="chart_annual_income_title">Annual Income</string>"
+    <string name="chart_annual_expense_title">Annual Expense</string>
 
 
 </resources>
