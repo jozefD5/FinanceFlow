@@ -1,8 +1,8 @@
 package com.jd.financeflow.features.finance.presentation.charts
 
-import androidx.compose.foundation.BorderStroke
 import java.time.Month
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -109,7 +109,7 @@ fun ChartsView(
         stringResource(R.string.finance_type_expense),
         stringResource(R.string.finance_balance_title)
     )
-    
+
     PullToRefreshBox(
         isRefreshing = state.isLoading,
         onRefresh = { onAction(ChartsActions.OnRefresh) },
@@ -239,7 +239,7 @@ fun ChartsView(
             )
 
             FinancePieChart(
-                title = stringResource(R.string.finance_type_income),
+                title = stringResource(R.string.chart_annual_income_title),
                 items = state.incomeCategories.mapIndexed { index, it ->
                     PieChartData(
                         label = it.first.asString(),
@@ -256,7 +256,7 @@ fun ChartsView(
             )
 
             FinancePieChart(
-                title = stringResource(R.string.finance_type_expense),
+                title = stringResource(R.string.chart_annual_expense_title),
                 items = state.expenseCategories.mapIndexed { index, it ->
                     PieChartData(
                         label = it.first.asString(),
