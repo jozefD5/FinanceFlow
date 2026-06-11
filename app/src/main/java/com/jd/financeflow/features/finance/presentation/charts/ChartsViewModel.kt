@@ -15,9 +15,14 @@ import androidx.lifecycle.viewModelScope
 import com.jd.financeflow.features.core.domain.Result
 import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.finance.domain.FinanceRepository
+import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
+import com.jd.financeflow.features.finance.domain.models.Finance
+import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceType
+import com.jd.financeflow.features.finance.domain.models.IncomeCategory
 import com.jd.financeflow.features.finance.presentation.components.annualCashFlow
 import com.jd.financeflow.features.finance.presentation.components.avgMonthlyCashFlow
+import com.jd.financeflow.features.finance.presentation.components.toUiText
 
 /**
  * Finance charts view model
@@ -100,19 +105,61 @@ class ChartsViewModel(
         val annualExpenseDiffered =
             async(Dispatchers.Default) { annualCashFlow(expenses) }
 
-        // Final values
+        // Final cash flow values
         val avgMonthlyIncome = avgMonthlyIncomeDeferred.await()
         val avgMonthlyExpense = avgMonthlyExpenseDeferred.await()
-        val avgMonthlyBalance = avgMonthlyIncome.mapIndexed { index, value ->
-            value - (avgMonthlyExpense.getOrNull(index) ?: 0.0)
+
+        var runningAvgBalance = 0.0
+        val avgMonthlyBalance = avgMonthlyIncome.mapIndexed { index, income ->
+            runningAvgBalance += income - (avgMonthlyExpense.getOrNull(index) ?: 0.0)
+            runningAvgBalance
         }
 
         val annualIncome = annualIncomeDiffered.await()
         val annualExpense = annualExpenseDiffered.await()
-        val annualBalance = annualIncome.mapIndexed { index, value ->
-            value - (annualExpense.getOrNull(index) ?: 0.0)
+
+        var runningAnnualBalance = 0.0
+        val annualBalance = annualIncome.mapIndexed { index, income ->
+            runningAnnualBalance += income - (annualExpense.getOrNull(index) ?: 0.0)
+            runningAnnualBalance
         }
 
+        // Categories
+        val incomeCategories = filterByCategoriesGetTotal(incomes, FinanceType.INCOME)
+            .map { (order, amount) ->
+                val category = when (order) {
+                    IncomeCategory.Salary.ordinal -> IncomeCategory.Salary
+                    IncomeCategory.Bonus.ordinal -> IncomeCategory.Bonus
+                    IncomeCategory.Commission.ordinal -> IncomeCategory.Commission
+                    IncomeCategory.Benefit.ordinal -> IncomeCategory.Benefit
+                    IncomeCategory.Investment.ordinal -> IncomeCategory.Investment
+                    else -> IncomeCategory.Other
+                }
+                Pair(
+                    FinanceCategory.Income(category).toUiText(),
+                    amount
+                )
+            }
+
+        val expenseCategories = filterByCategoriesGetTotal(expenses, FinanceType.EXPENSE)
+            .map { (order, amount) ->
+                val category = when (order) {
+                    ExpenseCategory.Housing.ordinal -> ExpenseCategory.Housing
+                    ExpenseCategory.Utility.ordinal -> ExpenseCategory.Utility
+                    ExpenseCategory.Food.ordinal -> ExpenseCategory.Food
+                    ExpenseCategory.Transport.ordinal -> ExpenseCategory.Transport
+                    ExpenseCategory.Health.ordinal -> ExpenseCategory.Health
+                    ExpenseCategory.Education.ordinal -> ExpenseCategory.Education
+                    ExpenseCategory.Entertainment.ordinal -> ExpenseCategory.Entertainment
+                    else -> ExpenseCategory.Other
+                }
+                Pair(
+                    FinanceCategory.Expense(category).toUiText(),
+                    amount
+                )
+            }
+
+        // Update state
         _state.update {
             it.copy(
                 isLoading = false,
@@ -121,8 +168,30 @@ class ChartsViewModel(
                 avgMonthlyBalance = avgMonthlyBalance,
                 yearlyCashFlowIncome = annualIncome,
                 yearlyCashFlowExpense = annualExpense,
-                yearlyCashFlowBalance = annualBalance
+                yearlyCashFlowBalance = annualBalance,
+                incomeCategories = incomeCategories,
+                expenseCategories = expenseCategories
             )
         }
+    }
+
+    /**
+     * Filter finances by categories, calculate sum of each category and return list of pairs
+     *
+     * @param finances List of finances
+     * @param type Finance type, either income or expense
+     * @return List of pairs containing category order and total amount
+     */
+    private fun filterByCategoriesGetTotal(
+        finances: List<Finance>,
+        type: FinanceType,
+    ): List<Pair<Int, Double>> {
+        val preFiltered = finances.filter { it.category.type == type }
+        return preFiltered
+            .groupBy { it.category.order }
+            .mapValues { (_, financeList) ->
+                financeList.sumOf { it.amount }
+            }
+            .toList()
     }
 }

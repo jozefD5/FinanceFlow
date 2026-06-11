@@ -36,9 +36,11 @@ import org.koin.androidx.compose.koinViewModel
 
 import com.jd.financeflow.R
 import com.jd.financeflow.features.finance.domain.models.chart.LineChartData
+import com.jd.financeflow.features.finance.domain.models.chart.PieChartData
 import com.jd.financeflow.features.finance.presentation.charts.components.ChartLegendItem
 import com.jd.financeflow.features.finance.presentation.charts.components.ChartLegendItemGrid
 import com.jd.financeflow.features.finance.presentation.charts.components.FinanceLineChart
+import com.jd.financeflow.features.finance.presentation.charts.components.FinancePieChart
 
 /**
  * Finance charts screen
@@ -95,7 +97,6 @@ fun ChartsView(
                 .padding(dimensionResource(R.dimen.padding_medium))
                 .verticalScroll(verticalScrollState)
         ) {
-
             MultiChoiceSegmentedButtonRow(
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -211,6 +212,40 @@ fun ChartsView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(max = 250.dp)
+            )
+
+            FinancePieChart(
+                title = stringResource(R.string.finance_type_income),
+                items = state.incomeCategories.map {
+                    PieChartData(
+                        label = it.first.asString(),
+                        color = Color(0xFF12C51A),
+                        selectedColor = MaterialTheme.colorScheme.inversePrimary,
+                        data = it.second,
+                        selected = false
+                    )
+                },
+                onItemClick = {},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 300.dp)
+            )
+
+            FinancePieChart(
+                title = stringResource(R.string.finance_type_income),
+                items = state.expenseCategories.map {
+                    PieChartData(
+                        label = it.first.asString(),
+                        color = Color(0xFFDA2F02),
+                        selectedColor = MaterialTheme.colorScheme.inversePrimary,
+                        data = it.second,
+                        selected = false
+                    )
+                },
+                onItemClick = {},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 300.dp)
             )
         }
     }

@@ -6,6 +6,7 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,9 +20,11 @@ import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -30,9 +33,18 @@ import ir.ehsannarmani.compose_charts.models.Pie
 import ir.ehsannarmani.compose_charts.models.LabelHelperProperties
 
 import com.jd.financeflow.R
+import com.jd.financeflow.features.core.presentation.components.formatCurrency
 import com.jd.financeflow.features.finance.domain.models.chart.PieChartData
 
-
+/**
+ * Finance pie chart for displaying different finance data such as income and expenses
+ *
+ * @param title Title
+ * @param items Items (chart data) to display, each item represents single pie slice
+ * @param onItemClick Item click handler
+ * @param modifier Modifier
+ * @param currencyCode currency code, e.g. "EUR" for Euro
+ */
 @Composable
 fun FinancePieChart(
     title: String,
@@ -43,8 +55,6 @@ fun FinancePieChart(
 ) {
     val formatter = NumberFormat.getCurrencyInstance()
     formatter.currency = Currency.getInstance(currencyCode)
-
-
 
     OutlinedCard(
         shape = RoundedCornerShape(
@@ -66,8 +76,21 @@ fun FinancePieChart(
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface
             )
+
+            ChartLegendItemGrid(
+                data = items.map { item ->
+                    ChartLegendItem(
+                        label = item.label,
+                        color = item.color
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(dimensionResource(R.dimen.chart_padding_medium))
+            )
+
             Box(
-                contentAlignment = androidx.compose.ui.Alignment.Center,
+                contentAlignment = Alignment.Center,
                 modifier = modifier.fillMaxSize()
             ) {
                 PieChart(
@@ -97,16 +120,32 @@ fun FinancePieChart(
                     scaleAnimExitSpec = tween(300),
                     spaceDegreeAnimExitSpec = tween(300),
                     spaceDegree = 1f,
-                    selectedPaddingDegree = 4f,
+                    selectedPaddingDegree = 2f,
                     labelHelperProperties = LabelHelperProperties(enabled = false),
-                    style = Pie.Style.Stroke(),
+                    style = Pie.Style.Stroke(width = 12.dp),
                     modifier = Modifier.fillMaxSize(),
                 )
 
-                Text(
-                    text = "Total: ${formatter.currency.symbol}${items.sumOf { it.data }.toInt()}",
-                    style = MaterialTheme.typography.titleMedium
-                )
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(dimensionResource(R.dimen.chart_padding_medium))
+                ) {
+                    Text(
+                        text = stringResource(R.string.chart_total_title),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+
+                    Text(
+                        text = formatCurrency(
+                            items.sumOf { it.data },
+                            currencyCode
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
             }
         }
     }
@@ -152,7 +191,7 @@ fun FinancePieChartPreview() {
                 onItemClick = {},
                 modifier = Modifier
                     .padding(innerPadding)
-                    .heightIn(max = 250.dp)
+                    .heightIn(max = 300.dp)
             )
         }
     }

@@ -18,6 +18,7 @@ private val Finance.zonedDateTime
  * Note, method is expecting data to be grouped by finance type before use, income or expense.
  *
  * @param financeItems finances used for calculation
+ * @return list of average monthly values
  */
 fun avgMonthlyCashFlow(financeItems: List<Finance>): List<Double> {
     val daysInMonth = 31
@@ -47,7 +48,7 @@ fun avgMonthlyCashFlow(financeItems: List<Finance>): List<Double> {
                 }
             }
 
-            else -> 0.0
+            else -> {}
         }
     }
 
@@ -59,6 +60,7 @@ fun avgMonthlyCashFlow(financeItems: List<Finance>): List<Double> {
  *
  * Note, method is expecting data to be grouped by finance type before use, income or expense.
  * @param financeItems finance items used for processing
+ * @return list of annual cash flow values
  */
 fun annualCashFlow(financeItems: List<Finance>): List<Double> {
     val monthsInYear = 12

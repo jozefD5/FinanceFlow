@@ -18,5 +18,8 @@ data class ChartsState(
 
     val yearlyCashFlowIncome: List<Double> = emptyList(),
     val yearlyCashFlowExpense: List<Double> = emptyList(),
-    val yearlyCashFlowBalance: List<Double> = emptyList()
+    val yearlyCashFlowBalance: List<Double> = emptyList(),
+
+    val incomeCategories: List<Pair<UiText, Double>> = emptyList(),
+    val expenseCategories: List<Pair<UiText, Double>> = emptyList(),
 )

@@ -9,12 +9,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,15 +38,20 @@ fun ChartLegendItemGrid(
     data: List<ChartLegendItem>,
     modifier: Modifier = Modifier
 ) {
-    val updateData = if (data.size % 3 == 0) {
-        data
-    } else {
-        data + ChartLegendItem(label = "", color = Color.Transparent)
+    // Correctly pad the data list to be a multiple of 3 to avoid layout issues in FlowRow
+    // Using remember to avoid re-calculating and re-allocating on every recomposition
+    val updateData = remember(data) {
+        val remainder = data.size % 3
+        if (remainder == 0) {
+            data
+        } else {
+            val padding = 3 - remainder
+            data + List(padding) { ChartLegendItem(label = "", color = Color.Transparent) }
+        }
     }
 
     FlowRow(
         verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalArrangement = Arrangement.Absolute.SpaceAround,
         maxItemsInEachRow = 3,
         modifier = modifier
     ) {
@@ -55,7 +60,8 @@ fun ChartLegendItemGrid(
                 color = it.color,
                 label = it.label,
                 modifier = Modifier
-                    .widthIn(min = 64.dp)
+                    .weight(1f)
+                //.widthIn(min = 64.dp)
             )
         }
     }
