@@ -1,42 +1,27 @@
 package com.jd.financeflow.features.finance.presentation.financeList.components
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import java.time.Instant
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.time.ZoneId
 
+import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.tooling.preview.Preview
-import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
 
+import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
 import com.jd.financeflow.features.finance.domain.models.Finance
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceInterval
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
 import com.jd.financeflow.features.finance.presentation.components.zonedDateTime
-import kotlinx.datetime.Month
-import java.util.Locale
-import java.util.Locale.getDefault
-import androidx.compose.ui.platform.LocalLocale
-import androidx.compose.ui.unit.dp
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
-
-private val Long.zonedDateTime
-    get() = Instant.ofEpochMilli(this).atZone(ZoneId.systemDefault())
 
 /**
  * Displays a list of finances in a lazy column.
@@ -49,7 +34,7 @@ private val Long.zonedDateTime
  */
 @Composable
 fun FinanceList(
-    finances: List<Finance>,//Map<Long, List<Finance>>,
+    finances: List<Finance>,
     onItemClick: (Finance) -> Unit,
     onItemLongClick: (Finance) -> Unit,
     modifier: Modifier = Modifier,
@@ -71,15 +56,13 @@ fun FinanceList(
             val itemMonth = item.zonedDateTime.monthValue
 
             if (index == 0) {
-                Timestamp(item.timeStampMs, Modifier.padding(8.dp))
+                TimeStampDivider(item.timeStampMs, Modifier.padding(8.dp))
                 currentTimestampReference = item.zonedDateTime
             }
 
-
             if (itemYear != currentTimestampReference.year || itemMonth != currentTimestampReference.monthValue) {
                 currentTimestampReference = item.zonedDateTime
-
-                Timestamp(item.timeStampMs, Modifier.padding(8.dp))
+                TimeStampDivider(item.timeStampMs, Modifier.padding(8.dp))
             }
 
             FinanceListItem(
@@ -88,59 +71,10 @@ fun FinanceList(
                 onLongClicked = onItemLongClick,
                 currencyCode = currencyCode,
             )
-
-//            if (index < (finances.size - 1)) {
-//                HorizontalDivider(
-//                    thickness = 2.dp,
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .alpha(0.6f)
-//                )
-//            }
         }
-
-
-//        itemsIndexed(
-//            items = finances,
-//            key = { _, item -> item.id }
-//        ) { index, item ->
-//            FinanceListItem(
-//                finance = item,
-//                onClicked = onItemClick,
-//                onLongClicked = onItemLongClick,
-//                currencyCode = currencyCode,
-//            )
-//
-//            if (index < (finances.size - 1)) {
-//                HorizontalDivider(
-//                    thickness = 2.dp,
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .alpha(0.6f)
-//                )
-//            }
-//        }
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-private fun Timestamp(
-    timestamp: Long,
-    modifier: Modifier = Modifier
-) {
-    val date = timestamp.zonedDateTime
-    Column(modifier = modifier) {
-        Text(
-            text = "${
-                Month.entries[date.monthValue - 1].name.lowercase(LocalLocale.current.platformLocale)
-                    .replaceFirstChar { it.uppercaseChar() }
-            } - ${date.year}",
-            style = MaterialTheme.typography.titleMediumEmphasized,
-        )
-        HorizontalDivider(thickness = 2.dp, modifier = Modifier.fillMaxWidth())
-    }
-}
 
 @Preview
 @Composable

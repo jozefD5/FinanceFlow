@@ -6,7 +6,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlin.math.ceil
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -15,6 +14,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlin.math.ceil
+import kotlin.time.Duration.Companion.milliseconds
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -31,7 +32,6 @@ import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceType
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
 import com.jd.financeflow.features.finance.domain.models.SortOrder
-import kotlin.time.Duration.Companion.milliseconds
 
 private const val TAG = "FinanceListViewModel"
 
@@ -183,7 +183,6 @@ class FinanceListViewModel(
             .launchIn(viewModelScope)
     }
 
-
     /**
      * Manually refreshes the list of finances.
      */
@@ -295,7 +294,7 @@ class FinanceListViewModel(
             if (refresh) {
                 when (val result = repository.getFinances()) {
                     is Result.Success -> {
-                        cachedFinances = result.data
+                        cachedFinances = result.data.sortedByDescending { it.timeStampMs }
                     }
 
                     is Result.Error -> {
@@ -398,7 +397,6 @@ class FinanceListViewModel(
                     } else {
                         true
                     }
-
 
                 // Filter by amount, must be within the range
                 val amountCheck = if (filterConfiguration.enableAmountFilter &&
