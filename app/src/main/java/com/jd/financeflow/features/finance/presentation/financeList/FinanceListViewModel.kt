@@ -31,6 +31,7 @@ import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceType
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
 import com.jd.financeflow.features.finance.domain.models.SortOrder
+import kotlin.time.Duration.Companion.milliseconds
 
 private const val TAG = "FinanceListViewModel"
 
@@ -162,7 +163,7 @@ class FinanceListViewModel(
         state
             .map { it.searchQuery }
             .distinctUntilChanged()
-            .debounce(500L)
+            .debounce(500L.milliseconds)
             .flatMapLatest { query ->
                 flow {
                     when {
@@ -180,6 +181,97 @@ class FinanceListViewModel(
                 }
             }
             .launchIn(viewModelScope)
+    }
+
+
+    /**
+     * Manually refreshes the list of finances.
+     */
+    private fun manualRefresh() = viewModelScope.launch {
+        _state.update {
+            it.copy(isLoading = true)
+        }
+
+        try {
+            val currentState = state.value
+
+            // When refreshing, query has priority. If query is empty, use filter configuration.
+            val (query, config) = if (currentState.searchQuery.length > 2) {
+                Pair(currentState.searchQuery, null)
+            } else {
+                Pair(null, currentState.filterConfiguration)
+            }
+
+            refreshFinanceList(
+                refresh = true,
+                query = query,
+                filterConfiguration = config
+            )
+        } catch (e: Exception) {
+            Log.e(TAG, "Error refreshing finance list", e)
+            _state.update {
+                it.copy(
+                    isLoading = false,
+                    error = DataError.Local.UNKNOWN.toUiText()
+                )
+            }
+        }
+    }
+
+    /**
+     * Deletes a finance.
+     *
+     * @param finance finance to be deleted
+     */
+    private fun deleteFinance(finance: Finance) = viewModelScope.launch {
+        _state.update { it.copy(isLoading = true) }
+        val currentState = state.value
+
+        runCatching {
+            // Delete finance from local storage
+            when (val result = repository.deleteFinance(finance)) {
+                is Result.Success -> {
+                    _state.update {
+                        it.copy(
+                            selectedDeleteFinance = null,
+                            showDeleteDialog = false
+                        )
+                    }
+
+                    refreshFinanceList(
+                        refresh = true,
+                        filterConfiguration = currentState.filterConfiguration
+                    )
+                }
+
+                is Result.Error -> {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            error = result.error.toUiText(),
+                            selectedDeleteFinance = null,
+                            showDeleteDialog = false
+                        )
+                    }
+                }
+            }
+
+            // Refresh finance list
+            refreshFinanceList(
+                refresh = true,
+                filterConfiguration = currentState.filterConfiguration
+            )
+
+        }.getOrElse {
+            _state.update {
+                it.copy(
+                    isLoading = false,
+                    error = DataError.Local.UNKNOWN.toUiText(),
+                    selectedDeleteFinance = null,
+                    showDeleteDialog = false
+                )
+            }
+        }
     }
 
     /**
@@ -332,97 +424,6 @@ class FinanceListViewModel(
             SortOrder.AMOUNT_DESCENDING -> filteredItems.sortedWith(compareByDescending<Finance> { it.amount }.thenBy { it.id })
             SortOrder.NEWEST_FIRST -> filteredItems.sortedWith(compareByDescending<Finance> { it.timeStampMs }.thenBy { it.id })
             SortOrder.OLDEST_FIRST -> filteredItems.sortedWith(compareBy<Finance> { it.timeStampMs }.thenBy { it.id })
-        }
-    }
-
-
-    /**
-     * Manually refreshes the list of finances.
-     */
-    private fun manualRefresh() = viewModelScope.launch {
-        _state.update {
-            it.copy(isLoading = true)
-        }
-
-        try {
-            val currentState = state.value
-
-            // When refreshing, query has priority. If query is empty, use filter configuration.
-            val (query, config) = if (currentState.searchQuery.length > 2) {
-                Pair(currentState.searchQuery, null)
-            } else {
-                Pair(null, currentState.filterConfiguration)
-            }
-
-            refreshFinanceList(
-                refresh = true,
-                query = query,
-                filterConfiguration = config
-            )
-        } catch (e: Exception) {
-            Log.e(TAG, "Error refreshing finance list", e)
-            _state.update {
-                it.copy(
-                    isLoading = false,
-                    error = DataError.Local.UNKNOWN.toUiText()
-                )
-            }
-        }
-    }
-
-    /**
-     * Deletes a finance.
-     *
-     * @param finance finance to be deleted
-     */
-    private fun deleteFinance(finance: Finance) = viewModelScope.launch {
-        _state.update { it.copy(isLoading = true) }
-        val currentState = state.value
-
-        runCatching {
-            // Delete finance from local storage
-            when (val result = repository.deleteFinance(finance)) {
-                is Result.Success -> {
-                    _state.update {
-                        it.copy(
-                            selectedDeleteFinance = null,
-                            showDeleteDialog = false
-                        )
-                    }
-
-                    refreshFinanceList(
-                        refresh = true,
-                        filterConfiguration = currentState.filterConfiguration
-                    )
-                }
-
-                is Result.Error -> {
-                    _state.update {
-                        it.copy(
-                            isLoading = false,
-                            error = result.error.toUiText(),
-                            selectedDeleteFinance = null,
-                            showDeleteDialog = false
-                        )
-                    }
-                }
-            }
-
-            // Refresh finance list
-            refreshFinanceList(
-                refresh = true,
-                filterConfiguration = currentState.filterConfiguration
-            )
-
-        }.getOrElse {
-            _state.update {
-                it.copy(
-                    isLoading = false,
-                    error = DataError.Local.UNKNOWN.toUiText(),
-                    selectedDeleteFinance = null,
-                    showDeleteDialog = false
-                )
-            }
         }
     }
 }

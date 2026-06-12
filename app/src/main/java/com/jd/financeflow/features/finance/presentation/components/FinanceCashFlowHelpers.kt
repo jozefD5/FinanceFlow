@@ -1,20 +1,10 @@
 package com.jd.financeflow.features.finance.presentation.components
 
-import java.time.Instant
-import java.time.ZoneId
-
 import com.jd.financeflow.features.finance.domain.models.Finance
 import com.jd.financeflow.features.finance.domain.models.FinanceInterval
-import com.jd.financeflow.features.finance.domain.models.FinanceType
 
 private const val daysInMonth = 31
 private const val monthsInYear = 12
-
-/**
- * Get zoned date time from finance item
- */
-private val Finance.zonedDateTime
-    get() = Instant.ofEpochMilli(timeStampMs).atZone(ZoneId.systemDefault())
 
 /**
  * Calculate average monthly values for each day of the month using data for the full year.
