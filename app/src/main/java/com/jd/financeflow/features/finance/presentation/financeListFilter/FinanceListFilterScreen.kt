@@ -23,7 +23,6 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
@@ -32,7 +31,6 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.ui.graphics.Color
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,14 +43,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 
 import com.jd.financeflow.R
-import com.jd.financeflow.features.core.presentation.components.LargeDropdownMenu
 import com.jd.financeflow.features.core.presentation.components.formatCurrency
 import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
 import com.jd.financeflow.features.finance.domain.models.FilterConfiguration
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceType
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
-import com.jd.financeflow.features.finance.domain.models.SortOrder
 import com.jd.financeflow.features.finance.presentation.components.toUiText
 
 /**
@@ -116,56 +112,6 @@ fun FinanceListFilterView(
                 .padding(dimensionResource(R.dimen.padding_large))
 
         ) {
-            // Sort section
-            OutlinedCard(
-                shape = RoundedCornerShape(
-                    dimensionResource(R.dimen.padding_medium)
-                ),
-                border = BorderStroke(width = 0.dp, color = Color.Transparent),
-                colors = CardDefaults.outlinedCardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                ),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                ListItem(
-                    colors = ListItemDefaults.colors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant
-                    ),
-                    headlineContent = {
-                        Text(
-                            text = stringResource(R.string.filter_sort_switch_label),
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                    }
-                )
-
-                Column {
-                    HorizontalDivider(
-                        modifier = Modifier.padding(
-                            horizontal = dimensionResource(R.dimen.horizontal_divider_padding_medium)
-                        )
-                    )
-                    LargeDropdownMenu(
-                        selectedIndex = state.selectedSortIndex,
-                        items = SortOrder.entries.map { it.toUiText().asString() },
-                        onItemSelected = { index, _ ->
-                            onAction(FinanceListFilterActions.OnUpdateSort(index))
-                        },
-                        shape = TextFieldDefaults.shape,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color.Transparent,
-                            unfocusedBorderColor = Color.Transparent,
-                            disabledBorderColor = Color.Transparent,
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = dimensionResource(R.dimen.padding_small))
-                    )
-                }
-            }
-
             // Type and category selection
             OutlinedCard(
                 shape = RoundedCornerShape(dimensionResource(R.dimen.padding_medium)),

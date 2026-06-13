@@ -7,9 +7,7 @@ sealed interface FinanceListFilterActions {
     data object OnClearError : FinanceListFilterActions
     data class OnApplyFilter(val callback: ((FilterConfiguration) -> Unit)? = null) :
         FinanceListFilterActions
-
     data object OnResetFilter : FinanceListFilterActions
-    data class OnUpdateSort(val index: Int) : FinanceListFilterActions
     data class OnEnableCategories(val enable: Boolean) : FinanceListFilterActions
     data class OnUpdateType(val index: Int) : FinanceListFilterActions
     data class OnCategorySelected(val type: FinanceType, val index: Int) : FinanceListFilterActions

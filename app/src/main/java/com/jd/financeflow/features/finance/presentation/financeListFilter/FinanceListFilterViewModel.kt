@@ -64,12 +64,6 @@ class FinanceListFilterViewModel(
                 resetFilter()
             }
 
-            is FinanceListFilterActions.OnUpdateSort -> {
-                _state.update {
-                    it.copy(selectedSortIndex = action.index)
-                }
-            }
-
             is FinanceListFilterActions.OnEnableCategories -> {
                 _state.update {
                     it.copy(enableCategories = action.enable)
@@ -129,9 +123,6 @@ class FinanceListFilterViewModel(
         _state.update {
             it.copy(
                 currencyCode = currencyCode,
-
-                // Sort order
-                selectedSortIndex = config.sortOrder.ordinal,
 
                 // Selected type and categories
                 enableCategories = config.enableCategoryFilter,
@@ -208,7 +199,6 @@ class FinanceListFilterViewModel(
             val currentState = _state.value
 
             // Extract the values from the current state
-            val sortOrder = SortOrder.entries[currentState.selectedSortIndex]
             val (miniAmount, maxAmount) = if (currentState.enableAmountRange) {
                 Pair(
                     currentState.selectedAmountRangeMini.toDouble(),
@@ -226,7 +216,6 @@ class FinanceListFilterViewModel(
 
             callback.invoke(
                 FilterConfiguration(
-                    sortOrder = sortOrder,
                     enableCategoryFilter = currentState.enableCategories,
                     selectedIncomeIndexes = currentState.selectedIncomeCategories,
                     selectedExpenseIndexes = currentState.selectedExpenseCategories,
@@ -249,7 +238,6 @@ class FinanceListFilterViewModel(
         val currentState = _state.value
         _state.update {
             it.copy(
-                selectedSortIndex = 0,
                 selectedTypeIndex = 0,
                 enableCategories = false,
                 selectedIncomeCategories = IncomeCategory.entries.map { true },
