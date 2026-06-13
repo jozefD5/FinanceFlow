@@ -70,6 +70,8 @@ class FinanceDetailsViewModel(
                 saveFinance(action.action)
             }
 
+            is FinanceDetailsActions.OnBackNavigationClicked -> {}
+
             is FinanceDetailsActions.OnUpdateTitle -> {
                 _state.update {
                     it.copy(

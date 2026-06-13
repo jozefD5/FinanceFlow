@@ -115,7 +115,7 @@ fun FinanceListView(
     searchBarState: SearchBarState = rememberSearchBarState()
 ) {
     Box(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
     ) {
         PullToRefreshBox(
             isRefreshing = state.isLoading,

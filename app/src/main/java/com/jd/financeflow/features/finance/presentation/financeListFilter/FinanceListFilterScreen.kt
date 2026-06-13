@@ -14,11 +14,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -61,6 +65,7 @@ import com.jd.financeflow.features.finance.presentation.components.toUiText
 fun FinanceListFilterScreen(
     modifier: Modifier = Modifier,
     onApplyFilter: (FilterConfiguration) -> Unit = {},
+    onBackNavigation: () -> Unit = {},
     viewModel: FinanceListFilterViewModel = koinViewModel(),
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
@@ -71,6 +76,11 @@ fun FinanceListFilterScreen(
             val actualAction = when (action) {
                 is FinanceListFilterActions.OnApplyFilter -> {
                     action.copy(callback = onApplyFilter)
+                }
+
+                is FinanceListFilterActions.OnBackNavigationClicked -> {
+                    onBackNavigation()
+                    action
                 }
 
                 else -> action
@@ -100,9 +110,23 @@ fun FinanceListFilterView(
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(scrollState)
     ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            IconButton(
+                onClick = { onAction(FinanceListFilterActions.OnBackNavigationClicked) },
+                modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.padding_small))
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
+                    contentDescription = null
+                )
+            }
+        }
+
         Column(
             verticalArrangement = Arrangement.spacedBy(
                 dimensionResource(R.dimen.list_items_spacing_medium)
@@ -110,6 +134,7 @@ fun FinanceListFilterView(
             modifier = modifier
                 .fillMaxSize()
                 .padding(dimensionResource(R.dimen.padding_large))
+                .verticalScroll(scrollState)
 
         ) {
             // Type and category selection
@@ -322,13 +347,8 @@ fun FinanceListFilterView(
                     }
                 }
             }
-        }
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(dimensionResource(R.dimen.padding_large))
-        ) {
+            // Control buttons
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier

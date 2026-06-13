@@ -6,6 +6,7 @@ package com.jd.financeflow.features.finance.presentation.financeDetails
 sealed interface FinanceDetailsActions {
     class ClearError : FinanceDetailsActions
     data class OnSaveFinance(val action: (() -> Unit)? = null) : FinanceDetailsActions
+    object OnBackNavigationClicked : FinanceDetailsActions
     data class OnUpdateTitle(val title: String) : FinanceDetailsActions
     data class OnUpdateDescription(val description: String) : FinanceDetailsActions
     data class OnUpdateAmount(val amount: String) : FinanceDetailsActions

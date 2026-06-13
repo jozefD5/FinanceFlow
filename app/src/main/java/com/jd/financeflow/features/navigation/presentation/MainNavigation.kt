@@ -153,6 +153,9 @@ fun MainNavigation(
                                     onSuccessfulAdd = {
                                         homeBackStack.removeLastOrNull()
                                     },
+                                    onBackNavigation = {
+                                        currentBackStack.removeLastOrNull()
+                                    },
                                     modifier = Modifier.fillMaxSize()
                                 )
                             }
@@ -210,6 +213,9 @@ fun MainNavigation(
                                     onSuccessfulAdd = {
                                         financeListBackStack.removeLastOrNull()
                                     },
+                                    onBackNavigation = {
+                                        currentBackStack.removeLastOrNull()
+                                    },
                                     modifier = Modifier.fillMaxSize()
                                 )
                             }
@@ -233,6 +239,9 @@ fun MainNavigation(
                                         currentBackStack.add(
                                             FinanceRootKey.FinanceListScreen(config)
                                         )
+                                    },
+                                    onBackNavigation = {
+                                        currentBackStack.removeLastOrNull()
                                     },
                                     modifier = Modifier.fillMaxSize()
                                 )

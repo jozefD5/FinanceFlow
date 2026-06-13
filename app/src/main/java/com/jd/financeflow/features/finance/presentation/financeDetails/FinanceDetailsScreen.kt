@@ -3,9 +3,9 @@ package com.jd.financeflow.features.finance.presentation.financeDetails
 import android.icu.util.Currency
 import android.util.Log
 import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,7 +15,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -54,11 +59,13 @@ import com.jd.financeflow.features.finance.presentation.financeDetails.component
  *
  * @param modifier modifier to be applied
  * @param viewModel view model to be used
+ * @param onSuccessfulAdd callback for when the finance transaction is successfully added
  */
 @Composable
 fun FinanceDetailsScreen(
     modifier: Modifier = Modifier,
     onSuccessfulAdd: () -> Unit = {},
+    onBackNavigation: () -> Unit = {},
     viewModel: FinanceDetailsViewModel = koinViewModel(),
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
@@ -70,9 +77,13 @@ fun FinanceDetailsScreen(
                 is FinanceDetailsActions.OnSaveFinance -> action
                     .copy(action = onSuccessfulAdd)
 
+                is FinanceDetailsActions.OnBackNavigationClicked -> {
+                    onBackNavigation()
+                    action
+                }
+
                 else -> action
             }
-
             viewModel.onAction(actualAction)
         },
         modifier = modifier
@@ -88,6 +99,7 @@ fun FinanceDetailsScreen(
  * @param focusManager focus manager to be used
  * @param scrollState scroll state to be used
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FinanceDetailsView(
     state: FinanceDetailsState,
@@ -97,10 +109,25 @@ fun FinanceDetailsView(
     scrollState: ScrollState = rememberScrollState()
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.verticalScroll(scrollState)
+        modifier = modifier
     ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            IconButton(
+                onClick = { onAction(FinanceDetailsActions.OnBackNavigationClicked) },
+                modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.padding_small))
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
+                    contentDescription = null
+                )
+            }
+        }
+
         Column(
             verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -237,7 +264,7 @@ fun FinanceDetailsView(
             onClick = { onAction(FinanceDetailsActions.OnSaveFinance()) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = dimensionResource(R.dimen.padding_large))
+                .padding(horizontal = dimensionResource(R.dimen.padding_medium))
         ) {
             Text(
                 text = stringResource(R.string.save_title),
@@ -262,7 +289,6 @@ fun FinanceDetailsViewPreview() {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
-                    .background(MaterialTheme.colorScheme.surfaceDim)
             )
         }
     }

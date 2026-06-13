@@ -15,7 +15,6 @@ import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.finance.domain.models.FilterConfiguration
 import com.jd.financeflow.features.finance.domain.models.FinanceType
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
-import com.jd.financeflow.features.finance.domain.models.SortOrder
 
 private const val TAG = "FinanceListFilterViewModel"
 
@@ -63,6 +62,8 @@ class FinanceListFilterViewModel(
             is FinanceListFilterActions.OnResetFilter -> {
                 resetFilter()
             }
+
+            is FinanceListFilterActions.OnBackNavigationClicked -> {}
 
             is FinanceListFilterActions.OnEnableCategories -> {
                 _state.update {
