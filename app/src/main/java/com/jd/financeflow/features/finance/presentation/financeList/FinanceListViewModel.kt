@@ -31,7 +31,6 @@ import com.jd.financeflow.features.finance.domain.models.Finance
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceType
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
-import com.jd.financeflow.features.finance.domain.models.SortOrder
 
 private const val TAG = "FinanceListViewModel"
 
@@ -141,7 +140,6 @@ class FinanceListViewModel(
 
             null -> {
                 FilterConfiguration(
-                    sortOrder = SortOrder.NEWEST_FIRST,
                     miniAmountLimit = 0.0,
                     maxAmountLimit = maxAmountLimit
                 )
@@ -355,73 +353,59 @@ class FinanceListViewModel(
         items: List<Finance>,
         filterConfiguration: FilterConfiguration
     ): List<Finance> {
-        val filteredItems = items
-            .filter { finance ->
-                // Filter by finance type
-                val financeTypeCheck = when (filterConfiguration.type) {
-                    FinanceType.INCOME -> finance.category is FinanceCategory.Income
-                    FinanceType.EXPENSE -> finance.category is FinanceCategory.Expense
-                    null -> true
-                }
+        return items.filter { finance ->
+            // Filter by finance type
+            val financeTypeCheck = when (filterConfiguration.type) {
+                FinanceType.INCOME -> finance.category is FinanceCategory.Income
+                FinanceType.EXPENSE -> finance.category is FinanceCategory.Expense
+                null -> true
+            }
 
-                // Filter by category
-                val categoryCheck =
-                    if (filterConfiguration.enableCategoryFilter && filterConfiguration.type != null) {
-                        val categoryCheckList = mutableListOf<FinanceCategory>()
+            // Filter by category
+            val categoryCheck =
+                if (filterConfiguration.enableCategoryFilter && filterConfiguration.type != null) {
+                    val categoryCheckList = mutableListOf<FinanceCategory>()
 
-                        // Add all selected categories to comparison/check list
-                        when (filterConfiguration.type) {
-                            FinanceType.INCOME -> {
-                                IncomeCategory.entries.forEachIndexed { index, category ->
-                                    if (filterConfiguration.selectedIncomeIndexes?.get(index) == true) {
-                                        categoryCheckList.add(FinanceCategory.Income(category))
-                                    }
-                                }
-                            }
-
-                            FinanceType.EXPENSE -> {
-                                ExpenseCategory.entries.forEachIndexed { index, category ->
-                                    if (filterConfiguration.selectedExpenseIndexes?.get(index) == true) {
-                                        categoryCheckList.add(FinanceCategory.Expense(category))
-                                    }
+                    // Add all selected categories to comparison/check list
+                    when (filterConfiguration.type) {
+                        FinanceType.INCOME -> {
+                            IncomeCategory.entries.forEachIndexed { index, category ->
+                                if (filterConfiguration.selectedIncomeIndexes?.get(index) == true) {
+                                    categoryCheckList.add(FinanceCategory.Income(category))
                                 }
                             }
                         }
 
-                        // Check if finance category is in comparison/check list
-                        if (categoryCheckList.isNotEmpty()) {
-                            categoryCheckList.contains(finance.category)
-                        } else {
-                            true
+                        FinanceType.EXPENSE -> {
+                            ExpenseCategory.entries.forEachIndexed { index, category ->
+                                if (filterConfiguration.selectedExpenseIndexes?.get(index) == true) {
+                                    categoryCheckList.add(FinanceCategory.Expense(category))
+                                }
+                            }
                         }
+                    }
+
+                    // Check if finance category is in comparison/check list
+                    if (categoryCheckList.isNotEmpty()) {
+                        categoryCheckList.contains(finance.category)
                     } else {
                         true
                     }
-
-                // Filter by amount, must be within the range
-                val amountCheck = if (filterConfiguration.enableAmountFilter &&
-                    filterConfiguration.miniSetAmount != null &&
-                    filterConfiguration.maxSetAmount != null
-                ) {
-                    finance.amount in filterConfiguration.miniSetAmount..filterConfiguration.maxSetAmount
                 } else {
                     true
                 }
 
-                financeTypeCheck && categoryCheck && amountCheck
+            // Filter by amount, must be within the range
+            val amountCheck = if (filterConfiguration.enableAmountFilter &&
+                filterConfiguration.miniSetAmount != null &&
+                filterConfiguration.maxSetAmount != null
+            ) {
+                finance.amount in filterConfiguration.miniSetAmount..filterConfiguration.maxSetAmount
+            } else {
+                true
             }
 
-        // Sort items by sort order
-        return when (filterConfiguration.sortOrder) {
-            SortOrder.AMOUNT_ASCENDING -> filteredItems.sortedWith(
-                compareBy(
-                    { it.amount },
-                    { it.id })
-            )
-
-            SortOrder.AMOUNT_DESCENDING -> filteredItems.sortedWith(compareByDescending<Finance> { it.amount }.thenBy { it.id })
-            SortOrder.NEWEST_FIRST -> filteredItems.sortedWith(compareByDescending<Finance> { it.timeStampMs }.thenBy { it.id })
-            SortOrder.OLDEST_FIRST -> filteredItems.sortedWith(compareBy<Finance> { it.timeStampMs }.thenBy { it.id })
+            financeTypeCheck && categoryCheck && amountCheck
         }
     }
 }
