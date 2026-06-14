@@ -58,7 +58,7 @@ import com.jd.financeflow.features.finance.domain.models.Finance
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceInterval
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
-import com.jd.financeflow.features.finance.presentation.financeList.components.FinanceList
+import com.jd.financeflow.features.finance.presentation.components.financeList.FinanceList
 import com.jd.financeflow.ui.theme.primaryLightMediumContrast
 
 /**

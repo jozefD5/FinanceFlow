@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.finance.presentation.financeList.components
+package com.jd.financeflow.features.finance.presentation.components.financeList
 
 import java.time.Instant
 import java.time.ZoneId

@@ -1,6 +1,5 @@
 package com.jd.financeflow.features.finance.presentation.home
 
-import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.core.presentation.UiText
 import com.jd.financeflow.features.finance.domain.models.Finance
 
@@ -9,6 +8,7 @@ import com.jd.financeflow.features.finance.domain.models.Finance
  */
 data class HomeState(
     // General
+    val isLoading: Boolean = false,
     val error: UiText? = null,
     val currencyCode: String = "EUR",
 
@@ -19,8 +19,4 @@ data class HomeState(
 
     // Recent transactions
     val recentTransactions: List<Finance> = emptyList(),
-
-    // Income category preview
-    val incomeCategoriesPreview: List<Pair<FinanceCategory, Double>> = emptyList(),
-    val expenseCategoriesPreview: List<Pair<FinanceCategory, Double>> = emptyList()
 )

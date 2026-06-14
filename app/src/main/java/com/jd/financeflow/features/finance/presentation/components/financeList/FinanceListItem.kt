@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.finance.presentation.financeList.components
+package com.jd.financeflow.features.finance.presentation.components.financeList
 
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi

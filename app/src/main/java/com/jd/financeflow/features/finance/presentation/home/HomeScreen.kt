@@ -36,7 +36,7 @@ import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
 import com.jd.financeflow.features.finance.domain.models.Finance
 import com.jd.financeflow.features.finance.domain.models.FinanceInterval
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
-import com.jd.financeflow.features.finance.presentation.financeList.components.FinanceList
+import com.jd.financeflow.features.finance.presentation.components.financeList.FinanceList
 import com.jd.financeflow.features.finance.presentation.home.components.BalanceCard
 import com.jd.financeflow.ui.theme.FinanceFlowTheme
 import com.jd.financeflow.ui.theme.vibrantMediumBlue
@@ -141,7 +141,9 @@ fun HomeView(
         }
 
         FloatingActionButton(
-            onClick = {},
+            onClick = {
+                onAction(HomeActions.OnAddFinanceClicked)
+            },
             containerColor = vibrantMediumBlue,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
