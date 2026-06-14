@@ -5,11 +5,11 @@ import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,7 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Dehaze
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -59,7 +59,7 @@ import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceInterval
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
 import com.jd.financeflow.features.finance.presentation.components.financeList.FinanceList
-import com.jd.financeflow.ui.theme.primaryLightMediumContrast
+import com.jd.financeflow.ui.theme.vibrantMediumBlue
 
 /**
  * Screen for displaying a list of finance transactions.
@@ -120,9 +120,7 @@ fun FinanceListView(
         PullToRefreshBox(
             isRefreshing = state.isLoading,
             onRefresh = { onAction(FinanceListActions.OnRefresh) },
-            modifier = Modifier
-                .background(primaryLightMediumContrast)
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
         ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
@@ -130,6 +128,7 @@ fun FinanceListView(
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(
@@ -183,25 +182,26 @@ fun FinanceListView(
                                 },
                                 placeholder = { Text(stringResource(R.string.search_query_placeholder)) })
                         }, modifier = Modifier
-                            .weight(0.8f)
+                            .weight(0.95f)
                             .alpha(0.85f)
                     )
+
+                    Spacer(Modifier.weight(0.05f))
 
                     AnimatedVisibility(
                         visible = !state.isSearching,
                         enter = fadeIn() + expandHorizontally(),
                         exit = fadeOut() + shrinkVertically(),
-                        modifier = Modifier.weight(0.2f)
                     ) {
-                        IconButton(
+                        OutlinedButton(
                             onClick = {
                                 onAction(FinanceListActions.OnFilterClicked)
                             },
+                            modifier = Modifier.weight(0.05f)
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Dehaze,
+                                imageVector = Icons.Default.FilterList,
                                 contentDescription = null,
-                                tint = Color(0xFFFFFFFF)
                             )
                         }
                     }
@@ -243,7 +243,7 @@ fun FinanceListView(
             onClick = {
                 onAction(FinanceListActions.OnAddFinanceClicked)
             },
-            containerColor = primaryLightMediumContrast,
+            containerColor = vibrantMediumBlue,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(16.dp)
