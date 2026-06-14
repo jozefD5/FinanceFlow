@@ -5,8 +5,7 @@
     <string name="finances_tab_label">Finances</string>
     <string name="charts_tab_label">Charts</string>
 
-    <string name="income_overview_title">Income overview</string>
-    <string name="expense_overview_title">Expense overview</string>
+    <string name="recent_transactions_title">Recent Transactions</string>
     <string name="add_finance_button_label">Add finance</string>
     <string name="save_title">Save</string>
     <string name="cancel_title">Cancel</string>

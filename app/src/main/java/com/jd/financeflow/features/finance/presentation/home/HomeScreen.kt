@@ -1,18 +1,16 @@
 package com.jd.financeflow.features.finance.presentation.home
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.NorthEast
-import androidx.compose.material.icons.filled.SouthWest
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -26,18 +24,22 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 
 import com.jd.financeflow.R
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.core.presentation.components.ErrorDialog
+import com.jd.financeflow.features.core.presentation.components.MainGradientBox
 import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
+import com.jd.financeflow.features.finance.domain.models.Finance
+import com.jd.financeflow.features.finance.domain.models.FinanceInterval
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
+import com.jd.financeflow.features.finance.presentation.financeList.components.FinanceList
 import com.jd.financeflow.features.finance.presentation.home.components.BalanceCard
-import com.jd.financeflow.features.finance.presentation.home.components.CategoryOverviewGrid
 import com.jd.financeflow.ui.theme.FinanceFlowTheme
-import com.jd.financeflow.ui.theme.primaryLightMediumContrast
+import com.jd.financeflow.ui.theme.vibrantMediumBlue
 
 /**
  * Screen for the home screen.
@@ -80,115 +82,77 @@ fun HomeView(
     onAction: (HomeActions) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
+    Box(
         modifier = modifier
     ) {
-        Surface(
-            color = primaryLightMediumContrast,
-            shape = RoundedCornerShape(
-                bottomStart = dimensionResource(R.dimen.padding_extra_extra_large),
-                bottomEnd = dimensionResource(R.dimen.padding_extra_extra_large)
-            ),
-            modifier = Modifier.fillMaxWidth()
+        Column(
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
+            modifier = Modifier.fillMaxSize()
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
+            Surface(
+                shape = RoundedCornerShape(
+                    topStart = dimensionResource(R.dimen.padding_extra_extra_large),
+                    topEnd = dimensionResource(R.dimen.padding_extra_extra_large),
+                    bottomStart = dimensionResource(R.dimen.padding_extra_extra_large),
+                    bottomEnd = dimensionResource(R.dimen.padding_extra_extra_large)
+                ),
+                tonalElevation = 4.dp,
+                shadowElevation = 4.dp,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(16.dp)
             ) {
-                BalanceCard(
-                    balance = state.balance,
-                    income = state.income,
-                    expense = state.expense,
-                    currencyCode = state.currencyCode,
-                    color = Color.Transparent,
-                    textColor = Color.White,
+                MainGradientBox(
                     modifier = Modifier.fillMaxWidth()
-                )
-
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .padding(dimensionResource(R.dimen.padding_large))
-                        .fillMaxWidth()
                 ) {
-                    FilledTonalButton(
-                        onClick = { },
-                        modifier = Modifier.weight(0.5f)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.NorthEast,
-                            contentDescription = null,
-                        )
-                    }
-
-                    FilledTonalButton(
-                        onClick = { },
-                        modifier = Modifier.weight(0.5f)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.SouthWest,
-                            contentDescription = null,
-                        )
-                    }
-
-                    Button(
-                        onClick = { onAction(HomeActions.OnAddFinanceClicked) },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = null,
-                        )
-                    }
+                    BalanceCard(
+                        balance = state.balance,
+                        income = state.income,
+                        expense = state.expense,
+                        currencyCode = state.currencyCode,
+                        color = Color.Transparent,
+                        textColor = Color.White,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    )
                 }
             }
+
+            Text(
+                text = stringResource(R.string.recent_transactions_title),
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.Bold
+                ),
+                modifier = Modifier
+                    .padding(horizontal = dimensionResource(R.dimen.padding_medium))
+                    .fillMaxWidth()
+            )
+
+            FinanceList(
+                finances = state.recentTransactions,
+                currencyCode = state.currencyCode,
+                onItemClick = {},
+                onItemLongClick = {},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = dimensionResource(R.dimen.padding_medium))
+            )
         }
 
-        Text(
-            text = stringResource(R.string.income_overview_title),
-            style = MaterialTheme.typography.titleMedium.copy(
-                fontWeight = FontWeight.Bold
-            ),
+        FloatingActionButton(
+            onClick = {},
+            containerColor = vibrantMediumBlue,
             modifier = Modifier
-                .padding(horizontal = dimensionResource(R.dimen.padding_medium))
-                .fillMaxWidth()
-        )
-
-        CategoryOverviewGrid(
-            categories = state.incomeCategoriesPreview,
-            lineGraphMaxValue = state.income,
-            currencyCode = state.currencyCode,
-            lineGraphColor = Color.Green,
-            onClicked = { },
-            modifier = Modifier
-                .padding(horizontal = dimensionResource(R.dimen.padding_medium))
-                .fillMaxWidth()
-        )
-
-        Text(
-            text = stringResource(R.string.expense_overview_title),
-            style = MaterialTheme.typography.titleMedium.copy(
-                fontWeight = FontWeight.Bold
-            ),
-            modifier = Modifier
-                .padding(horizontal = dimensionResource(R.dimen.padding_medium))
-                .fillMaxWidth()
-        )
-
-        CategoryOverviewGrid(
-            categories = state.expenseCategoriesPreview,
-            lineGraphMaxValue = state.expense,
-            currencyCode = state.currencyCode,
-            lineGraphColor = Color.Red,
-            onClicked = { },
-            modifier = Modifier
-                .padding(horizontal = dimensionResource(R.dimen.padding_medium))
-                .fillMaxWidth()
-        )
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Add,
+                contentDescription = null,
+                tint = Color.White
+            )
+        }
 
         if (state.error != null) {
             ErrorDialog(
@@ -204,41 +168,36 @@ fun HomeView(
 @Preview(showBackground = true)
 @Composable
 fun HomeViewPreview() {
-    val incomePreviewCategories = listOf(
-        Pair(
-            FinanceCategory.Income(IncomeCategory.Salary),
-            100_000.0
-        ),
-        Pair(
-            FinanceCategory.Income(IncomeCategory.Bonus),
-            50_000.0
-        ),
-        Pair(
-            FinanceCategory.Income(IncomeCategory.Investment),
-            40_000.0
-        ),
-        Pair(
-            FinanceCategory.Income(IncomeCategory.Commission),
-            10_000.0
-        )
-    )
-
-    val expensePreviewCategories = listOf(
-        Pair(
-            FinanceCategory.Expense(ExpenseCategory.Housing),
-            10_000.0
-        ),
-        Pair(
-            FinanceCategory.Expense(ExpenseCategory.Utility),
-            10_000.0
-        ),
-        Pair(
-            FinanceCategory.Expense(ExpenseCategory.Transport),
-            5_000.0
-        ),
-        Pair(
-            FinanceCategory.Expense(ExpenseCategory.Entertainment),
-            5_000.0
+    val currentUnixTime = System.currentTimeMillis()
+    val recentTransactions = listOf(
+        Finance(
+            title = "Salary",
+            description = "Monthly salary",
+            amount = 10_000.0,
+            timeStampMs = currentUnixTime,
+            interval = FinanceInterval.Monthly,
+            category = FinanceCategory.Income(IncomeCategory.Salary),
+        ), Finance(
+            title = "Bonus",
+            description = "Work bonus",
+            amount = 5_000.0,
+            timeStampMs = currentUnixTime,
+            interval = FinanceInterval.Quarterly,
+            category = FinanceCategory.Income(IncomeCategory.Bonus)
+        ), Finance(
+            title = "Investment",
+            description = "",
+            amount = 1000.0,
+            timeStampMs = currentUnixTime,
+            interval = FinanceInterval.Quarterly,
+            category = FinanceCategory.Income(IncomeCategory.Investment)
+        ), Finance(
+            title = "Housing",
+            description = "Rent",
+            amount = 500.0,
+            timeStampMs = currentUnixTime,
+            interval = FinanceInterval.Monthly,
+            category = FinanceCategory.Expense(ExpenseCategory.Housing)
         )
     )
 
@@ -250,8 +209,7 @@ fun HomeViewPreview() {
                     balance = 100_000.0,
                     income = 200_000.0,
                     expense = 30_000.0,
-                    incomeCategoriesPreview = incomePreviewCategories,
-                    expenseCategoriesPreview = expensePreviewCategories
+                    recentTransactions = recentTransactions,
                 ),
                 onAction = {},
                 modifier = Modifier

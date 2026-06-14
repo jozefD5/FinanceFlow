@@ -7,8 +7,10 @@ import androidx.compose.material.icons.automirrored.filled.ViewList
 import androidx.compose.material.icons.automirrored.outlined.ViewList
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.InsertChart
+import androidx.compose.material.icons.filled.ViewAgenda
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.InsertChartOutlined
+import androidx.compose.material.icons.outlined.ViewAgenda
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation3.runtime.NavKey
@@ -33,8 +35,8 @@ sealed interface MainNavigationBarKey : NavKey {
 
     @Serializable
     data object FinanceListTab : MainNavigationBarKey {
-        override val icon: ImageVector = Icons.AutoMirrored.Outlined.ViewList
-        override val selectedIcon: ImageVector = Icons.AutoMirrored.Filled.ViewList
+        override val icon: ImageVector = Icons.Outlined.ViewAgenda
+        override val selectedIcon: ImageVector = Icons.Filled.ViewAgenda
         override val labelResourceId = R.string.finances_tab_label
     }
 
