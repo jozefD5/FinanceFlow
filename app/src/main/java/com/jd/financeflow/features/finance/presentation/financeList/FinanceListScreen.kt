@@ -8,8 +8,8 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -38,11 +38,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.focus.onFocusEvent
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -59,7 +58,6 @@ import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceInterval
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
 import com.jd.financeflow.features.finance.presentation.components.financeList.FinanceList
-import com.jd.financeflow.ui.theme.vibrantMediumBlue
 
 /**
  * Screen for displaying a list of finance transactions.
@@ -114,6 +112,14 @@ fun FinanceListView(
     modifier: Modifier = Modifier,
     searchBarState: SearchBarState = rememberSearchBarState()
 ) {
+    LaunchedEffect(state.isSearching) {
+        if (state.isSearching) {
+            searchBarState.animateToExpanded()
+        } else {
+            searchBarState.animateToCollapsed()
+        }
+    }
+
     Box(
         modifier = modifier
     ) {
@@ -124,7 +130,7 @@ fun FinanceListView(
         ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
-                modifier = modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -182,11 +188,9 @@ fun FinanceListView(
                                 },
                                 placeholder = { Text(stringResource(R.string.search_query_placeholder)) })
                         }, modifier = Modifier
-                            .weight(0.95f)
+                            .weight(1f)
                             .alpha(0.85f)
                     )
-
-                    Spacer(Modifier.weight(0.05f))
 
                     AnimatedVisibility(
                         visible = !state.isSearching,
@@ -197,7 +201,7 @@ fun FinanceListView(
                             onClick = {
                                 onAction(FinanceListActions.OnFilterClicked)
                             },
-                            modifier = Modifier.weight(0.05f)
+                            modifier = Modifier.padding(start = 8.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.FilterList,
@@ -211,13 +215,8 @@ fun FinanceListView(
                     shape = RoundedCornerShape(
                         topStart = dimensionResource(R.dimen.padding_extra_extra_large),
                         topEnd = dimensionResource(R.dimen.padding_extra_extra_large)
-                    ), modifier = Modifier
-                        .fillMaxSize()
-                        .onFocusEvent { focusState ->
-                            if (focusState.isFocused) {
-                                onAction(FinanceListActions.OnEnableSearch(false))
-                            }
-                        }) {
+                    ), modifier = Modifier.fillMaxSize()
+                ) {
                     FinanceList(
                         finances = state.finances,
                         currencyCode = state.currencyCode,
@@ -227,13 +226,12 @@ fun FinanceListView(
                         onItemLongClick = {
                             onAction(
                                 FinanceListActions.OnSelectedDeleteFinanceItem(
-                                    shoeDialog = true, finance = it
+                                    showDialog = true, finance = it
                                 )
                             )
                         },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(dimensionResource(R.dimen.padding_large))
+                        contentPadding = PaddingValues(dimensionResource(R.dimen.padding_large)),
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }
@@ -243,7 +241,7 @@ fun FinanceListView(
             onClick = {
                 onAction(FinanceListActions.OnAddFinanceClicked)
             },
-            containerColor = vibrantMediumBlue,
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(16.dp)
@@ -251,13 +249,12 @@ fun FinanceListView(
             Icon(
                 imageVector = Icons.Filled.Add,
                 contentDescription = null,
-                tint = Color.White
+                tint = MaterialTheme.colorScheme.onPrimaryContainer
             )
         }
 
         if (state.showDeleteDialog) {
             AlertDialog(
-                icon = {},
                 title = { Text(text = stringResource(R.string.delete_finance_item_title)) },
                 text = {
                     Column {
@@ -277,7 +274,7 @@ fun FinanceListView(
                 onDismissRequest = {
                     onAction(
                         FinanceListActions.OnSelectedDeleteFinanceItem(
-                            shoeDialog = false, finance = null
+                            showDialog = false, finance = null
                         )
                     )
                 },
@@ -286,7 +283,7 @@ fun FinanceListView(
                         onClick = {
                             onAction(
                                 FinanceListActions.OnSelectedDeleteFinanceItem(
-                                    shoeDialog = false, finance = null
+                                    showDialog = false, finance = null
                                 )
                             )
                         }) {

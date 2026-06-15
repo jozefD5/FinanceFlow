@@ -74,7 +74,7 @@ class FinanceListViewModel(
             is FinanceListActions.OnSelectedDeleteFinanceItem -> {
                 _state.update {
                     it.copy(
-                        showDeleteDialog = action.shoeDialog,
+                        showDeleteDialog = action.showDialog,
                         selectedDeleteFinance = action.finance
                     )
                 }

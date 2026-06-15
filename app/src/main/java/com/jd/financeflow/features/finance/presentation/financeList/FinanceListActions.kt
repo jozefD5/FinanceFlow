@@ -12,7 +12,7 @@ sealed interface FinanceListActions {
     data class OnFinanceItemClicked(val id: Int) : FinanceListActions
     data class OnFinanceItemDelete(val finance: Finance) : FinanceListActions
     data class OnSelectedDeleteFinanceItem(
-        val shoeDialog: Boolean,
+        val showDialog: Boolean,
         val finance: Finance?
     ) : FinanceListActions
 
