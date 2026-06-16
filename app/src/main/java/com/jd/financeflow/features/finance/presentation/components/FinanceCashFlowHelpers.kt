@@ -102,6 +102,30 @@ fun annualCashFlow(financeItems: List<Finance>): List<Double> {
 }
 
 /**
+ * Calculates the total annual amount for a single finance item based on its interval and start date.
+ *
+ * @param item the finance item
+ * @return total annual amount
+ */
+fun calculateAnnualAmount(item: Finance): Double {
+    val startMonth = item.zonedDateTime.monthValue - 1
+    val monthsRemaining = monthsInYear - startMonth
+
+    return when (item.interval) {
+        FinanceInterval.Daily -> item.amount * 30.44 * monthsRemaining
+        FinanceInterval.Weekly -> item.amount * 4.34 * monthsRemaining
+        FinanceInterval.Monthly -> item.amount * monthsRemaining
+        FinanceInterval.Quarterly -> {
+            (0 until monthsInYear step 3).count { startMonth + it < monthsInYear } * item.amount
+        }
+        FinanceInterval.HalfYearly -> {
+            (0 until monthsInYear step 6).count { startMonth + it < monthsInYear } * item.amount
+        }
+        FinanceInterval.Yearly -> item.amount
+    }
+}
+
+/**
  * Annual total by category, grouped by finance type. Get total financial amount by category and interval.
  *
  * Note, method is expecting data to be grouped by finance type before use, income or expense.
@@ -110,71 +134,6 @@ fun annualCashFlow(financeItems: List<Finance>): List<Double> {
  * @return list of pairs containing category order and total amount
  */
 fun annualTotalByCategory(financeItems: List<Finance>): Map<Int, Double> {
-    val categoryTotalBuffer = mutableMapOf<Int, Double>()
-
-    financeItems.forEach { item ->
-        val date = item.zonedDateTime
-        val startMonth = date.monthValue - 1
-
-        when (item.interval) {
-            FinanceInterval.Daily -> {
-                val monthlyTotal = MutableList(monthsInYear) { 0.0 }
-                val monthlyAmount = item.amount * 30.44
-
-                for (i in startMonth until monthsInYear) monthlyTotal[i] += monthlyAmount
-
-                val currentValue = categoryTotalBuffer[item.category.order] ?: 0.0
-                categoryTotalBuffer[item.category.order] = currentValue + monthlyTotal.sum()
-            }
-
-            FinanceInterval.Weekly -> {
-                val monthlyTotal = MutableList(monthsInYear) { 0.0 }
-                val monthlyAmount = item.amount * 4.34
-                for (i in startMonth until monthsInYear) monthlyTotal[i] += monthlyAmount
-
-                val currentValue = categoryTotalBuffer[item.category.order] ?: 0.0
-                categoryTotalBuffer[item.category.order] = currentValue + monthlyTotal.sum()
-            }
-
-            FinanceInterval.Monthly -> {
-                val monthlyTotal = MutableList(monthsInYear) { 0.0 }
-                for (i in startMonth until monthsInYear) monthlyTotal[i] += item.amount
-
-                val currentValue = categoryTotalBuffer[item.category.order] ?: 0.0
-                categoryTotalBuffer[item.category.order] = currentValue + monthlyTotal.sum()
-            }
-
-            // Multi-month spikes
-            FinanceInterval.Quarterly -> {
-                val monthlyTotal = MutableList(monthsInYear) { 0.0 }
-                for (i in 0 until monthsInYear step 3) {
-                    val idx = startMonth + i
-                    if (idx < monthsInYear) monthlyTotal[idx] += item.amount
-
-                    val currentValue = categoryTotalBuffer[item.category.order] ?: 0.0
-                    categoryTotalBuffer[item.category.order] = currentValue + monthlyTotal.sum()
-                }
-            }
-
-            FinanceInterval.HalfYearly -> {
-                val monthlyTotal = MutableList(monthsInYear) { 0.0 }
-                for (i in 0 until monthsInYear step 6) {
-                    val idx = startMonth + i
-                    if (idx < monthsInYear) monthlyTotal[idx] += item.amount
-
-                    val currentValue = categoryTotalBuffer[item.category.order] ?: 0.0
-                    categoryTotalBuffer[item.category.order] = currentValue + monthlyTotal.sum()
-                }
-            }
-
-            FinanceInterval.Yearly -> {
-                val monthlyTotal = MutableList(monthsInYear) { 0.0 }
-                monthlyTotal[startMonth] += item.amount
-
-                val currentValue = categoryTotalBuffer[item.category.order] ?: 0.0
-                categoryTotalBuffer[item.category.order] = currentValue + monthlyTotal.sum()
-            }
-        }
-    }
-    return categoryTotalBuffer
+    return financeItems.groupBy { it.category.order }
+        .mapValues { (_, items) -> items.sumOf { calculateAnnualAmount(it) } }
 }

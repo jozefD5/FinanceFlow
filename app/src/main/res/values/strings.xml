@@ -75,6 +75,8 @@
     <string name="filter_max_range_label">Max</string>
     <string name="filter_reset_button_label">Reset</string>
     <string name="filter_apply_button_label">Apply filter</string>
+    <string name="filter_balance_label">Current balance</string>
+
 
     <string name="chart_total_title">Total</string>
     <string name="chart_average_value_label">Average</string>

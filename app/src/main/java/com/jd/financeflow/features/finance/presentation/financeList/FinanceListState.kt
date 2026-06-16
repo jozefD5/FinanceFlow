@@ -10,8 +10,9 @@ import com.jd.financeflow.features.finance.domain.models.Finance
 data class FinanceListState(
     val isLoading: Boolean = false,
     val error: UiText? = null,
-
     val currencyCode: String = "EUR",
+
+    val currentBalance: Double = 0.0,
     val filterConfiguration: FilterConfiguration? = null,
 
     val showDeleteDialog: Boolean = false,

@@ -16,6 +16,8 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlin.math.ceil
 import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -31,29 +33,30 @@ import com.jd.financeflow.features.finance.domain.models.Finance
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceType
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
+import com.jd.financeflow.features.finance.presentation.components.calculateAnnualAmount
+import kotlinx.coroutines.flow.StateFlow
+
 
 private const val TAG = "FinanceListViewModel"
 
-/**
- * View model for the FinanceList screen.
- */
 class FinanceListViewModel(
     private val repository: FinanceRepository,
-    private val currencyCode: String = "EUR",
+    private val currencyCode: String,
     private val filterConfiguration: FilterConfiguration? = null
 ) : ViewModel() {
+
     private var cachedFinances: List<Finance> = emptyList()
 
     private val _state = MutableStateFlow(FinanceListState(currencyCode = currencyCode))
-    val state = _state
+    val state: StateFlow<FinanceListState> = _state
         .onStart {
             applyFilterConfiguration(filterConfiguration)
             observeSearchQuery()
         }
         .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = FinanceListState(currencyCode = currencyCode)
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            FinanceListState()
         )
 
     /**
@@ -101,64 +104,47 @@ class FinanceListViewModel(
     }
 
     /**
-     * Apply filter configuration.
+     * Applies filter configuration.
      *
-     * @param config new filter configuration
+     * @param config filter configuration to be applied
      */
     private fun applyFilterConfiguration(config: FilterConfiguration?) = viewModelScope.launch {
-        // Get latest finances from local storage
-        refreshFinanceList(refresh = true)
-
-        // Get maximum value of finances (+10%) or set to default value.
-        val maxAmountLimit = try {
-            val amount: Double = cachedFinances.maxOfOrNull { it.amount } ?: 10_000.0
-
-            // Round up to nearest 1000
-            val rawValue = amount.times(1.1)
-            ceil(rawValue / 1000.0) * 1000.0
-
-        } catch (e: Exception) {
-            Log.e(TAG, "Error getting maximum amount", e)
-            _state.update {
-                it.copy(
-                    isLoading = false,
-                    error = DataError.Local.UNKNOWN.toUiText()
-                )
-            }
+        if (config == null) {
+            refreshFinanceList(refresh = true)
             return@launch
         }
 
-        // If provided, use supplied configuration with updated max amount limit. Else, create new
-        // filtered configuration object.
-        val updatedConfig = when (config) {
-            is FilterConfiguration -> {
-                config.copy(
-                    miniAmountLimit = 0.0,
-                    maxAmountLimit = maxAmountLimit
-                )
+        // Apply price range filter logic here if needed, eg. rounded values.
+        val updatedConfig = config.copy(
+            miniSetAmount = config.miniSetAmount?.let { amount ->
+                val rawValue = amount.times(1.1)
+                ceil(rawValue / 1000.0) * 1000.0
+            },
+            maxSetAmount = config.maxSetAmount?.let { amount ->
+                val rawValue = amount.times(1.1)
+                ceil(rawValue / 1000.0) * 1000.0
             }
+        )
 
-            null -> {
-                FilterConfiguration(
-                    miniAmountLimit = 0.0,
-                    maxAmountLimit = maxAmountLimit
-                )
-            }
+        _state.update { it.copy(isLoading = true) }
+
+        val filteredItems = filterItemsByFilter(cachedFinances, updatedConfig)
+
+        _state.update {
+            it.copy(
+                isLoading = false,
+                finances = filteredItems,
+                filterConfiguration = updatedConfig
+            )
         }
-
-        // Update state with new configuration
-        _state.update { it.copy(filterConfiguration = updatedConfig) }
-
-        // Refresh finance list with new configuration
-        refreshFinanceList(refresh = true, filterConfiguration = updatedConfig)
     }
 
     /**
-     * Observe search query changes and refresh finance list accordingly.
+     * Observes the search query and filters the list accordingly.
      */
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     private fun observeSearchQuery() {
-        state
+        _state
             .map { it.searchQuery }
             .distinctUntilChanged()
             .debounce(500L.milliseconds)
@@ -166,107 +152,54 @@ class FinanceListViewModel(
                 flow {
                     when {
                         query.isBlank() -> {
-                            refreshFinanceList(
-                                filterConfiguration = _state.value.filterConfiguration
-                            )
+                            emit(Unit)
                         }
 
                         query.length >= 2 -> {
-                            refreshFinanceList(query = query)
+                            emit(Unit)
                         }
                     }
-                    emit(Unit)
                 }
             }
             .launchIn(viewModelScope)
     }
 
     /**
-     * Manually refreshes the list of finances.
+     * Manually refreshes the finance list.
      */
     private fun manualRefresh() = viewModelScope.launch {
-        _state.update {
-            it.copy(isLoading = true)
-        }
-
-        try {
-            val currentState = state.value
-
-            // When refreshing, query has priority. If query is empty, use filter configuration.
-            val (query, config) = if (currentState.searchQuery.length > 2) {
-                Pair(currentState.searchQuery, null)
-            } else {
-                Pair(null, currentState.filterConfiguration)
-            }
-
-            refreshFinanceList(
-                refresh = true,
-                query = query,
-                filterConfiguration = config
-            )
-        } catch (e: Exception) {
-            Log.e(TAG, "Error refreshing finance list", e)
-            _state.update {
-                it.copy(
-                    isLoading = false,
-                    error = DataError.Local.UNKNOWN.toUiText()
-                )
-            }
-        }
+        refreshFinanceList(refresh = true)
     }
 
     /**
-     * Deletes a finance.
+     * Deletes the provided finance item.
      *
-     * @param finance finance to be deleted
+     * @param finance finance item to be deleted
      */
     private fun deleteFinance(finance: Finance) = viewModelScope.launch {
         _state.update { it.copy(isLoading = true) }
-        val currentState = state.value
 
-        runCatching {
-            // Delete finance from local storage
-            when (val result = repository.deleteFinance(finance)) {
-                is Result.Success -> {
-                    _state.update {
-                        it.copy(
-                            selectedDeleteFinance = null,
-                            showDeleteDialog = false
-                        )
-                    }
-
-                    refreshFinanceList(
-                        refresh = true,
-                        filterConfiguration = currentState.filterConfiguration
+        when (val result = repository.deleteFinance(finance)) {
+            is Result.Success -> {
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        showDeleteDialog = false,
+                        selectedDeleteFinance = null
                     )
                 }
-
-                is Result.Error -> {
-                    _state.update {
-                        it.copy(
-                            isLoading = false,
-                            error = result.error.toUiText(),
-                            selectedDeleteFinance = null,
-                            showDeleteDialog = false
-                        )
-                    }
-                }
+                refreshFinanceList(refresh = true)
             }
 
-            // Refresh finance list
-            refreshFinanceList(
-                refresh = true,
-                filterConfiguration = currentState.filterConfiguration
-            )
-
-        }.getOrElse {
-            _state.update {
-                it.copy(
-                    isLoading = false,
-                    error = DataError.Local.UNKNOWN.toUiText(),
-                    selectedDeleteFinance = null,
-                    showDeleteDialog = false
-                )
+            is Result.Error -> {
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        showDeleteDialog = false,
+                        selectedDeleteFinance = null,
+                        error = result.error.toUiText()
+                    )
+                }
             }
         }
     }
@@ -314,7 +247,15 @@ class FinanceListViewModel(
                 cachedFinances
             }
 
-            _state.update { it.copy(isLoading = false, finances = filteredItems) }
+            val currentBalance = calculateBalance(filteredItems)
+
+            _state.update {
+                it.copy(
+                    isLoading = false,
+                    finances = filteredItems,
+                    currentBalance = currentBalance
+                )
+            }
 
         }.getOrElse { error ->
             Log.e(TAG, "Error refreshing finance list", error)
@@ -408,4 +349,12 @@ class FinanceListViewModel(
             financeTypeCheck && categoryCheck && amountCheck
         }
     }
+
+    private suspend fun calculateBalance(finances: List<Finance>): Double =
+        withContext(Dispatchers.Default) {
+            finances.sumOf { item ->
+                val annualAmount = calculateAnnualAmount(item)
+                if (item.category.type == FinanceType.INCOME) annualAmount else -annualAmount
+            }
+        }
 }

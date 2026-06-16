@@ -39,11 +39,15 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -52,6 +56,7 @@ import org.koin.androidx.compose.koinViewModel
 
 import com.jd.financeflow.R
 import com.jd.financeflow.features.core.presentation.components.ErrorDialog
+import com.jd.financeflow.features.core.presentation.components.formatCurrency
 import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
 import com.jd.financeflow.features.finance.domain.models.Finance
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
@@ -90,7 +95,6 @@ fun FinanceListScreen(
                 is FinanceListActions.OnFinanceItemClicked -> onFinanceClicked(action.id)
                 is FinanceListActions.OnFilterClicked -> onFilterClicked()
                 is FinanceListActions.OnAddFinanceClicked -> onAddFinanceClicked()
-
                 else -> viewModel.onAction(action)
             }
         }, modifier = modifier
@@ -112,9 +116,12 @@ fun FinanceListView(
     modifier: Modifier = Modifier,
     searchBarState: SearchBarState = rememberSearchBarState()
 ) {
+    val focusRequester = remember { FocusRequester() }
+
     LaunchedEffect(state.isSearching) {
         if (state.isSearching) {
             searchBarState.animateToExpanded()
+            focusRequester.requestFocus()
         } else {
             searchBarState.animateToCollapsed()
         }
@@ -129,9 +136,25 @@ fun FinanceListView(
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(
-                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
                 modifier = Modifier.fillMaxWidth()
             ) {
+                Text(
+                    text = formatCurrency(state.currentBalance, state.currencyCode),
+                    style = MaterialTheme.typography.titleMediumEmphasized.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    modifier = Modifier.padding(
+                        horizontal = dimensionResource(R.dimen.padding_medium),
+                    )
+                )
+                Text(
+                    text = stringResource(R.string.filter_balance_label),
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(
+                        horizontal = dimensionResource(R.dimen.padding_medium),
+                    )
+                )
+
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -186,7 +209,9 @@ fun FinanceListView(
                                 onExpandedChange = { toggle ->
                                     onAction(FinanceListActions.OnEnableSearch(toggle))
                                 },
-                                placeholder = { Text(stringResource(R.string.search_query_placeholder)) })
+                                placeholder = { Text(stringResource(R.string.search_query_placeholder)) },
+                                modifier = Modifier.focusRequester(focusRequester)
+                            )
                         }, modifier = Modifier
                             .weight(1f)
                             .alpha(0.85f)
