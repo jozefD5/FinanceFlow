@@ -84,10 +84,10 @@ fun FinanceListScreen(
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
 
-    LifecycleResumeEffect(Unit) {
-        viewModel.onAction(FinanceListActions.OnRefresh)
-        onPauseOrDispose { }
-    }
+//    LifecycleResumeEffect(Unit) {
+//        viewModel.onAction(FinanceListActions.OnRefresh)
+//        onPauseOrDispose { }
+//    }
 
     FinanceListView(
         state = state.value, onAction = { action ->
