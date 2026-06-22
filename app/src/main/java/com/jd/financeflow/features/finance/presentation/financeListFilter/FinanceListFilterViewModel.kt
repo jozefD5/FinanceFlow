@@ -105,7 +105,7 @@ class FinanceListFilterViewModel(
      * @param config The initial filter configuration.
      */
     private fun applyInitialConfiguration(config: FilterConfiguration) {
-        Log.d("FinanceListFilterViewModel", "Applying initial configuration: $config")
+        Log.i("FinanceListFilterViewModel", "Applying initial configuration: $config")
 
         val currentState = _state.value
         val selectedTypeIndex = config.type?.ordinal ?: 0

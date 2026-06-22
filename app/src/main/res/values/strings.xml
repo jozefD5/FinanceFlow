@@ -85,6 +85,7 @@
     <string name="chart_annual_cash_flow_title">Annual Cash Flow</string>
     <string name="chart_annual_income_title">Annual Income</string>"
     <string name="chart_annual_expense_title">Annual Expense</string>
+    <string name="budget_rollover_label">Budget Rollover</string>
 
 
 </resources>

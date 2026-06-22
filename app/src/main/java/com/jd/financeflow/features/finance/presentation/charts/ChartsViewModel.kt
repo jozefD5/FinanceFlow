@@ -69,6 +69,11 @@ class ChartsViewModel(
                     it.copy(selectedChartOptions = updatedList)
                 }
             }
+
+            is ChartsActions.OnToggleBalanceRollover -> {
+                _state.update { it.copy(enableCascadeBalance = !it.enableCascadeBalance) }
+                refreshCashFlow()
+            }
         }
     }
 
@@ -77,6 +82,7 @@ class ChartsViewModel(
      */
     private fun refreshCashFlow() = viewModelScope.launch {
         _state.update { it.copy(isLoading = true) }
+        val currentState = _state.value
 
         val finances = when (val result = repository.getFinances()) {
             is Result.Success -> result.data
@@ -126,8 +132,12 @@ class ChartsViewModel(
 
         var runningAnnualBalance = 0.0
         val annualBalance = annualIncome.mapIndexed { index, income ->
-            runningAnnualBalance += income - (annualExpense.getOrNull(index) ?: 0.0)
-            runningAnnualBalance
+            if (currentState.enableCascadeBalance) {
+                income - (annualExpense.getOrNull(index) ?: 0.0)
+            } else {
+                runningAnnualBalance += income - (annualExpense.getOrNull(index) ?: 0.0)
+                runningAnnualBalance
+            }
         }
 
         // Categories
