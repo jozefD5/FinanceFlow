@@ -2,18 +2,18 @@ package com.jd.financeflow.features.finance.presentation.financeList
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.Add
@@ -30,21 +30,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBar
+import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.SearchBarDefaults
-import androidx.compose.material3.SearchBarState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -84,10 +76,11 @@ fun FinanceListScreen(
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
 
-//    LifecycleResumeEffect(Unit) {
-//        viewModel.onAction(FinanceListActions.OnRefresh)
-//        onPauseOrDispose { }
-//    }
+    // Refresh finances when screen is resumed
+    LifecycleResumeEffect(Unit) {
+        viewModel.onAction(FinanceListActions.OnRefresh)
+        onPauseOrDispose { }
+    }
 
     FinanceListView(
         state = state.value, onAction = { action ->
@@ -113,68 +106,61 @@ fun FinanceListScreen(
 fun FinanceListView(
     state: FinanceListState,
     onAction: (FinanceListActions) -> Unit,
-    modifier: Modifier = Modifier,
-    searchBarState: SearchBarState = rememberSearchBarState()
+    modifier: Modifier = Modifier
 ) {
-    val focusRequester = remember { FocusRequester() }
-
-    LaunchedEffect(state.isSearching) {
-        if (state.isSearching) {
-            searchBarState.animateToExpanded()
-            focusRequester.requestFocus()
-        } else {
-            searchBarState.animateToCollapsed()
-        }
-    }
-
     Box(
         modifier = modifier
     ) {
         PullToRefreshBox(
             isRefreshing = state.isLoading,
             onRefresh = { onAction(FinanceListActions.OnRefresh) },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxSize()
         ) {
             Column(
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(
-                    text = formatCurrency(state.currentBalance, state.currencyCode),
-                    style = MaterialTheme.typography.titleMediumEmphasized.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
-                    modifier = Modifier.padding(
-                        horizontal = dimensionResource(R.dimen.padding_medium),
-                    )
-                )
-                Text(
-                    text = stringResource(R.string.filter_balance_label),
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(
-                        horizontal = dimensionResource(R.dimen.padding_medium),
-                    )
-                )
+
+                AnimatedVisibility(
+                    visible = !state.isSearching,
+                    enter = fadeIn() + expandVertically(),
+                    exit = fadeOut() + shrinkVertically(),
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = formatCurrency(state.currentBalance, state.currencyCode),
+                            style = MaterialTheme.typography.titleMediumEmphasized.copy(
+                                fontWeight = FontWeight.Bold
+                            ),
+                            modifier = Modifier.padding(
+                                horizontal = dimensionResource(R.dimen.padding_large),
+                            )
+                        )
+                        Text(
+                            text = stringResource(R.string.filter_balance_label),
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(
+                                horizontal = dimensionResource(R.dimen.padding_large),
+                            )
+                        )
+                    }
+                }
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(
-                            vertical = dimensionResource(R.dimen.padding_large),
-                            horizontal = dimensionResource(R.dimen.padding_medium),
-                        )
+                        .padding(horizontal = dimensionResource(R.dimen.padding_large))
                 ) {
-                    SearchBar(
-                        state = searchBarState, inputField = {
+                    DockedSearchBar(
+                        inputField = {
                             SearchBarDefaults.InputField(
                                 query = state.searchQuery,
-                                onQueryChange = {
-                                    onAction(FinanceListActions.OnUpdateSearchQuery(it))
-                                },
-                                onSearch = {
-                                    onAction(FinanceListActions.OnSearch)
-                                },
+                                onQueryChange = { onAction(FinanceListActions.OnUpdateSearchQuery(it)) },
+                                onSearch = {},
                                 leadingIcon = {
                                     if (state.isSearching) {
                                         IconButton(onClick = {
@@ -206,27 +192,27 @@ fun FinanceListView(
                                     }
                                 },
                                 expanded = state.isSearching,
-                                onExpandedChange = { toggle ->
-                                    onAction(FinanceListActions.OnEnableSearch(toggle))
+                                onExpandedChange = {
+                                    onAction(FinanceListActions.OnEnableSearch(it))
                                 },
-                                placeholder = { Text(stringResource(R.string.search_query_placeholder)) },
-                                modifier = Modifier.focusRequester(focusRequester)
+                                placeholder = { Text(stringResource(R.string.search_query_placeholder)) }
                             )
-                        }, modifier = Modifier
-                            .weight(1f)
-                            .alpha(0.85f)
+                        },
+                        expanded = false,
+                        onExpandedChange = {},
+                        content = {},
+                        modifier = Modifier.weight(1f)
                     )
 
                     AnimatedVisibility(
                         visible = !state.isSearching,
                         enter = fadeIn() + expandHorizontally(),
-                        exit = fadeOut() + shrinkVertically(),
+                        exit = fadeOut() + shrinkHorizontally(),
                     ) {
                         OutlinedButton(
                             onClick = {
                                 onAction(FinanceListActions.OnFilterClicked)
-                            },
-                            modifier = Modifier.padding(start = 8.dp)
+                            }
                         ) {
                             Icon(
                                 imageVector = Icons.Default.FilterList,
@@ -236,29 +222,23 @@ fun FinanceListView(
                     }
                 }
 
-                Surface(
-                    shape = RoundedCornerShape(
-                        topStart = dimensionResource(R.dimen.padding_extra_extra_large),
-                        topEnd = dimensionResource(R.dimen.padding_extra_extra_large)
-                    ), modifier = Modifier.fillMaxSize()
-                ) {
-                    FinanceList(
-                        finances = state.finances,
-                        currencyCode = state.currencyCode,
-                        onItemClick = {
-                            onAction(FinanceListActions.OnFinanceItemClicked(it.id))
-                        },
-                        onItemLongClick = {
-                            onAction(
-                                FinanceListActions.OnSelectedDeleteFinanceItem(
-                                    showDialog = true, finance = it
-                                )
+                FinanceList(
+                    finances = state.finances,
+                    currencyCode = state.currencyCode,
+                    onItemClick = {
+                        onAction(FinanceListActions.OnFinanceItemClicked(it.id))
+                    },
+                    onItemLongClick = {
+                        onAction(
+                            FinanceListActions.OnSelectedDeleteFinanceItem(
+                                showDialog = true, finance = it
                             )
-                        },
-                        contentPadding = PaddingValues(dimensionResource(R.dimen.padding_large)),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = dimensionResource(R.dimen.padding_large))
+                )
             }
         }
 
@@ -378,10 +358,10 @@ fun FinanceListViewPreview() {
         Scaffold { innerPadding ->
             FinanceListView(
                 state = FinanceListState(
-                    isLoading = true,
+                    isLoading = false,
                     currencyCode = "EUR",
                     finances = finances,
-                    searchQuery = "abc123",
+                    searchQuery = "",
                     //error = DataError.Local.UNKNOWN.toUiText()
                 ), onAction = {}, modifier = Modifier.padding(innerPadding)
             )

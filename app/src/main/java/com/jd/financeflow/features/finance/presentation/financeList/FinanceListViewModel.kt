@@ -13,12 +13,10 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
-import kotlin.math.ceil
-import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlin.math.ceil
+import kotlin.time.Duration.Companion.milliseconds
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -35,7 +33,9 @@ import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceType
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
 import com.jd.financeflow.features.finance.presentation.components.calculateAnnualAmount
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.onEach
 
 
 private const val TAG = "FinanceListViewModel"
@@ -47,16 +47,19 @@ class FinanceListViewModel(
 ) : ViewModel() {
 
     // Full list of last cached finances from local storage
-    private var cachedFinances: List<Finance> = emptyList()
+    private var cachedAllFinances: List<Finance> = emptyList()
 
     // Filtered list of finances using provided filter configuration
-    private var filteredFinances: List<Finance> = emptyList()
+    private var cachedFilteredFinances: List<Finance> = emptyList()
+
+    // Job for debouncing search query
+    private var searchJob: Job? = null
 
     private val _state = MutableStateFlow(FinanceListState())
     val state: StateFlow<FinanceListState> = _state
         .onStart {
             refreshFinanceList(refresh = true)
-//            observeSearchQuery()
+            observeSearchQuery()
         }
         .stateIn(
             viewModelScope,
@@ -83,14 +86,12 @@ class FinanceListViewModel(
             is FinanceListActions.OnFinanceItemClicked -> {}
 
             is FinanceListActions.OnEnableSearch -> {
-                // _state.update { it.copy(isSearching = action.value) }
+                _state.update { it.copy(isSearching = action.value) }
             }
 
             is FinanceListActions.OnUpdateSearchQuery -> {
-                // _state.update { it.copy(searchQuery = action.value) }
+                _state.update { it.copy(searchQuery = action.value) }
             }
-
-            is FinanceListActions.OnSearch -> {}
 
             is FinanceListActions.OnRefresh -> {
                 val currentState = state.value
@@ -116,6 +117,34 @@ class FinanceListViewModel(
     }
 
     /**
+     * Observes the search query and filters the list accordingly.
+     */
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+    private fun observeSearchQuery() {
+        _state
+            .map { it.searchQuery }
+            .distinctUntilChanged()
+            .debounce(500L.milliseconds)
+            .onEach { query ->
+                when {
+                    query.isBlank() -> {
+                        _state.update {
+                            it.copy(
+                                finances = cachedFilteredFinances
+                            )
+                        }
+                    }
+
+                    query.length >= 2 -> {
+                        searchJob?.cancel()
+                        searchJob = refreshFinanceList(query = query)
+                    }
+                }
+            }
+            .launchIn(viewModelScope)
+    }
+
+    /**
      * Refreshes the list of finances.
      *
      * @param refresh whether to get new list form local storage or use current list. Only one
@@ -137,7 +166,7 @@ class FinanceListViewModel(
                 // Get all finances from local storage
                 when (val result = repository.getFinances()) {
                     is Result.Success -> {
-                        cachedFinances = result.data.sortedByDescending { it.timeStampMs }
+                        cachedAllFinances = result.data.sortedByDescending { it.timeStampMs }
                     }
 
                     is Result.Error -> {
@@ -162,22 +191,22 @@ class FinanceListViewModel(
 
                 // Start filtering in parallel
                 val filteredFinancesDeferred = async {
-                    filterFinances(cachedFinances, updatedConfig)
+                    filterFinances(cachedAllFinances, updatedConfig)
                 }
 
                 // Start calculating balance in parallel
                 val balanceDeferred = async {
-                    calculateBalance(cachedFinances)
+                    calculateBalance(cachedAllFinances)
                 }
 
-                filteredFinances = filteredFinancesDeferred.await()
+                cachedFilteredFinances = filteredFinancesDeferred.await()
                 balance = balanceDeferred.await()
             } else {
-                balance = calculateBalance(filteredFinances)
+                balance = calculateBalance(cachedFilteredFinances)
             }
 
             // Filter by query if provided
-            val queriedFinances = filteredFinances
+            val queriedFinances = cachedFilteredFinances
                 .filter { item ->
                     item.title.contains(query ?: "", ignoreCase = true) ||
                             item.description?.contains(query ?: "", ignoreCase = true) == true
@@ -198,39 +227,6 @@ class FinanceListViewModel(
         }
     }
 
-
-//    /**
-//     * Observes the search query and filters the list accordingly.
-//     */
-//    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-//    private fun observeSearchQuery() {
-//        _state
-//            .map { it.searchQuery }
-//            .distinctUntilChanged()
-//            .debounce(500L.milliseconds)
-//            .flatMapLatest { query ->
-//                flow {
-//                    when {
-//                        query.isBlank() -> {
-//                            emit(Unit)
-//                        }
-//
-//                        query.length >= 2 -> {
-//                            emit(Unit)
-//                        }
-//                    }
-//                }
-//            }
-//            .launchIn(viewModelScope)
-//    }
-//
-//    /**
-//     * Manually refreshes the finance list.
-//     */
-//    private fun manualRefresh() = viewModelScope.launch {
-//        refreshFinanceList(refresh = true)
-//    }
-//
     /**
      * Deletes the provided finance item.
      *

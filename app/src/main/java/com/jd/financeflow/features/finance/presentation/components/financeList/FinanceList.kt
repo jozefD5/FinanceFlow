@@ -5,10 +5,8 @@ import java.time.format.DateTimeFormatter
 import java.time.ZoneId
 import java.time.YearMonth
 
-import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 
 import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
 import com.jd.financeflow.features.finance.domain.models.Finance
@@ -49,7 +48,6 @@ fun FinanceList(
     onItemLongClick: (Finance) -> Unit,
     modifier: Modifier = Modifier,
     currencyCode: String = "EUR",
-    contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
     // Group and sort finances by month and year.
     val groupedFinances = remember(finances) {
@@ -64,7 +62,6 @@ fun FinanceList(
     LazyColumn(
         modifier = modifier,
         horizontalAlignment = Alignment.Start,
-        contentPadding = contentPadding
     ) {
         groupedFinances.forEach { (yearMonth, financesInMonth) ->
             stickyHeader(key = yearMonth) {
@@ -80,7 +77,7 @@ fun FinanceList(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(MaterialTheme.colorScheme.surface)
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .padding(vertical = 8.dp)
                 )
             }
 
