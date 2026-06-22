@@ -58,6 +58,7 @@
     <string name="add_finance_title_start_date">Date</string>
     <string name="add_finance_title_start_date_placeholder">Select date</string>
 
+    <string name="finance_interval_one_time">One-time</string>
     <string name="finance_interval_daily">Daily"</string>
     <string name="finance_interval_weekly">Weekly</string>
     <string name="finance_interval_monthly">Monthly</string>

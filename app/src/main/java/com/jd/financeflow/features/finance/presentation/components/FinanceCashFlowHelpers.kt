@@ -86,14 +86,14 @@ fun annualCashFlow(financeItems: List<Finance>): List<Double> {
                 }
             }
 
-            FinanceInterval.HalfYearly -> {
+            FinanceInterval.SemiAnnually -> {
                 for (i in 0 until monthsInYear step 6) {
                     val idx = startMonth + i
                     if (idx < monthsInYear) monthlyTotal[idx] += item.amount
                 }
             }
 
-            FinanceInterval.Yearly -> {
+            FinanceInterval.Annually -> {
                 monthlyTotal[startMonth] += item.amount
             }
         }
@@ -118,10 +118,12 @@ fun calculateAnnualAmount(item: Finance): Double {
         FinanceInterval.Quarterly -> {
             (0 until monthsInYear step 3).count { startMonth + it < monthsInYear } * item.amount
         }
-        FinanceInterval.HalfYearly -> {
+
+        FinanceInterval.SemiAnnually -> {
             (0 until monthsInYear step 6).count { startMonth + it < monthsInYear } * item.amount
         }
-        FinanceInterval.Yearly -> item.amount
+
+        FinanceInterval.Annually -> item.amount
     }
 }
 
