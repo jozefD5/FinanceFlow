@@ -3,14 +3,12 @@ package com.jd.financeflow.features.navigation.domain
 import kotlinx.serialization.Serializable
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ViewList
-import androidx.compose.material.icons.automirrored.outlined.ViewList
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.InsertChart
-import androidx.compose.material.icons.filled.ViewAgenda
+import androidx.compose.material.icons.filled.Leaderboard
+import androidx.compose.material.icons.filled.TableRows
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.InsertChartOutlined
-import androidx.compose.material.icons.outlined.ViewAgenda
+import androidx.compose.material.icons.outlined.Leaderboard
+import androidx.compose.material.icons.outlined.TableRows
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation3.runtime.NavKey
@@ -35,15 +33,15 @@ sealed interface MainNavigationBarKey : NavKey {
 
     @Serializable
     data object FinanceListTab : MainNavigationBarKey {
-        override val icon: ImageVector = Icons.Outlined.ViewAgenda
-        override val selectedIcon: ImageVector = Icons.Filled.ViewAgenda
+        override val icon: ImageVector = Icons.Outlined.TableRows
+        override val selectedIcon: ImageVector = Icons.Filled.TableRows
         override val labelResourceId = R.string.finances_tab_label
     }
 
     @Serializable
     data object ChartTab : MainNavigationBarKey {
-        override val icon: ImageVector = Icons.Outlined.InsertChartOutlined
-        override val selectedIcon: ImageVector = Icons.Filled.InsertChart
+        override val icon: ImageVector = Icons.Outlined.Leaderboard
+        override val selectedIcon: ImageVector = Icons.Filled.Leaderboard
         override val labelResourceId = R.string.charts_tab_label
     }
 

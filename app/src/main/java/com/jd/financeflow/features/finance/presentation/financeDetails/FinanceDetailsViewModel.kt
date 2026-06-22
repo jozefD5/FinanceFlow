@@ -48,7 +48,7 @@ class FinanceDetailsViewModel(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = FinanceDetailsState(currencyCode = currencyCode)
+            initialValue = _state.value
         )
 
     /**

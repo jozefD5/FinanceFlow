@@ -42,7 +42,7 @@ class ChartsViewModel(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = ChartsState(currencyCode = currencyCode)
+            initialValue = _state.value
         )
 
     /**

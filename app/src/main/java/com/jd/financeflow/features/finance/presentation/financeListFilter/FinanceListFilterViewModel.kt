@@ -33,13 +33,13 @@ class FinanceListFilterViewModel(
     val state = _state
         .onStart {
             if (configuration != null) {
-                applyInitialConfiguration(currencyCode, configuration)
+                applyInitialConfiguration(configuration)
             }
         }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = FinanceListFilterState(currencyCode = currencyCode)
+            initialValue = _state.value
         )
 
     /**
@@ -102,13 +102,11 @@ class FinanceListFilterViewModel(
     /**
      * Applies the initial configuration to the state.
      *
-     * @param currencyCode The currency code to be used.
      * @param config The initial filter configuration.
      */
-    private fun applyInitialConfiguration(
-        currencyCode: String,
-        config: FilterConfiguration
-    ) {
+    private fun applyInitialConfiguration(config: FilterConfiguration) {
+        Log.d("FinanceListFilterViewModel", "Applying initial configuration: $config")
+
         val currentState = _state.value
         val selectedTypeIndex = config.type?.ordinal ?: 0
 

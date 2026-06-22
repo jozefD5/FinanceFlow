@@ -55,7 +55,12 @@ class FinanceListViewModel(
     // Job for debouncing search query
     private var searchJob: Job? = null
 
-    private val _state = MutableStateFlow(FinanceListState())
+    private val _state = MutableStateFlow(
+        FinanceListState(
+            currencyCode = currencyCode,
+            filterConfiguration = filterConfiguration
+        )
+    )
     val state: StateFlow<FinanceListState> = _state
         .onStart {
             refreshFinanceList(refresh = true)
@@ -64,10 +69,7 @@ class FinanceListViewModel(
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000),
-            FinanceListState(
-                currencyCode = currencyCode,
-                filterConfiguration = filterConfiguration
-            )
+            _state.value
         )
 
     /**
@@ -201,6 +203,17 @@ class FinanceListViewModel(
 
                 cachedFilteredFinances = filteredFinancesDeferred.await()
                 balance = balanceDeferred.await()
+
+                // Update max amount range
+                val currentConfig = state.value.filterConfiguration ?: FilterConfiguration()
+                _state.update {
+                    it.copy(
+                        filterConfiguration = currentConfig.copy(
+                            maxAmountLimit = cachedFilteredFinances.maxOf { item -> item.amount },
+                            miniAmountLimit = 0.0
+                        )
+                    )
+                }
             } else {
                 balance = calculateBalance(cachedFilteredFinances)
             }
