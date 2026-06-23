@@ -44,7 +44,7 @@ import androidx.compose.ui.window.Dialog
 import com.jd.financeflow.ui.theme.FinanceFlowTheme
 
 /**
- * Larg drop down menu for selecting an item from a list of items. Composable is using outlined
+ * Large drop down menu for selecting an item from a list of items. Composable is using outlined
  * text field to show selected content, and a dialog to show list of selectable items.
  *
  * @param items List of items to select from.

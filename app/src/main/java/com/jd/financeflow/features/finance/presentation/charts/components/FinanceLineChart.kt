@@ -51,23 +51,24 @@ import com.jd.financeflow.features.finance.domain.models.chart.LineChartData
 
 /**
  * Finance linear charts for displaying different finance data such as income and expenses
- * @param title Title
+ *
  * @param items Items (chart data) to display, each item represents single line of data
  * @param modifier composable modifier
- * @param currencyCode currency code, e.g. "EUR" for Euro
+ * @param title Title
  * @param averageValue optional average net value
  * @param labels optional X-axis labels
+ * @param currencyCode currency code, e.g. "EUR" for Euro
  * @param enableLabelHelperProperties or disable label helper properties
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun FinanceLineChart(
-    title: String,
     items: List<LineChartData>,
     modifier: Modifier = Modifier,
-    currencyCode: String = "EUR",
+    title: String? = null,
     averageValue: Double? = null,
     labels: List<String>? = null,
+    currencyCode: String = "EUR",
     enableLabelHelperProperties: Boolean = false
 ) {
     val formatter = NumberFormat.getCurrencyInstance()
@@ -88,11 +89,15 @@ fun FinanceLineChart(
                 .fillMaxWidth()
                 .padding(dimensionResource(R.dimen.chart_padding_medium))
         ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface
-            )
+
+
+            title?.let {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
 
             averageValue?.let {
                 Row(

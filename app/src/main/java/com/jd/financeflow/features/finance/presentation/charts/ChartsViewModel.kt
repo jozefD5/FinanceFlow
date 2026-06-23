@@ -23,6 +23,7 @@ import com.jd.financeflow.features.finance.presentation.components.annualCashFlo
 import com.jd.financeflow.features.finance.presentation.components.annualTotalByCategory
 import com.jd.financeflow.features.finance.presentation.components.avgMonthlyCashFlow
 import com.jd.financeflow.features.finance.presentation.components.toUiText
+import java.time.LocalDate
 
 /**
  * Finance charts view model
@@ -34,7 +35,12 @@ class ChartsViewModel(
     private val repository: FinanceRepository,
     private val currencyCode: String = "EUR",
 ) : ViewModel() {
-    private val _state = MutableStateFlow(ChartsState(currencyCode = currencyCode))
+    private val _state = MutableStateFlow(
+        ChartsState(
+            currencyCode = currencyCode,
+            selectedMonthIndex = LocalDate.now().monthValue
+        )
+    )
     val state = _state
         .onStart {
             refreshCashFlow()
@@ -70,9 +76,22 @@ class ChartsViewModel(
                 }
             }
 
+            is ChartsActions.OnSelectYear -> {
+                _state.update {
+                    it.copy(selectedYearIndex = action.index)
+                }
+            }
+
+            is ChartsActions.OnSelectMonth -> {
+                _state.update {
+                    it.copy(selectedMonthIndex = action.index)
+                }
+            }
+
             is ChartsActions.OnToggleBalanceRollover -> {
-                _state.update { it.copy(enableCascadeBalance = !it.enableCascadeBalance) }
-                refreshCashFlow()
+                _state.update {
+                    it.copy(enableCascadeBalance = !it.enableCascadeBalance)
+                }
             }
         }
     }
@@ -83,6 +102,7 @@ class ChartsViewModel(
     private fun refreshCashFlow() = viewModelScope.launch {
         _state.update { it.copy(isLoading = true) }
         val currentState = _state.value
+
 
         val finances = when (val result = repository.getFinances()) {
             is Result.Success -> result.data
@@ -99,13 +119,23 @@ class ChartsViewModel(
 
         val (incomes, expenses) = finances.partition { it.category.type == FinanceType.INCOME }
 
-        // Cash flow
+        // Monthly cash flow
         val avgMonthlyIncomeDeferred =
-            async(Dispatchers.Default) { avgMonthlyCashFlow(incomes) }
+            async(Dispatchers.Default) {
+                avgMonthlyCashFlow(
+                    incomes,
+                    currentState.selectedMonthIndex
+                )
+            }
         val avgMonthlyExpenseDeferred =
-            async(Dispatchers.Default) { avgMonthlyCashFlow(expenses) }
+            async(Dispatchers.Default) {
+                avgMonthlyCashFlow(
+                    expenses,
+                    currentState.selectedMonthIndex
+                )
+            }
 
-        // Monthly average
+        // Annual cash flow
         val annualIncomeDiffered =
             async(Dispatchers.Default) { annualCashFlow(incomes) }
         val annualExpenseDiffered =
@@ -133,10 +163,10 @@ class ChartsViewModel(
         var runningAnnualBalance = 0.0
         val annualBalance = annualIncome.mapIndexed { index, income ->
             if (currentState.enableCascadeBalance) {
-                income - (annualExpense.getOrNull(index) ?: 0.0)
-            } else {
                 runningAnnualBalance += income - (annualExpense.getOrNull(index) ?: 0.0)
                 runningAnnualBalance
+            } else {
+                income - (annualExpense.getOrNull(index) ?: 0.0)
             }
         }
 

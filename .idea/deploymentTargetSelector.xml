@@ -13,10 +13,6 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="CashFlowLineChartPReview">
-        <option name="selectionMode" value="DROPDOWN" />
-        <DialogSelection />
-      </SelectionState>
       <SelectionState runConfigName="FinanceBarChartPreview">
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection />
@@ -52,6 +48,17 @@
         <DialogSelection />
       </SelectionState>
       <SelectionState runConfigName="androidTest">
+        <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2026-06-14T17:21:22.630113800Z">
+          <Target type="DEFAULT_BOOT">
+            <handle>
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\JozefDuda\.android\avd\Pixel_10.avd" />
+            </handle>
+          </Target>
+        </DropdownSelection>
+        <DialogSelection />
+      </SelectionState>
+      <SelectionState runConfigName="MonthlyChartViewPreview">
         <option name="selectionMode" value="DROPDOWN" />
         <DropdownSelection timestamp="2026-06-14T17:21:22.630113800Z">
           <Target type="DEFAULT_BOOT">

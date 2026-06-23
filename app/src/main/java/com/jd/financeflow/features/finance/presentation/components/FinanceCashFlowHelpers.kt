@@ -1,5 +1,6 @@
 package com.jd.financeflow.features.finance.presentation.components
 
+import android.util.Log
 import com.jd.financeflow.features.finance.domain.models.Finance
 import com.jd.financeflow.features.finance.domain.models.FinanceInterval
 
@@ -12,41 +13,69 @@ private const val monthsInYear = 12
  * Note, method is expecting data to be grouped by finance type before use, income or expense.
  *
  * @param financeItems finances used for calculation
+ * @param monthIndex index of the month for which to calculate the average
  * @return list of average monthly values
  */
-fun avgMonthlyCashFlow(financeItems: List<Finance>): List<Double> {
+fun avgMonthlyCashFlow(
+    financeItems: List<Finance>,
+    monthIndex: Int
+): List<Double> {
     val dailyAverages = MutableList(daysInMonth) { 0.0 }
 
-    financeItems.forEach { item ->
-        val dayIndex = item.zonedDateTime.dayOfMonth - 1
+    Log.d("avgMonthlyCashFlow", "monthIndex: $monthIndex")
 
-        when (item.interval) {
-            FinanceInterval.Daily -> {
-                for (i in 0 until daysInMonth) dailyAverages[i] += item.amount
-            }
+    // Process repeated finance items for the specific month. This includes any finance items
+    // from previous months with valid intervals (repeated up to monthly bases).
+    financeItems
+        .filter { item ->
+            item.zonedDateTime.monthValue <= monthIndex
+        }
+        .forEach { item ->
+            val dayIndex = item.zonedDateTime.dayOfMonth - 1
 
-            FinanceInterval.Weekly -> {
-                // Apply to the specific day and every 7 days forward/backward in the month
-                for (i in -4..4) {
-                    val actualIndex = dayIndex + (i * 7)
-                    if (actualIndex in 0 until daysInMonth) {
-                        dailyAverages[actualIndex] += item.amount
+            when (item.interval) {
+                FinanceInterval.Daily -> {
+                    for (i in 0 until daysInMonth) dailyAverages[i] += item.amount
+                }
+
+                FinanceInterval.Weekly -> {
+                    // Apply to the specific day and every 7 days forward/backward in the month
+                    for (i in -4..4) {
+                        val actualIndex = dayIndex + (i * 7)
+                        if (actualIndex in 0 until daysInMonth) {
+                            dailyAverages[actualIndex] += item.amount
+                        }
                     }
                 }
-            }
 
-            FinanceInterval.Monthly -> {
-                if (dayIndex in 0 until daysInMonth) {
-                    dailyAverages[dayIndex] += item.amount
+                FinanceInterval.Monthly -> {
+                    if (dayIndex in 0 until daysInMonth) {
+                        dailyAverages[dayIndex] += item.amount
+                    }
                 }
-            }
 
-            else -> {}
+                else -> {}
+            }
         }
-    }
+
+    // Process one-time finance items for the specific month.
+    financeItems
+        .filter { item ->
+            item.zonedDateTime.monthValue == monthIndex
+        }
+        .forEach { item ->
+            val dayIndex = item.zonedDateTime.dayOfMonth - 1
+
+            if (item.interval == FinanceInterval.OneTime ||
+                item.interval >= FinanceInterval.Quarterly
+            ) {
+                dailyAverages[dayIndex] += item.amount
+            }
+        }
 
     return dailyAverages
 }
+
 
 /**
  * Annual cash flow with respect to date and interval of individual finance item.
@@ -78,7 +107,6 @@ fun annualCashFlow(financeItems: List<Finance>): List<Double> {
                 for (i in startMonth until monthsInYear) monthlyTotal[i] += item.amount
             }
 
-            // Multi-month spikes
             FinanceInterval.Quarterly -> {
                 for (i in 0 until monthsInYear step 3) {
                     val idx = startMonth + i
@@ -95,6 +123,10 @@ fun annualCashFlow(financeItems: List<Finance>): List<Double> {
 
             FinanceInterval.Annually -> {
                 monthlyTotal[startMonth] += item.amount
+            }
+
+            else -> {
+                // TODO: Handle other intervals
             }
         }
     }
@@ -124,6 +156,8 @@ fun calculateAnnualAmount(item: Finance): Double {
         }
 
         FinanceInterval.Annually -> item.amount
+
+        else -> 0.0 // TODO: Handle other intervals
     }
 }
 

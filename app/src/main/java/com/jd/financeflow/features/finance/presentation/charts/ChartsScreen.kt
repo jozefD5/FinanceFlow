@@ -5,22 +5,30 @@ import java.time.Month
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MultiChoiceSegmentedButtonRow
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
@@ -30,6 +38,8 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,12 +52,17 @@ import androidx.compose.ui.platform.LocalLocale
 import org.koin.androidx.compose.koinViewModel
 
 import com.jd.financeflow.R
+import com.jd.financeflow.features.core.presentation.components.LargeDropdownMenu
 import com.jd.financeflow.features.finance.domain.models.chart.LineChartData
 import com.jd.financeflow.features.finance.domain.models.chart.PieChartData
 import com.jd.financeflow.features.finance.presentation.charts.components.ChartLegendItem
 import com.jd.financeflow.features.finance.presentation.charts.components.ChartLegendItemGrid
 import com.jd.financeflow.features.finance.presentation.charts.components.FinanceLineChart
 import com.jd.financeflow.features.finance.presentation.charts.components.FinancePieChart
+import com.jd.financeflow.features.finance.presentation.charts.monthlyChart.MonthlyChartActions
+import kotlinx.datetime.format.MonthNames
+import java.time.LocalDate
+import java.time.YearMonth
 
 // Monthly finance line chart labels
 private val lineLabels = listOf("1", "6", "11", "16", "21", "26", "31")
@@ -130,193 +145,304 @@ fun ChartsView(
                 .padding(dimensionResource(R.dimen.padding_medium))
                 .verticalScroll(verticalScrollState)
         ) {
-            MultiChoiceSegmentedButtonRow(
+
+            val totalPages = 10_000
+            val initialPage = totalPages / 2
+
+            val pageState = rememberPagerState(
+                initialPage = initialPage,
+                pageCount = { totalPages }
+            )
+
+            // Base reference month (the current calendar month)
+            val baseMonth = YearMonth.now()
+
+            LaunchedEffect(pageState) {
+                snapshotFlow { pageState.currentPage }.collect { page ->
+                    val monthOffset = (page - initialPage).toLong()
+                    val selectedMonth = baseMonth.minusMonths(monthOffset)
+                }
+            }
+
+
+            HorizontalPager(
+                state = pageState,
+                key = { page -> page },
                 modifier = Modifier.fillMaxWidth()
-            ) {
-                options.forEachIndexed { index, label ->
-                    SegmentedButton(
-                        shape = SegmentedButtonDefaults.itemShape(
-                            index = index,
-                            count = options.size
+            ) { page ->
+                val monthOffset = (page - initialPage).toLong()
+                val currentViewMonth = baseMonth.minusMonths(monthOffset)
+
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    FinanceLineChart(
+                        title = currentViewMonth.toString(),
+                        items = listOf(
+                            LineChartData(
+                                label = stringResource(R.string.finance_type_income),
+                                color = Color(0xFF12C51A),
+                                values = state.avgMonthlyIncome,
+                                enable = state.selectedChartOptions[0]
+                            ),
+                            LineChartData(
+                                label = stringResource(R.string.finance_type_expense),
+                                color = Color(0xFFBE0E1F),
+                                values = state.avgMonthlyExpense,
+                                enable = state.selectedChartOptions[1]
+                            ),
+                            LineChartData(
+                                label = stringResource(R.string.finance_balance_title),
+                                color = Color(0xFF0C6EE5),
+                                values = state.avgMonthlyBalance,
+                                enable = state.selectedChartOptions[2]
+                            ),
                         ),
-                        checked = state.selectedChartOptions[index],
-                        onCheckedChange = {
-                            onAction(ChartsActions.OnToggleChartOption(index))
-                        },
-                        icon = { SegmentedButtonDefaults.Icon(state.selectedChartOptions[index]) },
-                        label = { Text(text = label) },
+                        labels = lineLabels,
+                        currencyCode = state.currencyCode,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = 250.dp)
                     )
                 }
             }
 
-            OutlinedCard(
-                shape = RoundedCornerShape(
-                    dimensionResource(R.dimen.chart_round_corner_size_small)
-                ),
-                border = BorderStroke(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.outlineVariant
-                ),
-                colors = CardDefaults.outlinedCardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-                ),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(dimensionResource(R.dimen.padding_medium))
-                ) {
-                    Text(text = stringResource(R.string.budget_rollover_label))
-                    Switch(
-                        checked = state.enableCascadeBalance,
-                        onCheckedChange = {
-                            onAction(ChartsActions.OnToggleBalanceRollover)
-                        },
-                        thumbContent = {
-                            if (state.enableCascadeBalance) {
-                                Icon(
-                                    imageVector = Icons.Filled.Check,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(SwitchDefaults.IconSize),
-                                )
-                            }
-                        }
-                    )
-                }
-            }
 
-            OutlinedCard(
-                shape = RoundedCornerShape(
-                    dimensionResource(R.dimen.chart_round_corner_size_small)
-                ),
-                border = BorderStroke(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.outlineVariant
-                ),
-                colors = CardDefaults.outlinedCardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-                ),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                ChartLegendItemGrid(
-                    data = listOf(
-                        ChartLegendItem(
-                            label = stringResource(R.string.finance_type_income),
-                            color = Color(0xFF12C51A)
-                        ),
-                        ChartLegendItem(
-                            label = stringResource(R.string.finance_type_expense),
-                            color = Color(0xFFBE0E1F)
-                        ),
-                        ChartLegendItem(
-                            label = stringResource(R.string.finance_balance_title),
-                            color = Color(0xFF0C6EE5)
-                        )
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(dimensionResource(R.dimen.chart_padding_medium))
-                )
-            }
+//            MultiChoiceSegmentedButtonRow(
+//                modifier = Modifier.fillMaxWidth()
+//            ) {
+//                options.forEachIndexed { index, label ->
+//                    SegmentedButton(
+//                        shape = SegmentedButtonDefaults.itemShape(
+//                            index = index,
+//                            count = options.size
+//                        ),
+//                        checked = state.selectedChartOptions[index],
+//                        onCheckedChange = {
+//                            onAction(ChartsActions.OnToggleChartOption(index))
+//                        },
+//                        icon = { SegmentedButtonDefaults.Icon(state.selectedChartOptions[index]) },
+//                        label = { Text(text = label) },
+//                    )
+//                }
+//            }
+//
+//            Row(
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                LargeDropdownMenu(
+//                    label = stringResource(R.string.chart_year_label),
+//                    selectedIndex = state.selectedYearIndex,
+//                    items = IntRange(2020, LocalDate.now().year).toList().reversed(),
+//                    onItemSelected = { index, _ ->
+//                        onAction(ChartsActions.OnSelectYear(index))
+//                    },
+//                    shape = RoundedCornerShape(dimensionResource(R.dimen.round_corner_size_medium)),
+//                    modifier = Modifier.weight(0.5f)
+//                )
+//
+//                Spacer(Modifier.padding(dimensionResource(R.dimen.padding_extra_small)))
+//
+//                LargeDropdownMenu(
+//                    label = stringResource(R.string.chart_month_label),
+//                    selectedIndex = state.selectedMonthIndex,
+//                    items = MonthNames.ENGLISH_ABBREVIATED.names.reversed(),
+//                    onItemSelected = { index, _ ->
+//                        onAction(ChartsActions.OnSelectMonth(index))
+//                    },
+//                    shape = RoundedCornerShape(dimensionResource(R.dimen.round_corner_size_medium)),
+//                    modifier = Modifier.weight(0.5f)
+//                )
+//            }
+//
+//            OutlinedCard(
+//                shape = RoundedCornerShape(
+//                    dimensionResource(R.dimen.chart_round_corner_size_small)
+//                ),
+//                border = BorderStroke(
+//                    width = 1.dp,
+//                    color = MaterialTheme.colorScheme.outlineVariant
+//                ),
+//                colors = CardDefaults.outlinedCardColors(
+//                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+//                ),
+//                modifier = Modifier.fillMaxWidth()
+//            ) {
+//                Row(
+//                    verticalAlignment = Alignment.CenterVertically,
+//                    horizontalArrangement = Arrangement.SpaceBetween,
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(dimensionResource(R.dimen.padding_medium))
+//                ) {
+//                    Text(text = stringResource(R.string.budget_rollover_label))
+//                    Switch(
+//                        checked = state.enableCascadeBalance,
+//                        onCheckedChange = {
+//                            onAction(ChartsActions.OnToggleBalanceRollover)
+//                        },
+//                        thumbContent = {
+//                            if (state.enableCascadeBalance) {
+//                                Icon(
+//                                    imageVector = Icons.Filled.Check,
+//                                    contentDescription = null,
+//                                    modifier = Modifier.size(SwitchDefaults.IconSize),
+//                                )
+//                            }
+//                        }
+//                    )
+//                }
+//            }
 
-            FinanceLineChart(
-                title = stringResource(R.string.chart_annual_cash_flow_title),
-                items = listOf(
-                    LineChartData(
-                        label = stringResource(R.string.finance_type_income),
-                        color = Color(0xFF12C51A),
-                        values = state.yearlyCashFlowIncome,
-                        enable = state.selectedChartOptions[0]
-                    ),
-                    LineChartData(
-                        label = stringResource(R.string.finance_type_expense),
-                        color = Color(0xFFBE0E1F),
-                        values = state.yearlyCashFlowExpense,
-                        enable = state.selectedChartOptions[1]
-                    ),
-                    LineChartData(
-                        label = stringResource(R.string.finance_balance_title),
-                        color = Color(0xFF0C6EE5),
-                        values = state.yearlyCashFlowBalance,
-                        enable = state.selectedChartOptions[2]
-                    )
-                ),
-                labels = Month.entries.map {
-                    it.name.substring(0, 3)
-                        .lowercase(LocalLocale.current.platformLocale)
-                        .replaceFirstChar { char -> char.uppercase() }
-                },
-                currencyCode = state.currencyCode,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(max = 250.dp)
-            )
 
-            FinanceLineChart(
-                title = stringResource(R.string.chart_monthly_cash_flow_title),
-                items = listOf(
-                    LineChartData(
-                        label = stringResource(R.string.finance_type_income),
-                        color = Color(0xFF12C51A),
-                        values = state.avgMonthlyIncome,
-                        enable = state.selectedChartOptions[0]
-                    ),
-                    LineChartData(
-                        label = stringResource(R.string.finance_type_expense),
-                        color = Color(0xFFBE0E1F),
-                        values = state.avgMonthlyExpense,
-                        enable = state.selectedChartOptions[1]
-                    ),
-                    LineChartData(
-                        label = stringResource(R.string.finance_balance_title),
-                        color = Color(0xFF0C6EE5),
-                        values = state.avgMonthlyBalance,
-                        enable = state.selectedChartOptions[2]
-                    ),
-                ),
-                labels = lineLabels,
-                currencyCode = state.currencyCode,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(max = 250.dp)
-            )
+//            Row(
+//                verticalAlignment = Alignment.CenterVertically,
+//                horizontalArrangement = Arrangement.SpaceBetween,
+//                modifier = Modifier.fillMaxWidth()
+//            ) {
+//                OutlinedCard(
+//                    shape = RoundedCornerShape(
+//                        dimensionResource(R.dimen.chart_round_corner_size_small)
+//                    ),
+//                    border = BorderStroke(
+//                        width = 1.dp,
+//                        color = MaterialTheme.colorScheme.outlineVariant
+//                    ),
+//                    colors = CardDefaults.outlinedCardColors(
+//                        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+//                    ),
+//                    modifier = Modifier.weight(0.8f)
+//                ) {
+//                    ChartLegendItemGrid(
+//                        data = listOf(
+//                            ChartLegendItem(
+//                                label = stringResource(R.string.finance_type_income),
+//                                color = Color(0xFF12C51A)
+//                            ),
+//                            ChartLegendItem(
+//                                label = stringResource(R.string.finance_type_expense),
+//                                color = Color(0xFFBE0E1F)
+//                            ),
+//                            ChartLegendItem(
+//                                label = stringResource(R.string.finance_balance_title),
+//                                color = Color(0xFF0C6EE5)
+//                            )
+//                        ),
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .padding(dimensionResource(R.dimen.chart_padding_medium))
+//                    )
+//                }
+//
+//                Spacer(modifier.weight(0.1f))
+//
+//                OutlinedButton(
+//                    onClick = {},
+//                    modifier = Modifier.weight(0.2f)
+//                ) {
+//                    Icon(
+//                        imageVector = Icons.Default.FilterList,
+//                        contentDescription = null,
+//                        modifier = Modifier.size(ButtonDefaults.IconSize)
+//                    )
+//                }
+//            }
 
-            FinancePieChart(
-                title = stringResource(R.string.chart_annual_income_title),
-                items = state.incomeCategories.mapIndexed { index, it ->
-                    PieChartData(
-                        label = it.first.asString(),
-                        color = incomeChartColors[index % incomeChartColors.size],
-                        selectedColor = MaterialTheme.colorScheme.inversePrimary,
-                        data = it.second,
-                        selected = false
-                    )
-                },
-                onItemClick = {},
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(max = 300.dp)
-            )
+//            FinanceLineChart(
+//                title = stringResource(R.string.chart_annual_cash_flow_title),
+//                items = listOf(
+//                    LineChartData(
+//                        label = stringResource(R.string.finance_type_income),
+//                        color = Color(0xFF12C51A),
+//                        values = state.yearlyCashFlowIncome,
+//                        enable = state.selectedChartOptions[0]
+//                    ),
+//                    LineChartData(
+//                        label = stringResource(R.string.finance_type_expense),
+//                        color = Color(0xFFBE0E1F),
+//                        values = state.yearlyCashFlowExpense,
+//                        enable = state.selectedChartOptions[1]
+//                    ),
+//                    LineChartData(
+//                        label = stringResource(R.string.finance_balance_title),
+//                        color = Color(0xFF0C6EE5),
+//                        values = state.yearlyCashFlowBalance,
+//                        enable = state.selectedChartOptions[2]
+//                    )
+//                ),
+//                labels = Month.entries.map {
+//                    it.name.substring(0, 3)
+//                        .lowercase(LocalLocale.current.platformLocale)
+//                        .replaceFirstChar { char -> char.uppercase() }
+//                },
+//                currencyCode = state.currencyCode,
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .heightIn(max = 250.dp)
+//            )
 
-            FinancePieChart(
-                title = stringResource(R.string.chart_annual_expense_title),
-                items = state.expenseCategories.mapIndexed { index, it ->
-                    PieChartData(
-                        label = it.first.asString(),
-                        color = expenseChartColors[index % expenseChartColors.size],
-                        selectedColor = MaterialTheme.colorScheme.inversePrimary,
-                        data = it.second,
-                        selected = false
-                    )
-                },
-                onItemClick = {},
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(max = 300.dp)
-            )
+//            FinanceLineChart(
+//                title = stringResource(R.string.chart_monthly_cash_flow_title),
+//                items = listOf(
+//                    LineChartData(
+//                        label = stringResource(R.string.finance_type_income),
+//                        color = Color(0xFF12C51A),
+//                        values = state.avgMonthlyIncome,
+//                        enable = state.selectedChartOptions[0]
+//                    ),
+//                    LineChartData(
+//                        label = stringResource(R.string.finance_type_expense),
+//                        color = Color(0xFFBE0E1F),
+//                        values = state.avgMonthlyExpense,
+//                        enable = state.selectedChartOptions[1]
+//                    ),
+//                    LineChartData(
+//                        label = stringResource(R.string.finance_balance_title),
+//                        color = Color(0xFF0C6EE5),
+//                        values = state.avgMonthlyBalance,
+//                        enable = state.selectedChartOptions[2]
+//                    ),
+//                ),
+//                labels = lineLabels,
+//                currencyCode = state.currencyCode,
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .heightIn(max = 250.dp)
+//            )
+//
+
+
+//            FinancePieChart(
+//                title = stringResource(R.string.chart_annual_income_title),
+//                items = state.incomeCategories.mapIndexed { index, it ->
+//                    PieChartData(
+//                        label = it.first.asString(),
+//                        color = incomeChartColors[index % incomeChartColors.size],
+//                        selectedColor = MaterialTheme.colorScheme.inversePrimary,
+//                        data = it.second,
+//                        selected = false
+//                    )
+//                },
+//                onItemClick = {},
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .heightIn(max = 300.dp)
+//            )
+//
+//            FinancePieChart(
+//                title = stringResource(R.string.chart_annual_expense_title),
+//                items = state.expenseCategories.mapIndexed { index, it ->
+//                    PieChartData(
+//                        label = it.first.asString(),
+//                        color = expenseChartColors[index % expenseChartColors.size],
+//                        selectedColor = MaterialTheme.colorScheme.inversePrimary,
+//                        data = it.second,
+//                        selected = false
+//                    )
+//                },
+//                onItemClick = {},
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .heightIn(max = 300.dp)
+//            )
         }
     }
 }

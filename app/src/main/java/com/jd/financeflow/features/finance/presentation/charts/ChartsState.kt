@@ -13,6 +13,9 @@ data class ChartsState(
     val selectedChartOptions: List<Boolean> = listOf(true, true, true),
     val enableCascadeBalance: Boolean = false,
 
+    val selectedMonthIndex: Int = 0,
+    val selectedYearIndex: Int = 0,
+
     val avgMonthlyIncome: List<Double> = emptyList(),
     val avgMonthlyExpense: List<Double> = emptyList(),
     val avgMonthlyBalance: List<Double> = emptyList(),
