@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.finance.presentation.charts.monthlyChart
+package com.jd.financeflow.features.finance.presentation.charts.financeChartCard
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,18 +8,12 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import java.time.LocalDate
 
-class MonthlyChartViewModel(
+class FinanceChartCardViewModel(
     private val repository: FinanceRepository,
     private val currencyCode: String = "EUR",
 ) : ViewModel() {
-    private val _state = MutableStateFlow(
-        MonthlyChartState(
-            currencyCode = currencyCode,
-            selectedMonthIndex = LocalDate.now().monthValue
-        )
-    )
+    private val _state = MutableStateFlow(FinanceChartCardState(currencyCode = currencyCode))
 
     val state = _state
         .onStart { }
@@ -29,16 +23,13 @@ class MonthlyChartViewModel(
             initialValue = _state.value
         )
 
-    fun onAction(action: MonthlyChartActions) {
+    fun onAction(action: FinanceChartCardActions) {
         when (action) {
-            is MonthlyChartActions.OnClearError -> {
+            is FinanceChartCardActions.OnClearError -> {
                 _state.update { it.copy(error = null) }
             }
 
-            is MonthlyChartActions.OnRefresh -> {}
-            is MonthlyChartActions.OnToggleChartOption -> {}
-            is MonthlyChartActions.OnSelectYear -> {}
-            is MonthlyChartActions.OnSelectMonth -> {}
+            is FinanceChartCardActions.OnRefresh -> {}
         }
     }
 

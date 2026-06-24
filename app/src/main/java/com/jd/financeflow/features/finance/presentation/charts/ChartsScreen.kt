@@ -1,41 +1,19 @@
 package com.jd.financeflow.features.finance.presentation.charts
 
-import java.time.Month
-
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MultiChoiceSegmentedButtonRow
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
-import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -48,20 +26,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.compose.ui.platform.LocalLocale
 import org.koin.androidx.compose.koinViewModel
 
 import com.jd.financeflow.R
-import com.jd.financeflow.features.core.presentation.components.LargeDropdownMenu
 import com.jd.financeflow.features.finance.domain.models.chart.LineChartData
-import com.jd.financeflow.features.finance.domain.models.chart.PieChartData
-import com.jd.financeflow.features.finance.presentation.charts.components.ChartLegendItem
-import com.jd.financeflow.features.finance.presentation.charts.components.ChartLegendItemGrid
 import com.jd.financeflow.features.finance.presentation.charts.components.FinanceLineChart
-import com.jd.financeflow.features.finance.presentation.charts.components.FinancePieChart
-import com.jd.financeflow.features.finance.presentation.charts.monthlyChart.MonthlyChartActions
-import kotlinx.datetime.format.MonthNames
-import java.time.LocalDate
 import java.time.YearMonth
 
 // Monthly finance line chart labels
@@ -175,25 +144,21 @@ fun ChartsView(
 
                 Box(modifier = Modifier.fillMaxWidth()) {
                     FinanceLineChart(
-                        title = currentViewMonth.toString(),
                         items = listOf(
                             LineChartData(
                                 label = stringResource(R.string.finance_type_income),
                                 color = Color(0xFF12C51A),
                                 values = state.avgMonthlyIncome,
-                                enable = state.selectedChartOptions[0]
                             ),
                             LineChartData(
                                 label = stringResource(R.string.finance_type_expense),
                                 color = Color(0xFFBE0E1F),
                                 values = state.avgMonthlyExpense,
-                                enable = state.selectedChartOptions[1]
                             ),
                             LineChartData(
                                 label = stringResource(R.string.finance_balance_title),
                                 color = Color(0xFF0C6EE5),
                                 values = state.avgMonthlyBalance,
-                                enable = state.selectedChartOptions[2]
                             ),
                         ),
                         labels = lineLabels,
