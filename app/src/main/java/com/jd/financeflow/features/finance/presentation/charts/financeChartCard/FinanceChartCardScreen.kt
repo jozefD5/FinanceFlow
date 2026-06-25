@@ -8,11 +8,9 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,20 +26,21 @@ import com.jd.financeflow.features.finance.presentation.charts.components.Financ
 // Monthly finance line chart labels
 private val lineLabels = listOf("1", "6", "11", "16", "21", "26", "31")
 
-
+/**
+ * Finance chart card
+ *
+ * @param state Finance chart card state
+ * @param modifier Modifier
+ */
 @Composable
 fun FinanceChartCard(
     state: FinanceChartCardState,
     modifier: Modifier = Modifier,
 ) {
     OutlinedCard(
-        shape = RoundedCornerShape(
-            dimensionResource(R.dimen.chart_round_corner_size_small)
-        ),
+        shape = RoundedCornerShape(dimensionResource(R.dimen.chart_round_corner_size_small)),
         border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.outlineVariant),
-        colors = CardDefaults.outlinedCardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-        ),
+        colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
         modifier = modifier
     ) {
         Column(
@@ -49,34 +48,25 @@ fun FinanceChartCard(
                 .fillMaxWidth()
                 .padding(dimensionResource(R.dimen.chart_padding_medium))
         ) {
-            Text(
-                text = state.title,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-
-            HorizontalDivider(
-                thickness = 1.dp,
-                color = MaterialTheme.colorScheme.outlineVariant,
-                modifier = Modifier.padding(bottom = 12.dp)
-            )
-
             FinanceLineChart(
                 items = listOf(
                     LineChartData(
                         label = stringResource(R.string.finance_type_income),
                         color = Color(0xFF12C51A),
-                        values = state.avgMonthlyIncome
+                        values = state.income,
+                        enable = state.incomeLineEnable
                     ),
                     LineChartData(
                         label = stringResource(R.string.finance_type_expense),
                         color = Color(0xFFBE0E1F),
-                        values = state.avgMonthlyExpense
+                        values = state.expense,
+                        enable = state.expenseLineEnable
                     ),
                     LineChartData(
                         label = stringResource(R.string.finance_balance_title),
                         color = Color(0xFF0C6EE5),
-                        values = state.avgMonthlyBalance
+                        values = state.balance,
+                        enable = state.balanceLineEnable
                     ),
                 ),
                 labels = lineLabels,
@@ -97,9 +87,7 @@ fun FinanceChartCardPreview() {
                 .padding(8.dp)
         ) { innerPadding ->
             FinanceChartCard(
-                state = FinanceChartCardState(
-                    title = "Jan 2026"
-                ),
+                state = FinanceChartCardState(),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(innerPadding)

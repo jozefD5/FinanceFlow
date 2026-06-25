@@ -7,6 +7,71 @@ import com.jd.financeflow.features.finance.domain.models.FinanceInterval
 private const val daysInMonth = 31
 private const val monthsInYear = 12
 
+
+fun monthlyCashFlow(
+    items: List<Finance>,
+    startTimeMs: Long,
+    endTimeMs: Long,
+): List<Double> {
+    val dailyAverages = MutableList(daysInMonth) { 0.0 }
+
+    Log.d("monthlyCashFlow", "startTimeMs: $startTimeMs")
+
+    // Process repeated finance items for the specific month. This includes any finance items
+    // from previous months with valid intervals (repeated up to monthly bases).
+    items
+        .filter { item ->
+            item.timeStampMs in endTimeMs..startTimeMs
+        }
+        .forEach { item ->
+            val dayIndex = item.zonedDateTime.dayOfMonth - 1
+            when (item.interval) {
+                FinanceInterval.Daily -> {
+                    for (i in 0 until daysInMonth) dailyAverages[i] += item.amount
+                }
+
+                FinanceInterval.Weekly -> {
+                    for (i in 0..4) {
+                        val actualIndex = dayIndex + (i * 7)
+                        if (actualIndex in 0 until daysInMonth) {
+                            dailyAverages[actualIndex] += item.amount
+                        }
+                    }
+                }
+
+                FinanceInterval.Monthly -> {
+                    if (dayIndex in 0 until daysInMonth) {
+                        dailyAverages[dayIndex] += item.amount
+                    }
+                }
+
+                else -> {}
+            }
+        }
+
+    // Process one-time finance items for the specific month.
+    items
+        .filter { item ->
+            item.timeStampMs in endTimeMs..startTimeMs
+        }
+        .forEach { item ->
+            val dayIndex = item.zonedDateTime.dayOfMonth - 1
+
+            if (item.interval == FinanceInterval.OneTime ||
+                item.interval >= FinanceInterval.Quarterly
+            ) {
+                dailyAverages[dayIndex] += item.amount
+            }
+        }
+
+    return dailyAverages
+}
+
+
+//--------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
+
+
 /**
  * Calculate average monthly values for each day of the month using data for the full year.
  *
@@ -75,7 +140,6 @@ fun avgMonthlyCashFlow(
 
     return dailyAverages
 }
-
 
 /**
  * Annual cash flow with respect to date and interval of individual finance item.
