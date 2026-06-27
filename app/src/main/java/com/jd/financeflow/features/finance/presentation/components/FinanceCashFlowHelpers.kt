@@ -16,6 +16,8 @@ fun monthlyCashFlow(
     val dailyAverages = MutableList(daysInMonth) { 0.0 }
 
     Log.d("monthlyCashFlow", "startTimeMs: $startTimeMs")
+    Log.d("monthlyCashFlow", "endTimeMs: $endTimeMs")
+
 
     // Process repeated finance items for the specific month. This includes any finance items
     // from previous months with valid intervals (repeated up to monthly bases).

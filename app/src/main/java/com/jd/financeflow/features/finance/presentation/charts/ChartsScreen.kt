@@ -17,6 +17,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,7 +32,12 @@ import org.koin.androidx.compose.koinViewModel
 import com.jd.financeflow.R
 import com.jd.financeflow.features.finance.domain.models.chart.LineChartData
 import com.jd.financeflow.features.finance.presentation.charts.components.FinanceLineChart
+import com.jd.financeflow.features.finance.presentation.charts.financeChartCard.FinanceChartCard
+import org.koin.core.parameter.parametersOf
+import java.time.LocalDate
 import java.time.YearMonth
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 
 // Monthly finance line chart labels
 private val lineLabels = listOf("1", "6", "11", "16", "21", "26", "31")
@@ -114,300 +120,49 @@ fun ChartsView(
                 .padding(dimensionResource(R.dimen.padding_medium))
                 .verticalScroll(verticalScrollState)
         ) {
+            val totalMonths = 120
+            val initialPage = totalMonths / 2
 
-            val totalPages = 10_000
-            val initialPage = totalPages / 2
-
-            val pageState = rememberPagerState(
+            val pagerState = rememberPagerState(
                 initialPage = initialPage,
-                pageCount = { totalPages }
+                pageCount = { totalMonths }
             )
 
-            // Base reference month (the current calendar month)
-            val baseMonth = YearMonth.now()
-
-            LaunchedEffect(pageState) {
-                snapshotFlow { pageState.currentPage }.collect { page ->
-                    val monthOffset = (page - initialPage).toLong()
-                    val selectedMonth = baseMonth.minusMonths(monthOffset)
-                }
-            }
-
+            // Force the base date to always be the 1st of the current month
+            val baseDate = LocalDate.now().withDayOfMonth(1)
+            val monthFormatter = remember { DateTimeFormatter.ofPattern("MM-yyyy") }
 
             HorizontalPager(
-                state = pageState,
+                state = pagerState,
                 key = { page -> page },
                 modifier = Modifier.fillMaxWidth()
             ) { page ->
-                val monthOffset = (page - initialPage).toLong()
-                val currentViewMonth = baseMonth.minusMonths(monthOffset)
+                // Calculate the offset relative to our middle starting point.
+                // If page is 60, offset is 0 (Current Month)
+                // If page is 59, offset is -1 (Past Month)
+                // If page is 61, offset is +1 (Future Month)
+                val monthOffset = page - initialPage
+                val targetMonth = baseDate.plusMonths(monthOffset.toLong())
 
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    FinanceLineChart(
-                        items = listOf(
-                            LineChartData(
-                                label = stringResource(R.string.finance_type_income),
-                                color = Color(0xFF12C51A),
-                                values = state.avgMonthlyIncome,
-                            ),
-                            LineChartData(
-                                label = stringResource(R.string.finance_type_expense),
-                                color = Color(0xFFBE0E1F),
-                                values = state.avgMonthlyExpense,
-                            ),
-                            LineChartData(
-                                label = stringResource(R.string.finance_balance_title),
-                                color = Color(0xFF0C6EE5),
-                                values = state.avgMonthlyBalance,
-                            ),
-                        ),
-                        labels = lineLabels,
-                        currencyCode = state.currencyCode,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(max = 250.dp)
-                    )
-                }
+                // Convert LocalDate to Epoch Milliseconds (UTC)
+                val epochMillis = targetMonth.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli()
+
+                FinanceChartCard(
+                    title = targetMonth.format(monthFormatter),
+                    viewModel = koinViewModel(
+                        key = targetMonth.toString(),
+                        parameters = {
+                            parametersOf(
+                                epochMillis,
+                                state.currencyCode
+                            )
+                        }
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 350.dp)
+                )
             }
-
-
-//            MultiChoiceSegmentedButtonRow(
-//                modifier = Modifier.fillMaxWidth()
-//            ) {
-//                options.forEachIndexed { index, label ->
-//                    SegmentedButton(
-//                        shape = SegmentedButtonDefaults.itemShape(
-//                            index = index,
-//                            count = options.size
-//                        ),
-//                        checked = state.selectedChartOptions[index],
-//                        onCheckedChange = {
-//                            onAction(ChartsActions.OnToggleChartOption(index))
-//                        },
-//                        icon = { SegmentedButtonDefaults.Icon(state.selectedChartOptions[index]) },
-//                        label = { Text(text = label) },
-//                    )
-//                }
-//            }
-//
-//            Row(
-//                verticalAlignment = Alignment.CenterVertically
-//            ) {
-//                LargeDropdownMenu(
-//                    label = stringResource(R.string.chart_year_label),
-//                    selectedIndex = state.selectedYearIndex,
-//                    items = IntRange(2020, LocalDate.now().year).toList().reversed(),
-//                    onItemSelected = { index, _ ->
-//                        onAction(ChartsActions.OnSelectYear(index))
-//                    },
-//                    shape = RoundedCornerShape(dimensionResource(R.dimen.round_corner_size_medium)),
-//                    modifier = Modifier.weight(0.5f)
-//                )
-//
-//                Spacer(Modifier.padding(dimensionResource(R.dimen.padding_extra_small)))
-//
-//                LargeDropdownMenu(
-//                    label = stringResource(R.string.chart_month_label),
-//                    selectedIndex = state.selectedMonthIndex,
-//                    items = MonthNames.ENGLISH_ABBREVIATED.names.reversed(),
-//                    onItemSelected = { index, _ ->
-//                        onAction(ChartsActions.OnSelectMonth(index))
-//                    },
-//                    shape = RoundedCornerShape(dimensionResource(R.dimen.round_corner_size_medium)),
-//                    modifier = Modifier.weight(0.5f)
-//                )
-//            }
-//
-//            OutlinedCard(
-//                shape = RoundedCornerShape(
-//                    dimensionResource(R.dimen.chart_round_corner_size_small)
-//                ),
-//                border = BorderStroke(
-//                    width = 1.dp,
-//                    color = MaterialTheme.colorScheme.outlineVariant
-//                ),
-//                colors = CardDefaults.outlinedCardColors(
-//                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-//                ),
-//                modifier = Modifier.fillMaxWidth()
-//            ) {
-//                Row(
-//                    verticalAlignment = Alignment.CenterVertically,
-//                    horizontalArrangement = Arrangement.SpaceBetween,
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(dimensionResource(R.dimen.padding_medium))
-//                ) {
-//                    Text(text = stringResource(R.string.budget_rollover_label))
-//                    Switch(
-//                        checked = state.enableCascadeBalance,
-//                        onCheckedChange = {
-//                            onAction(ChartsActions.OnToggleBalanceRollover)
-//                        },
-//                        thumbContent = {
-//                            if (state.enableCascadeBalance) {
-//                                Icon(
-//                                    imageVector = Icons.Filled.Check,
-//                                    contentDescription = null,
-//                                    modifier = Modifier.size(SwitchDefaults.IconSize),
-//                                )
-//                            }
-//                        }
-//                    )
-//                }
-//            }
-
-
-//            Row(
-//                verticalAlignment = Alignment.CenterVertically,
-//                horizontalArrangement = Arrangement.SpaceBetween,
-//                modifier = Modifier.fillMaxWidth()
-//            ) {
-//                OutlinedCard(
-//                    shape = RoundedCornerShape(
-//                        dimensionResource(R.dimen.chart_round_corner_size_small)
-//                    ),
-//                    border = BorderStroke(
-//                        width = 1.dp,
-//                        color = MaterialTheme.colorScheme.outlineVariant
-//                    ),
-//                    colors = CardDefaults.outlinedCardColors(
-//                        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-//                    ),
-//                    modifier = Modifier.weight(0.8f)
-//                ) {
-//                    ChartLegendItemGrid(
-//                        data = listOf(
-//                            ChartLegendItem(
-//                                label = stringResource(R.string.finance_type_income),
-//                                color = Color(0xFF12C51A)
-//                            ),
-//                            ChartLegendItem(
-//                                label = stringResource(R.string.finance_type_expense),
-//                                color = Color(0xFFBE0E1F)
-//                            ),
-//                            ChartLegendItem(
-//                                label = stringResource(R.string.finance_balance_title),
-//                                color = Color(0xFF0C6EE5)
-//                            )
-//                        ),
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(dimensionResource(R.dimen.chart_padding_medium))
-//                    )
-//                }
-//
-//                Spacer(modifier.weight(0.1f))
-//
-//                OutlinedButton(
-//                    onClick = {},
-//                    modifier = Modifier.weight(0.2f)
-//                ) {
-//                    Icon(
-//                        imageVector = Icons.Default.FilterList,
-//                        contentDescription = null,
-//                        modifier = Modifier.size(ButtonDefaults.IconSize)
-//                    )
-//                }
-//            }
-
-//            FinanceLineChart(
-//                title = stringResource(R.string.chart_annual_cash_flow_title),
-//                items = listOf(
-//                    LineChartData(
-//                        label = stringResource(R.string.finance_type_income),
-//                        color = Color(0xFF12C51A),
-//                        values = state.yearlyCashFlowIncome,
-//                        enable = state.selectedChartOptions[0]
-//                    ),
-//                    LineChartData(
-//                        label = stringResource(R.string.finance_type_expense),
-//                        color = Color(0xFFBE0E1F),
-//                        values = state.yearlyCashFlowExpense,
-//                        enable = state.selectedChartOptions[1]
-//                    ),
-//                    LineChartData(
-//                        label = stringResource(R.string.finance_balance_title),
-//                        color = Color(0xFF0C6EE5),
-//                        values = state.yearlyCashFlowBalance,
-//                        enable = state.selectedChartOptions[2]
-//                    )
-//                ),
-//                labels = Month.entries.map {
-//                    it.name.substring(0, 3)
-//                        .lowercase(LocalLocale.current.platformLocale)
-//                        .replaceFirstChar { char -> char.uppercase() }
-//                },
-//                currencyCode = state.currencyCode,
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .heightIn(max = 250.dp)
-//            )
-
-//            FinanceLineChart(
-//                title = stringResource(R.string.chart_monthly_cash_flow_title),
-//                items = listOf(
-//                    LineChartData(
-//                        label = stringResource(R.string.finance_type_income),
-//                        color = Color(0xFF12C51A),
-//                        values = state.avgMonthlyIncome,
-//                        enable = state.selectedChartOptions[0]
-//                    ),
-//                    LineChartData(
-//                        label = stringResource(R.string.finance_type_expense),
-//                        color = Color(0xFFBE0E1F),
-//                        values = state.avgMonthlyExpense,
-//                        enable = state.selectedChartOptions[1]
-//                    ),
-//                    LineChartData(
-//                        label = stringResource(R.string.finance_balance_title),
-//                        color = Color(0xFF0C6EE5),
-//                        values = state.avgMonthlyBalance,
-//                        enable = state.selectedChartOptions[2]
-//                    ),
-//                ),
-//                labels = lineLabels,
-//                currencyCode = state.currencyCode,
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .heightIn(max = 250.dp)
-//            )
-//
-
-
-//            FinancePieChart(
-//                title = stringResource(R.string.chart_annual_income_title),
-//                items = state.incomeCategories.mapIndexed { index, it ->
-//                    PieChartData(
-//                        label = it.first.asString(),
-//                        color = incomeChartColors[index % incomeChartColors.size],
-//                        selectedColor = MaterialTheme.colorScheme.inversePrimary,
-//                        data = it.second,
-//                        selected = false
-//                    )
-//                },
-//                onItemClick = {},
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .heightIn(max = 300.dp)
-//            )
-//
-//            FinancePieChart(
-//                title = stringResource(R.string.chart_annual_expense_title),
-//                items = state.expenseCategories.mapIndexed { index, it ->
-//                    PieChartData(
-//                        label = it.first.asString(),
-//                        color = expenseChartColors[index % expenseChartColors.size],
-//                        selectedColor = MaterialTheme.colorScheme.inversePrimary,
-//                        data = it.second,
-//                        selected = false
-//                    )
-//                },
-//                onItemClick = {},
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .heightIn(max = 300.dp)
-//            )
         }
     }
 }

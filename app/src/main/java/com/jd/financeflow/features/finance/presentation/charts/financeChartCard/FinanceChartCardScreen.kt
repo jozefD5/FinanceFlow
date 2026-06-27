@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,6 +20,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.jd.financeflow.R
 import com.jd.financeflow.features.finance.domain.models.chart.LineChartData
@@ -29,11 +32,36 @@ private val lineLabels = listOf("1", "6", "11", "16", "21", "26", "31")
 /**
  * Finance chart card
  *
+ * @param title Title
+ * @param modifier Modifier
+ * @param viewModel View model
+ */
+@Composable
+fun FinanceChartCard(
+    title: String,
+    modifier: Modifier = Modifier,
+    viewModel: FinanceChartCardViewModel,
+) {
+    val state = viewModel.state.collectAsStateWithLifecycle()
+
+    FinanceChartCardView(
+        state = state.value,
+        title = title,
+        modifier = modifier
+    )
+}
+
+
+/**
+ * Finance chart card view
+ *
+ * @param title Title
  * @param state Finance chart card state
  * @param modifier Modifier
  */
 @Composable
-fun FinanceChartCard(
+fun FinanceChartCardView(
+    title: String,
     state: FinanceChartCardState,
     modifier: Modifier = Modifier,
 ) {
@@ -48,6 +76,18 @@ fun FinanceChartCard(
                 .fillMaxWidth()
                 .padding(dimensionResource(R.dimen.chart_padding_medium))
         ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            HorizontalDivider(
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.outlineVariant,
+                modifier = Modifier.padding(bottom = 12.dp)
+            )
+
             FinanceLineChart(
                 items = listOf(
                     LineChartData(
@@ -79,19 +119,20 @@ fun FinanceChartCard(
 
 @Preview
 @Composable
-fun FinanceChartCardPreview() {
+fun FinanceChartCardViewPreview() {
     MaterialTheme {
         Scaffold(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(8.dp)
         ) { innerPadding ->
-            FinanceChartCard(
+            FinanceChartCardView(
                 state = FinanceChartCardState(),
+                title = "Jan 2026",
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(innerPadding)
-                    .heightIn(max = 250.dp)
+                    .heightIn(max = 350.dp)
             )
         }
     }

@@ -1,5 +1,6 @@
 package com.jd.financeflow.features.finance.presentation.charts.financeChartCard
 
+import android.util.Log
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
@@ -121,6 +122,11 @@ class FinanceChartCardViewModel(
             runningBalance += income - (expense.getOrNull(index) ?: 0.0)
             runningBalance
         }
+
+        Log.d("FinanceChartCardViewModel", "income: $income")
+        Log.d("FinanceChartCardViewModel", "expense: $expense")
+        Log.d("FinanceChartCardViewModel", "balance: $balance")
+
 
         _state.update {
             it.copy(
