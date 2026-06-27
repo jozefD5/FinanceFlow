@@ -1,5 +1,8 @@
 package com.jd.financeflow.features.finance.presentation.charts.financeChartCard
 
+import java.time.Instant
+import java.time.ZoneId
+
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
@@ -15,10 +18,13 @@ import androidx.lifecycle.viewModelScope
 import com.jd.financeflow.features.core.domain.Result
 import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.finance.domain.FinanceRepository
+import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
+import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceType
+import com.jd.financeflow.features.finance.domain.models.IncomeCategory
 import com.jd.financeflow.features.finance.presentation.components.monthlyCashFlow
-import java.time.Instant
-import java.time.ZoneId
+import com.jd.financeflow.features.finance.presentation.components.toUiText
+import com.jd.financeflow.features.finance.presentation.components.totalByCategoryRange
 
 /**
  * Finance chart card view model
@@ -81,14 +87,14 @@ class FinanceChartCardViewModel(
                 return@launch
             }
         }
-
         val (incomes, expenses) = finances.partition { it.category.type == FinanceType.INCOME }
 
+        // Convert start time to year and month
         val zonedDateTime = Instant.ofEpochMilli(startTimeMs).atZone(ZoneId.systemDefault())
         val year = zonedDateTime.year
         val month = zonedDateTime.monthValue
 
-        // Calculate monthly cash flow for income and expense
+        // Calculate key values asynchronously
         val incomeDiffered = async(Dispatchers.Default) {
             monthlyCashFlow(
                 items = incomes,
@@ -103,25 +109,74 @@ class FinanceChartCardViewModel(
                 month = month
             )
         }
+        val incomeCategoryDiffered = async(Dispatchers.Default) {
+            totalByCategoryRange(
+                items = incomes,
+                year = year,
+                month = month
+            )
+        }
+        val expenseCategoryDiffered = async(Dispatchers.Default) {
+            totalByCategoryRange(
+                items = expenses,
+                year = year,
+                month = month
+            )
+        }
 
+
+        // Get final values and calculate total
         val income = incomeDiffered.await()
         val expense = expenseDiffered.await()
+        val finalBalance = income.sum() - expense.sum()
 
-        // Calculate daily balance for the month
-        val balance = income.mapIndexed { index, income ->
-            val runningBalance = income - (expense.getOrNull(index) ?: 0.0)
-            runningBalance
-        }
+        val incomeCategories = incomeCategoryDiffered
+            .await()
+            .map { (order, amount) ->
+                val category = when (order) {
+                    IncomeCategory.Salary.ordinal -> IncomeCategory.Salary
+                    IncomeCategory.Bonus.ordinal -> IncomeCategory.Bonus
+                    IncomeCategory.Commission.ordinal -> IncomeCategory.Commission
+                    IncomeCategory.Benefit.ordinal -> IncomeCategory.Benefit
+                    IncomeCategory.Investment.ordinal -> IncomeCategory.Investment
+                    else -> IncomeCategory.Other
+                }
+                Pair(
+                    FinanceCategory.Income(category).toUiText(),
+                    amount
+                )
+            }
+
+        val expenseCategories = expenseCategoryDiffered
+            .await()
+            .map { (order, amount) ->
+                val category = when (order) {
+                    ExpenseCategory.Housing.ordinal -> ExpenseCategory.Housing
+                    ExpenseCategory.Utility.ordinal -> ExpenseCategory.Utility
+                    ExpenseCategory.Food.ordinal -> ExpenseCategory.Food
+                    ExpenseCategory.Transport.ordinal -> ExpenseCategory.Transport
+                    ExpenseCategory.Health.ordinal -> ExpenseCategory.Health
+                    ExpenseCategory.Education.ordinal -> ExpenseCategory.Education
+                    ExpenseCategory.Entertainment.ordinal -> ExpenseCategory.Entertainment
+                    else -> ExpenseCategory.Other
+                }
+                Pair(
+                    FinanceCategory.Expense(category).toUiText(),
+                    amount
+                )
+            }
 
         val dataAvailable = income.sum() > 0 || expense.sum() > 0
 
         _state.update {
             it.copy(
                 isLoading = false,
-                income = income,
-                expense = expense,
-                balance = balance,
-                dataAvailable = dataAvailable
+                dataAvailable = dataAvailable,
+                incomeTransactions = income,
+                expenseTransactions = expense,
+                balance = finalBalance,
+                incomeCategories = incomeCategories,
+                expenseCategories = expenseCategories
             )
         }
     }

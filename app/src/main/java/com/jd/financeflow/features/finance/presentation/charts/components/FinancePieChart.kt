@@ -5,7 +5,6 @@ import android.icu.util.Currency
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,10 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -52,80 +48,68 @@ fun FinancePieChart(
     onItemClick: (PieChartData) -> Unit,
     modifier: Modifier = Modifier,
     currencyCode: String = "EUR",
+    enableTotalIndicator: Boolean = false
 ) {
     val formatter = NumberFormat.getCurrencyInstance()
     formatter.currency = Currency.getInstance(currencyCode)
 
-    OutlinedCard(
-        shape = RoundedCornerShape(
-            dimensionResource(R.dimen.chart_round_corner_size_small)
-        ),
-        border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.outlineVariant),
-        colors = CardDefaults.outlinedCardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-        ),
-        modifier = modifier
-    ) {
-        Column(
+    Column(modifier = modifier) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+
+        ChartLegendItemGrid(
+            data = items.map { item ->
+                ChartLegendItem(
+                    label = item.label,
+                    color = item.color
+                )
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(dimensionResource(R.dimen.chart_padding_medium))
+        )
+
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = modifier.fillMaxSize()
         ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-
-            ChartLegendItemGrid(
-                data = items.map { item ->
-                    ChartLegendItem(
-                        label = item.label,
-                        color = item.color
-                    )
+            PieChart(
+                data = items.mapNotNull { item ->
+                    if (item.enable) {
+                        Pie(
+                            label = item.label,
+                            data = item.data,
+                            color = item.color,
+                            selectedColor = item.selectedColor,
+                            selected = item.selected
+                        )
+                    } else {
+                        null
+                    }
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(dimensionResource(R.dimen.chart_padding_medium))
+                onPieClick = { pie ->
+                    onItemClick(items[items.indexOf(items.find { it.label == pie.label })])
+                },
+                selectedScale = 1.1f,
+                scaleAnimEnterSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessLow
+                ),
+                colorAnimEnterSpec = tween(300),
+                colorAnimExitSpec = tween(300),
+                scaleAnimExitSpec = tween(300),
+                spaceDegreeAnimExitSpec = tween(300),
+                spaceDegree = 4f,
+                selectedPaddingDegree = 4f,
+                labelHelperProperties = LabelHelperProperties(enabled = false),
+                style = Pie.Style.Stroke(width = 24.dp),
+                modifier = Modifier.fillMaxSize(),
             )
 
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = modifier.fillMaxSize()
-            ) {
-                PieChart(
-                    data = items.mapNotNull { item ->
-                        if (item.enable) {
-                            Pie(
-                                label = item.label,
-                                data = item.data,
-                                color = item.color,
-                                selectedColor = item.selectedColor,
-                                selected = item.selected
-                            )
-                        } else {
-                            null
-                        }
-                    },
-                    onPieClick = { pie ->
-                        onItemClick(items[items.indexOf(items.find { it.label == pie.label })])
-                    },
-                    selectedScale = 1.1f,
-                    scaleAnimEnterSpec = spring(
-                        dampingRatio = Spring.DampingRatioMediumBouncy,
-                        stiffness = Spring.StiffnessLow
-                    ),
-                    colorAnimEnterSpec = tween(300),
-                    colorAnimExitSpec = tween(300),
-                    scaleAnimExitSpec = tween(300),
-                    spaceDegreeAnimExitSpec = tween(300),
-                    spaceDegree = 4f,
-                    selectedPaddingDegree = 4f,
-                    labelHelperProperties = LabelHelperProperties(enabled = false),
-                    style = Pie.Style.Stroke(width = 24.dp),
-                    modifier = Modifier.fillMaxSize(),
-                )
-
+            if (enableTotalIndicator) {
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,

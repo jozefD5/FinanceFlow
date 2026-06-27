@@ -108,6 +108,26 @@ fun monthlyCashFlow(
 }
 
 
+/**
+ * Calculate total amount by category for a specific month and year.
+ *
+ * @param items list of finances
+ * @param year the year
+ * @param month the month (1-12)
+ * @return map of category order to total amount
+ */
+fun totalByCategoryRange(
+    items: List<Finance>,
+    year: Int,
+    month: Int,
+): Map<Int, Double> {
+    return items.groupBy { it.category.order }
+        .mapValues { (_, categoryItems) ->
+            monthlyCashFlow(categoryItems, year, month).sum()
+        }
+}
+
+
 //--------------------------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------
 

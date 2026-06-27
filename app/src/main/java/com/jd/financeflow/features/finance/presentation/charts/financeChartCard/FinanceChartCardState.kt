@@ -11,7 +11,10 @@ data class FinanceChartCardState(
     val currencyCode: String = "EUR",
 
     val dataAvailable: Boolean = false,
-    val income: List<Double> = emptyList(),
-    val expense: List<Double> = emptyList(),
-    val balance: List<Double> = emptyList(),
+    val balance: Double = 0.0,
+    val incomeTransactions: List<Double> = emptyList(),
+    val expenseTransactions: List<Double> = emptyList(),
+
+    val incomeCategories: List<Pair<UiText, Double>> = emptyList(),
+    val expenseCategories: List<Pair<UiText, Double>> = emptyList(),
 )
