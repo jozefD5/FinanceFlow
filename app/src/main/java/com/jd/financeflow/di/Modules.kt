@@ -62,10 +62,7 @@ val appModule = module {
     }
 
     viewModel { (currencyCode: String) ->
-        ChartsViewModel(
-            repository = get(),
-            currencyCode = currencyCode,
-        )
+        ChartsViewModel(currencyCode = currencyCode,)
     }
 
     viewModel { (startTimeMs: Long, currencyCode: String) ->
