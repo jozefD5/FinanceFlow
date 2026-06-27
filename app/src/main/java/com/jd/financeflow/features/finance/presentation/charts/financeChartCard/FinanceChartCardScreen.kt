@@ -2,7 +2,6 @@ package com.jd.financeflow.features.finance.presentation.charts.financeChartCard
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -19,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -89,26 +89,40 @@ fun FinanceChartCardView(
                 modifier = Modifier.padding(vertical = 12.dp)
             )
 
-            FinanceLineChart(
-                items = listOf(
-                    LineChartData(
-                        label = stringResource(R.string.finance_type_income),
-                        color = Color(0xFF12C51A),
-                        values = state.income,
+
+            if (!state.dataAvailable) {
+                Text(
+                    text = "No data available",
+                    style = MaterialTheme.typography.headlineMediumEmphasized,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp)
+                        .weight(0.8f)
+                )
+            } else {
+                FinanceLineChart(
+                    items = listOf(
+                        LineChartData(
+                            label = stringResource(R.string.finance_type_income),
+                            color = Color(0xFF12C51A),
+                            values = state.income,
+                        ),
+                        LineChartData(
+                            label = stringResource(R.string.finance_type_expense),
+                            color = Color(0xFFBE0E1F),
+                            values = state.expense,
+                        ),
                     ),
-                    LineChartData(
-                        label = stringResource(R.string.finance_type_expense),
-                        color = Color(0xFFBE0E1F),
-                        values = state.expense,
-                    ),
-                ),
-                labels = lineLabels,
-                currencyCode = state.currencyCode,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(12.dp)
-                    .weight(0.8f)
-            )
+                    labels = lineLabels,
+                    currencyCode = state.currencyCode,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp)
+                        .weight(0.8f)
+                )
+            }
         }
     }
 }
@@ -123,7 +137,11 @@ fun FinanceChartCardViewPreview() {
                 .padding(8.dp)
         ) { innerPadding ->
             FinanceChartCardView(
-                state = FinanceChartCardState(),
+                state = FinanceChartCardState(
+                    income = listOf(10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0),
+                    expense = listOf(5.0, 15.0, 25.0, 35.0, 45.0, 55.0, 65.0),
+                    dataAvailable = true
+                ),
                 title = "Jan 2026",
                 modifier = Modifier
                     .fillMaxWidth()

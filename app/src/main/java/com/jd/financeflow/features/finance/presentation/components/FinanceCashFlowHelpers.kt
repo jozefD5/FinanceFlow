@@ -1,82 +1,110 @@
 package com.jd.financeflow.features.finance.presentation.components
 
+import java.time.YearMonth
+import java.time.ZoneId
+
 import android.util.Log
 
 import com.jd.financeflow.features.finance.domain.models.Finance
 import com.jd.financeflow.features.finance.domain.models.FinanceInterval
 
-private const val daysInMonth = 31
+
 private const val monthsInYear = 12
 
 /**
- * Calculate monthly cash flow for a given list of finances.
+ * Calculate monthly cash flow for a given list of finances for a specific month and year.
  *
  * Note, method is expecting data to be grouped by finance type before use, income or expense.
  * @param items list of finances, e.g. income or expense
- * @param startTimeMs start time in milliseconds
- * @param endTimeMs end time in milliseconds
- * @return list of monthly cash flow values
+ * @param year the year
+ * @param month the month (1-12)
+ * @return list of daily cash flow values for the month
  */
 fun monthlyCashFlow(
     items: List<Finance>,
-    startTimeMs: Long,
-    endTimeMs: Long,
+    year: Int,
+    month: Int,
 ): List<Double> {
-    val dailyAverages = MutableList(daysInMonth) { 0.0 }
+    val yearMonth = YearMonth.of(year, month)
+    val daysInMonth = yearMonth.lengthOfMonth()
+    val result = DoubleArray(daysInMonth)
 
-    // Process repeated finance items for the specific month. This includes any finance items
-    // from previous months with valid intervals (repeated up to monthly bases).
-    items
-        .filter { item ->
-            // Valid if it started before or during this month, and is a recurring type
-            item.timeStampMs < endTimeMs &&
-                    item.interval != FinanceInterval.OneTime &&
-                    item.interval < FinanceInterval.Quarterly
-        }
-        .forEach { item ->
-            val dayIndex = item.zonedDateTime.dayOfMonth - 1
-            when (item.interval) {
-                FinanceInterval.Daily -> {
-                    // For daily, we should ideally only count from the start date
-                    // but keeping it simple for now as per previous logic
-                    for (i in 0 until daysInMonth) dailyAverages[i] += item.amount
+    val zoneId = ZoneId.systemDefault()
+    val monthStartMs = yearMonth.atDay(1).atStartOfDay(zoneId).toInstant().toEpochMilli()
+    val monthEndMs =
+        yearMonth.atEndOfMonth().atTime(23, 59, 59, 999000000).atZone(zoneId).toInstant()
+            .toEpochMilli()
+
+    for (item in items) {
+        if (item.timeStampMs > monthEndMs) continue
+
+        val itemDate = item.zonedDateTime
+        val amount = item.amount
+        val itemDayIndex = itemDate.dayOfMonth - 1
+        val itemMonth = itemDate.monthValue
+
+        when (item.interval) {
+            FinanceInterval.OneTime -> {
+                if (item.timeStampMs in monthStartMs..monthEndMs && itemDayIndex in 0 until daysInMonth) {
+                    result[itemDayIndex] += amount
                 }
+            }
 
-                FinanceInterval.Weekly -> {
-                    for (i in 0..4) {
-                        val actualIndex = dayIndex + (i * 7)
-                        if (actualIndex in 0 until daysInMonth) {
-                            dailyAverages[actualIndex] += item.amount
+            FinanceInterval.Daily -> {
+                val start = if (item.timeStampMs < monthStartMs) 0 else itemDayIndex
+                if (start < daysInMonth) {
+                    for (i in start until daysInMonth) result[i] += amount
+                }
+            }
+
+            FinanceInterval.Weekly -> {
+                val targetDayOfWeek = itemDate.dayOfWeek
+                val firstDayOfMonth = yearMonth.atDay(1)
+                val firstOccurrenceOffset =
+                    (targetDayOfWeek.value - firstDayOfMonth.dayOfWeek.value + 7) % 7
+
+                var dayIdx = firstOccurrenceOffset
+                while (dayIdx < daysInMonth) {
+                    if (item.timeStampMs < monthStartMs) {
+                        result[dayIdx] += amount
+                    } else {
+                        val occurrenceMs =
+                            yearMonth.atDay(dayIdx + 1).atStartOfDay(zoneId).toInstant()
+                                .toEpochMilli()
+                        if (occurrenceMs >= item.timeStampMs) {
+                            result[dayIdx] += amount
                         }
                     }
+                    dayIdx += 7
                 }
+            }
 
-                FinanceInterval.Monthly -> {
-                    if (dayIndex in 0 until daysInMonth) {
-                        dailyAverages[dayIndex] += item.amount
-                    }
+            FinanceInterval.Monthly -> {
+                if (itemDayIndex in 0 until daysInMonth) {
+                    result[itemDayIndex] += amount
                 }
+            }
 
-                else -> {}
+            FinanceInterval.Quarterly -> {
+                if ((month - itemMonth) % 3 == 0 && itemDayIndex in 0 until daysInMonth) {
+                    result[itemDayIndex] += amount
+                }
+            }
+
+            FinanceInterval.SemiAnnually -> {
+                if ((month - itemMonth) % 6 == 0 && itemDayIndex in 0 until daysInMonth) {
+                    result[itemDayIndex] += amount
+                }
+            }
+
+            FinanceInterval.Annually -> {
+                if (month == itemMonth && itemDayIndex in 0 until daysInMonth) {
+                    result[itemDayIndex] += amount
+                }
             }
         }
-
-    // Process one-time finance items for the specific month.
-    items
-        .filter { item ->
-            item.timeStampMs in startTimeMs..endTimeMs && (
-                    item.interval == FinanceInterval.OneTime ||
-                            item.interval >= FinanceInterval.Quarterly
-                    )
-        }
-        .forEach { item ->
-            val dayIndex = item.zonedDateTime.dayOfMonth - 1
-            if (dayIndex in 0 until daysInMonth) {
-                dailyAverages[dayIndex] += item.amount
-            }
-        }
-
-    return dailyAverages
+    }
+    return result.toList()
 }
 
 
@@ -97,60 +125,50 @@ fun avgMonthlyCashFlow(
     financeItems: List<Finance>,
     monthIndex: Int
 ): List<Double> {
-    val dailyAverages = MutableList(daysInMonth) { 0.0 }
+    val dailyAverages = DoubleArray(31)
 
     Log.d("avgMonthlyCashFlow", "monthIndex: $monthIndex")
 
-    // Process repeated finance items for the specific month. This includes any finance items
-    // from previous months with valid intervals (repeated up to monthly bases).
-    financeItems
-        .filter { item ->
-            item.zonedDateTime.monthValue <= monthIndex
-        }
-        .forEach { item ->
-            val dayIndex = item.zonedDateTime.dayOfMonth - 1
+    for (item in financeItems) {
+        val itemDate = item.zonedDateTime
+        val itemMonth = itemDate.monthValue
+        val dayIndex = itemDate.dayOfMonth - 1
+        if (dayIndex !in 0..30) continue
 
+        val amount = item.amount
+
+        // Recurring items (Daily, Weekly, Monthly) that started before or in the target month
+        if (itemMonth <= monthIndex) {
             when (item.interval) {
                 FinanceInterval.Daily -> {
-                    for (i in 0 until daysInMonth) dailyAverages[i] += item.amount
+                    for (i in 0..30) dailyAverages[i] += amount
                 }
 
                 FinanceInterval.Weekly -> {
                     // Apply to the specific day and every 7 days forward/backward in the month
                     for (i in -4..4) {
-                        val actualIndex = dayIndex + (i * 7)
-                        if (actualIndex in 0 until daysInMonth) {
-                            dailyAverages[actualIndex] += item.amount
-                        }
+                        val idx = dayIndex + (i * 7)
+                        if (idx in 0..30) dailyAverages[idx] += amount
                     }
                 }
 
                 FinanceInterval.Monthly -> {
-                    if (dayIndex in 0 until daysInMonth) {
-                        dailyAverages[dayIndex] += item.amount
-                    }
+                    dailyAverages[dayIndex] += amount
                 }
 
                 else -> {}
             }
         }
 
-    // Process one-time finance items for the specific month.
-    financeItems
-        .filter { item ->
-            item.zonedDateTime.monthValue == monthIndex
-        }
-        .forEach { item ->
-            val dayIndex = item.zonedDateTime.dayOfMonth - 1
-
-            if (item.interval == FinanceInterval.OneTime ||
-                item.interval >= FinanceInterval.Quarterly
-            ) {
-                dailyAverages[dayIndex] += item.amount
+        // One-time and long-term recurring items (only for the specific month)
+        if (itemMonth == monthIndex) {
+            if (item.interval == FinanceInterval.OneTime || item.interval >= FinanceInterval.Quarterly) {
+                dailyAverages[dayIndex] += amount
             }
         }
+    }
 
-    return dailyAverages
+    return dailyAverages.toList()
 }
 
 /**

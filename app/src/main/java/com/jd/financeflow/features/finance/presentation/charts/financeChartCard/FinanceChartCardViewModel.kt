@@ -15,10 +15,10 @@ import androidx.lifecycle.viewModelScope
 import com.jd.financeflow.features.core.domain.Result
 import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.finance.domain.FinanceRepository
-import com.jd.financeflow.features.finance.domain.models.FinanceInterval
 import com.jd.financeflow.features.finance.domain.models.FinanceType
-import com.jd.financeflow.features.finance.presentation.components.endTimeDuration
 import com.jd.financeflow.features.finance.presentation.components.monthlyCashFlow
+import java.time.Instant
+import java.time.ZoneId
 
 /**
  * Finance chart card view model
@@ -84,19 +84,23 @@ class FinanceChartCardViewModel(
 
         val (incomes, expenses) = finances.partition { it.category.type == FinanceType.INCOME }
 
+        val zonedDateTime = Instant.ofEpochMilli(startTimeMs).atZone(ZoneId.systemDefault())
+        val year = zonedDateTime.year
+        val month = zonedDateTime.monthValue
+
         // Calculate monthly cash flow for income and expense
         val incomeDiffered = async(Dispatchers.Default) {
             monthlyCashFlow(
                 items = incomes,
-                startTimeMs = startTimeMs,
-                endTimeMs = startTimeMs.endTimeDuration(FinanceInterval.Monthly)
+                year = year,
+                month = month
             )
         }
         val expenseDiffered = async(Dispatchers.Default) {
             monthlyCashFlow(
                 items = expenses,
-                startTimeMs = startTimeMs,
-                endTimeMs = startTimeMs.endTimeDuration(FinanceInterval.Monthly)
+                year = year,
+                month = month
             )
         }
 
@@ -109,12 +113,15 @@ class FinanceChartCardViewModel(
             runningBalance
         }
 
+        val dataAvailable = income.sum() > 0 || expense.sum() > 0
+
         _state.update {
             it.copy(
                 isLoading = false,
                 income = income,
                 expense = expense,
-                balance = balance
+                balance = balance,
+                dataAvailable = dataAvailable
             )
         }
     }
