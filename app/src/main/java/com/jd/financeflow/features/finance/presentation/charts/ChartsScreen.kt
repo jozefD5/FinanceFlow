@@ -130,7 +130,7 @@ fun ChartsView(
 
             // Force the base date to always be the 1st of the current month
             val baseDate = LocalDate.now().withDayOfMonth(1)
-            val monthFormatter = remember { DateTimeFormatter.ofPattern("MM-yyyy") }
+            val monthFormatter = remember { DateTimeFormatter.ofPattern("MMM yyyy") }
 
             HorizontalPager(
                 state = pagerState,

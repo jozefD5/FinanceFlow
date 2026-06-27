@@ -2,6 +2,7 @@ package com.jd.financeflow.features.finance.presentation.charts.financeChartCard
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -85,7 +86,7 @@ fun FinanceChartCardView(
             HorizontalDivider(
                 thickness = 1.dp,
                 color = MaterialTheme.colorScheme.outlineVariant,
-                modifier = Modifier.padding(bottom = 12.dp)
+                modifier = Modifier.padding(vertical = 12.dp)
             )
 
             FinanceLineChart(
@@ -94,24 +95,19 @@ fun FinanceChartCardView(
                         label = stringResource(R.string.finance_type_income),
                         color = Color(0xFF12C51A),
                         values = state.income,
-                        enable = state.incomeLineEnable
                     ),
                     LineChartData(
                         label = stringResource(R.string.finance_type_expense),
                         color = Color(0xFFBE0E1F),
                         values = state.expense,
-                        enable = state.expenseLineEnable
-                    ),
-                    LineChartData(
-                        label = stringResource(R.string.finance_balance_title),
-                        color = Color(0xFF0C6EE5),
-                        values = state.balance,
-                        enable = state.balanceLineEnable
                     ),
                 ),
                 labels = lineLabels,
                 currencyCode = state.currencyCode,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp)
+                    .weight(0.8f)
             )
         }
     }

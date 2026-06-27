@@ -10,10 +10,6 @@ data class FinanceChartCardState(
     val error: UiText? = null,
     val currencyCode: String = "EUR",
 
-    val incomeLineEnable: Boolean = true,
-    val expenseLineEnable: Boolean = true,
-    val balanceLineEnable: Boolean = true,
-
     val income: List<Double> = emptyList(),
     val expense: List<Double> = emptyList(),
     val balance: List<Double> = emptyList(),

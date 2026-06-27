@@ -30,6 +30,7 @@ import ir.ehsannarmani.compose_charts.models.LabelProperties
 import ir.ehsannarmani.compose_charts.models.LabelHelperProperties
 
 import com.jd.financeflow.features.finance.domain.models.chart.LineChartData
+import ir.ehsannarmani.compose_charts.models.PopupProperties
 
 /**
  * Finance linear charts for displaying different finance data such as income and expenses
@@ -116,6 +117,7 @@ fun FinanceLineChart(
                 enabled = false
             )
         ),
+        popupProperties = PopupProperties(enabled = false),
         animationDelay = 0,
         animationMode = AnimationMode.None,
         modifier = modifier

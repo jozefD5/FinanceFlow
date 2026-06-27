@@ -1,13 +1,22 @@
 package com.jd.financeflow.features.finance.presentation.components
 
 import android.util.Log
+
 import com.jd.financeflow.features.finance.domain.models.Finance
 import com.jd.financeflow.features.finance.domain.models.FinanceInterval
 
 private const val daysInMonth = 31
 private const val monthsInYear = 12
 
-
+/**
+ * Calculate monthly cash flow for a given list of finances.
+ *
+ * Note, method is expecting data to be grouped by finance type before use, income or expense.
+ * @param items list of finances, e.g. income or expense
+ * @param startTimeMs start time in milliseconds
+ * @param endTimeMs end time in milliseconds
+ * @return list of monthly cash flow values
+ */
 fun monthlyCashFlow(
     items: List<Finance>,
     startTimeMs: Long,
@@ -15,20 +24,21 @@ fun monthlyCashFlow(
 ): List<Double> {
     val dailyAverages = MutableList(daysInMonth) { 0.0 }
 
-    Log.d("monthlyCashFlow", "startTimeMs: $startTimeMs")
-    Log.d("monthlyCashFlow", "endTimeMs: $endTimeMs")
-
-
     // Process repeated finance items for the specific month. This includes any finance items
     // from previous months with valid intervals (repeated up to monthly bases).
     items
         .filter { item ->
-            item.timeStampMs in endTimeMs..startTimeMs
+            // Valid if it started before or during this month, and is a recurring type
+            item.timeStampMs < endTimeMs &&
+                    item.interval != FinanceInterval.OneTime &&
+                    item.interval < FinanceInterval.Quarterly
         }
         .forEach { item ->
             val dayIndex = item.zonedDateTime.dayOfMonth - 1
             when (item.interval) {
                 FinanceInterval.Daily -> {
+                    // For daily, we should ideally only count from the start date
+                    // but keeping it simple for now as per previous logic
                     for (i in 0 until daysInMonth) dailyAverages[i] += item.amount
                 }
 
@@ -54,14 +64,14 @@ fun monthlyCashFlow(
     // Process one-time finance items for the specific month.
     items
         .filter { item ->
-            item.timeStampMs in endTimeMs..startTimeMs
+            item.timeStampMs in startTimeMs..endTimeMs && (
+                    item.interval == FinanceInterval.OneTime ||
+                            item.interval >= FinanceInterval.Quarterly
+                    )
         }
         .forEach { item ->
             val dayIndex = item.zonedDateTime.dayOfMonth - 1
-
-            if (item.interval == FinanceInterval.OneTime ||
-                item.interval >= FinanceInterval.Quarterly
-            ) {
+            if (dayIndex in 0 until daysInMonth) {
                 dailyAverages[dayIndex] += item.amount
             }
         }

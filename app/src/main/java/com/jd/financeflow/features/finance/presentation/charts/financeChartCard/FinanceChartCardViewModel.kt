@@ -1,6 +1,5 @@
 package com.jd.financeflow.features.finance.presentation.charts.financeChartCard
 
-import android.util.Log
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
@@ -60,18 +59,6 @@ class FinanceChartCardViewModel(
             is FinanceChartCardActions.OnRefresh -> {
                 refreshChart()
             }
-
-            is FinanceChartCardActions.OnEnableIncome -> {
-                _state.update { it.copy(incomeLineEnable = action.enable) }
-            }
-
-            is FinanceChartCardActions.OnEnableExpense -> {
-                _state.update { it.copy(expenseLineEnable = action.enable) }
-            }
-
-            is FinanceChartCardActions.OnEnableBalance -> {
-                _state.update { it.copy(balanceLineEnable = action.enable) }
-            }
         }
     }
 
@@ -116,17 +103,11 @@ class FinanceChartCardViewModel(
         val income = incomeDiffered.await()
         val expense = expenseDiffered.await()
 
-        // Calculate balance
-        var runningBalance = 0.0
+        // Calculate daily balance for the month
         val balance = income.mapIndexed { index, income ->
-            runningBalance += income - (expense.getOrNull(index) ?: 0.0)
+            val runningBalance = income - (expense.getOrNull(index) ?: 0.0)
             runningBalance
         }
-
-        Log.d("FinanceChartCardViewModel", "income: $income")
-        Log.d("FinanceChartCardViewModel", "expense: $expense")
-        Log.d("FinanceChartCardViewModel", "balance: $balance")
-
 
         _state.update {
             it.copy(
