@@ -67,7 +67,9 @@ fun ChartsView(
     PullToRefreshBox(
         isRefreshing = state.isLoading,
         onRefresh = { onAction(ChartsActions.OnRefresh) },
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = dimensionResource(R.dimen.chart_padding_medium))
     ) {
         val pagerState = rememberPagerState(
             initialPage = initialPage,

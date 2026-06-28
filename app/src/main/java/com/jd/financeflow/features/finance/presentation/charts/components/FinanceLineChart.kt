@@ -7,7 +7,6 @@ import android.icu.util.Currency
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -60,10 +59,10 @@ fun FinanceLineChart(
                     label = item.label,
                     values = item.values,
                     color = SolidColor(item.color),
-                    firstGradientFillColor = item.color.copy(alpha = 0.5f),
+                    firstGradientFillColor = item.color.copy(alpha = 0.3f),
                     secondGradientFillColor = item.color.copy(alpha = 0.1f),
-                    strokeAnimationSpec = tween(2000, easing = EaseInOutCubic),
-                    drawStyle = DrawStyle.Stroke(width = 3.dp),
+                    strokeAnimationSpec = tween(200, easing = EaseInOutCubic),
+                    drawStyle = DrawStyle.Stroke(width = 2.dp),
                     curvedEdges = true,
                 )
             } else {
