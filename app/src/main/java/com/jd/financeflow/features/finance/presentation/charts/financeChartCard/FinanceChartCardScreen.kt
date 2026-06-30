@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,28 +37,28 @@ import com.jd.financeflow.features.finance.presentation.charts.components.Financ
 // Monthly finance line chart labels
 private val lineLabels = listOf("1", "15", "31")
 
-// High-contrast colors for Income (Alternating distinct hues: Green, Blue, Lime, Teal)
+// Colors for Income
 private val incomeChartColors = listOf(
     Color(0xFF2E7D32), // Forest Green
-    Color(0xFF0288D1), // Light Blue
-    Color(0xFF9E9D24), // Olive/Lime
-    Color(0xFF00897B), // Teal
-    Color(0xFF1565C0), // Denim Blue
-    Color(0xFF558B2F), // Light Green
-    Color(0xFF00ACC1), // Cyan
-    Color(0xFF004D40)  // Deep Pine
+    Color(0xFF00BFA5), // Teal A700
+    Color(0xFF00B0FF), // Light Blue A700
+    Color(0xFF64DD17), // Light Green A700
+    Color(0xFF00E5FF), // Cyan A400
+    Color(0xFF1DE9B6), // Teal A400
+    Color(0xFF76FF03), // Light Green A400
+    Color(0xFF00E676)  // Green A400
 )
 
-// High-contrast colors for Expenses (Alternating distinct hues: Red, Purple, Orange, Pink)
+// Colors for Expenses
 private val expenseChartColors = listOf(
-    Color(0xFFC62828), // Red
-    Color(0xFF6A1B9A), // Purple
-    Color(0xFFEF6C00), // Orange
-    Color(0xFFAD1457), // Pink/Magenta
-    Color(0xFF4527A0), // Deep Indigo
-    Color(0xFFD84315), // Deep Orange/Rust
-    Color(0xFF283593), // Indigo
-    Color(0xFF880E4F)  // Maroon
+    Color(0xFFC62828), // Red 800
+    Color(0xFFFF7043), // Deep Orange 400
+    Color(0xFFAB47BC), // Purple 400
+    Color(0xFFFFCA28), // Amber 400
+    Color(0xFFEC407A), // Pink 400
+    Color(0xFF7E57C2), // Deep Purple 400
+    Color(0xFFFF5252), // Red A200
+    Color(0xFFFFAB40)  // Orange A200
 )
 
 /**
@@ -96,62 +97,65 @@ fun FinanceChartCardView(
     modifier: Modifier = Modifier,
     verticalScrollState: ScrollState = rememberScrollState()
 ) {
-    Column(modifier = modifier.verticalScroll(verticalScrollState)) {
+    Column(
+        modifier = modifier.verticalScroll(verticalScrollState)
+    ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
         )
 
         HorizontalDivider(
             thickness = 1.dp,
             color = MaterialTheme.colorScheme.outlineVariant,
-            modifier = Modifier.padding(vertical = 12.dp)
+            modifier = Modifier.padding(vertical = 16.dp)
         )
 
         if (state.dataAvailable) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
                     text = stringResource(R.string.finance_balance_title),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 Text(
                     text = formatCurrency(state.balance, state.currencyCode),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }
 
-        Spacer(Modifier.padding(4.dp))
+        Spacer(Modifier.padding(8.dp))
 
         if (!state.dataAvailable) {
             Text(
                 text = stringResource(R.string.no_data_available_label),
-                style = MaterialTheme.typography.headlineMediumEmphasized,
+                style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 12.dp)
-                    .weight(0.7f)
+                    .padding(vertical = 48.dp)
             )
         } else {
             FinanceLineChart(
                 items = listOf(
                     LineChartData(
                         label = stringResource(R.string.finance_type_income),
-                        color = Color(0xFF12C51A),
+                        color = Color(0xFF4CAF50), // Standard MD Green
                         values = state.incomeTransactions,
                     ),
                     LineChartData(
                         label = stringResource(R.string.finance_type_expense),
-                        color = Color(0xFFBE0E1F),
+                        color = Color(0xFFF44336), // Standard MD Red
                         values = state.expenseTransactions,
                     ),
                 ),
@@ -159,48 +163,52 @@ fun FinanceChartCardView(
                 currencyCode = state.currencyCode,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(max = 200.dp)
+                    .height(250.dp)
             )
-        }
 
-        if (state.dataAvailable) {
+            Spacer(Modifier.height(24.dp))
+
             FinancePieChart(
                 title = stringResource(R.string.finance_type_income),
-                items = state.incomeCategories.mapIndexed { index, it ->
-                    PieChartData(
-                        label = it.first.asString(),
-                        color = incomeChartColors[index % incomeChartColors.size],
-                        selectedColor = MaterialTheme.colorScheme.inversePrimary,
-                        data = it.second,
-                        selected = false
-                    )
+                items = state.incomeCategories.mapIndexedNotNull { index, it ->
+                    if (it.second > 0) {
+                        PieChartData(
+                            label = it.first.asString(),
+                            color = incomeChartColors[index % incomeChartColors.size],
+                            selectedColor = MaterialTheme.colorScheme.primaryContainer,
+                            data = it.second,
+                            selected = false
+                        )
+                    } else {
+                        null
+                    }
                 },
                 onItemClick = {},
                 currencyCode = state.currencyCode,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(12.dp)
-                    .heightIn(max = 500.dp)
+                modifier = Modifier.fillMaxWidth()
             )
 
-//            FinancePieChart(
-//                title = stringResource(R.string.finance_type_expense),
-//                items = state.expenseCategories.mapIndexed { index, it ->
-//                    PieChartData(
-//                        label = it.first.asString(),
-//                        color = expenseChartColors[index % expenseChartColors.size],
-//                        selectedColor = MaterialTheme.colorScheme.inversePrimary,
-//                        data = it.second,
-//                        selected = false
-//                    )
-//                },
-//                onItemClick = {},
-//                currencyCode = state.currencyCode,
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(12.dp)
-//                    .heightIn(max = 250.dp)
-//            )
+            Spacer(Modifier.height(24.dp))
+
+            FinancePieChart(
+                title = stringResource(R.string.finance_type_expense),
+                items = state.expenseCategories.mapIndexedNotNull { index, it ->
+                    if (it.second > 0) {
+                        PieChartData(
+                            label = it.first.asString(),
+                            color = expenseChartColors[index % expenseChartColors.size],
+                            selectedColor = MaterialTheme.colorScheme.errorContainer,
+                            data = it.second,
+                            selected = false
+                        )
+                    } else {
+                        null
+                    }
+                },
+                onItemClick = {},
+                currencyCode = state.currencyCode,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }

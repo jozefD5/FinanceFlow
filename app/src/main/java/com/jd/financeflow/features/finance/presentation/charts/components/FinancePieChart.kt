@@ -1,15 +1,20 @@
 package com.jd.financeflow.features.finance.presentation.charts.components
 
+import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -17,6 +22,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -52,6 +59,10 @@ fun FinancePieChart(
     modifier: Modifier = Modifier,
     currencyCode: String = "EUR",
 ) {
+    val configuration = LocalConfiguration.current
+    val isWideScreen =
+        (LocalWindowInfo.current.containerSize.width > 600) || (configuration.orientation == ORIENTATION_LANDSCAPE)
+
     Column(modifier = modifier) {
         Text(
             text = title,
@@ -60,87 +71,131 @@ fun FinancePieChart(
             modifier = Modifier.padding(bottom = dimensionResource(R.dimen.padding_small))
         )
 
-        BoxWithConstraints(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .fillMaxSize()
-                .weight(0.6f)
-        ) {
-            val chartSize = min(maxWidth, maxHeight)
-
-            // Scaling stroke width between 16dp and 40dp based on available size
-            val strokeWidth = (chartSize * 0.15f).coerceIn(16.dp, 40.dp)
-
-            PieChart(
-                data = items.mapNotNull { item ->
-                    if (item.enable) {
-                        Pie(
-                            label = item.label,
-                            data = item.data,
-                            color = item.color,
-                            selectedColor = item.selectedColor,
-                            selected = item.selected
-                        )
-                    } else {
-                        null
-                    }
-                },
-                onPieClick = { pie ->
-                    onItemClick(items[items.indexOf(items.find { it.label == pie.label })])
-                },
-                selectedScale = 1.1f,
-                scaleAnimEnterSpec = spring(
-                    dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow
-                ),
-                colorAnimEnterSpec = tween(300),
-                colorAnimExitSpec = tween(300),
-                scaleAnimExitSpec = tween(300),
-                spaceDegreeAnimExitSpec = tween(300),
-                spaceDegree = 4f,
-                selectedPaddingDegree = 4f,
-                labelHelperProperties = LabelHelperProperties(enabled = false),
-                style = Pie.Style.Stroke(width = strokeWidth),
-                modifier = Modifier.size(chartSize),
-            )
-
-            // Heuristic for font size: base size is ~10% of chart diameter
-            val baseFontSize = chartSize.value * 0.1f
-
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(strokeWidth) // Ensure text stays within the hole
+        if (isWideScreen) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(24.dp)
             ) {
-                Text(
-                    text = stringResource(R.string.chart_total_title),
-                    style = MaterialTheme.typography.labelMedium,
-                    fontSize = (baseFontSize * 0.7f).sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                PieChartSection(
+                    items = items,
+                    onItemClick = onItemClick,
+                    currencyCode = currencyCode,
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(300.dp)
                 )
-
-                Text(
-                    text = formatCurrency(
-                        items.sumOf { it.data }, currencyCode
-                    ),
-                    style = MaterialTheme.typography.titleMediumEmphasized,
-                    fontSize = baseFontSize.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface,
+                LinearProgressWidgetList(
+                    items = items.map { item ->
+                        item.toFinancialProportionBarData(
+                            total = items.sumOf { it.data },
+                            currencyCode = currencyCode
+                        )
+                    },
+                    modifier = Modifier.weight(1.2f)
+                )
+            }
+        } else {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                PieChartSection(
+                    items = items,
+                    onItemClick = onItemClick,
+                    currencyCode = currencyCode,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp)
+                )
+                LinearProgressWidgetList(
+                    items = items.map { item ->
+                        item.toFinancialProportionBarData(
+                            total = items.sumOf { it.data },
+                            currencyCode = currencyCode
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         }
+    }
+}
 
-        LinearProgressWidgetList(
-            items = items.map { item ->
-                item.toFinancialProportionBarData(
-                    total = items.sumOf { it.data },
-                    currencyCode = currencyCode
-                )
+@Composable
+private fun PieChartSection(
+    items: List<PieChartData>,
+    onItemClick: (PieChartData) -> Unit,
+    currencyCode: String,
+    modifier: Modifier = Modifier
+) {
+    BoxWithConstraints(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+    ) {
+        val chartSize = min(maxWidth, maxHeight)
+
+        // Scaling stroke width between 16dp and 40dp based on available size
+        val strokeWidth = (chartSize * 0.15f).coerceIn(16.dp, 40.dp)
+
+        PieChart(
+            data = items.mapNotNull { item ->
+                if (item.enable) {
+                    Pie(
+                        label = item.label,
+                        data = item.data,
+                        color = item.color,
+                        selectedColor = item.selectedColor,
+                        selected = item.selected
+                    )
+                } else {
+                    null
+                }
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(0.4f)
+            onPieClick = { pie ->
+                onItemClick(items[items.indexOf(items.find { it.label == pie.label })])
+            },
+            selectedScale = 1.1f,
+            scaleAnimEnterSpec = spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow
+            ),
+            colorAnimEnterSpec = tween(300),
+            colorAnimExitSpec = tween(300),
+            scaleAnimExitSpec = tween(300),
+            spaceDegreeAnimExitSpec = tween(300),
+            spaceDegree = 4f,
+            selectedPaddingDegree = 4f,
+            labelHelperProperties = LabelHelperProperties(enabled = false),
+            style = Pie.Style.Stroke(width = strokeWidth),
+            modifier = Modifier.size(chartSize),
         )
+
+        // Heuristic for font size: base size is ~10% of chart diameter
+        val baseFontSize = chartSize.value * 0.1f
+
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+           // modifier = Modifier.padding(strokeWidth)
+        ) {
+            Text(
+                text = stringResource(R.string.chart_total_title),
+                style = MaterialTheme.typography.labelMedium,
+                fontSize = (baseFontSize * 0.7f).sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+
+            Text(
+                text = formatCurrency(
+                    items.sumOf { it.data }, currencyCode
+                ),
+                style = MaterialTheme.typography.titleMediumEmphasized,
+                fontSize = baseFontSize.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        }
     }
 }
 
