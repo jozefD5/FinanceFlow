@@ -1,29 +1,24 @@
 package com.jd.financeflow.features.finance.presentation.charts.components
 
-import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -51,6 +46,7 @@ import com.jd.financeflow.features.finance.presentation.home.components.LinearPr
  * @param modifier Modifier
  * @param currencyCode currency code, e.g. "EUR" for Euro
  */
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 fun FinancePieChart(
     title: String,
@@ -59,10 +55,6 @@ fun FinancePieChart(
     modifier: Modifier = Modifier,
     currencyCode: String = "EUR",
 ) {
-    val configuration = LocalConfiguration.current
-    val isWideScreen =
-        (LocalWindowInfo.current.containerSize.width > 600) || (configuration.orientation == ORIENTATION_LANDSCAPE)
-
     Column(modifier = modifier) {
         Text(
             text = title,
@@ -71,54 +63,28 @@ fun FinancePieChart(
             modifier = Modifier.padding(bottom = dimensionResource(R.dimen.padding_small))
         )
 
-        if (isWideScreen) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(24.dp)
-            ) {
-                PieChartSection(
-                    items = items,
-                    onItemClick = onItemClick,
-                    currencyCode = currencyCode,
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(300.dp)
-                )
-                LinearProgressWidgetList(
-                    items = items.map { item ->
-                        item.toFinancialProportionBarData(
-                            total = items.sumOf { it.data },
-                            currencyCode = currencyCode
-                        )
-                    },
-                    modifier = Modifier.weight(1.2f)
-                )
-            }
-        } else {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                PieChartSection(
-                    items = items,
-                    onItemClick = onItemClick,
-                    currencyCode = currencyCode,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(300.dp)
-                )
-                LinearProgressWidgetList(
-                    items = items.map { item ->
-                        item.toFinancialProportionBarData(
-                            total = items.sumOf { it.data },
-                            currencyCode = currencyCode
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            PieChartSection(
+                items = items,
+                onItemClick = onItemClick,
+                currencyCode = currencyCode,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 250.dp)
+            )
+            LinearProgressWidgetList(
+                items = items.map { item ->
+                    item.toFinancialProportionBarData(
+                        total = items.sumOf { it.data },
+                        currencyCode = currencyCode
+                    )
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }
@@ -177,7 +143,7 @@ private fun PieChartSection(
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
-           // modifier = Modifier.padding(strokeWidth)
+            // modifier = Modifier.padding(strokeWidth)
         ) {
             Text(
                 text = stringResource(R.string.chart_total_title),

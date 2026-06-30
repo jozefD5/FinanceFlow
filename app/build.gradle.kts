@@ -63,6 +63,7 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     implementation(libs.kotlinx.date.time)
+    implementation(libs.androidx.compose.material3.window.size)
 
     // Navigation 3
     implementation(libs.androidx.navigation3.ui)

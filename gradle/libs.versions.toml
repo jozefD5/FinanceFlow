@@ -49,6 +49,7 @@ androidx-compose-material3-expressive = {module = "androidx.compose.material3:ma
 androidx-compose-material-icons = { module = "androidx.compose.material:material-icons-core", version.ref = "material-icons"}
 androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "material-icons-extended"}
 androidx-compose-ui-text = { module = "androidx.compose.ui:ui-text-google-fonts", version.ref = "google-fonts" }
+androidx-compose-material3-window-size = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "material3AdaptiveNav3" }
 
 # Navigation 3
 # Core Navigation 3 libraries

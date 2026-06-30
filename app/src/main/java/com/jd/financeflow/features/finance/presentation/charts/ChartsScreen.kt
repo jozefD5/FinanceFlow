@@ -1,5 +1,6 @@
 package com.jd.financeflow.features.finance.presentation.charts
 
+import androidx.compose.foundation.layout.Column
 import java.time.LocalDate
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -10,8 +11,8 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -64,9 +65,8 @@ fun ChartsView(
     onAction: (ChartsActions) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    PullToRefreshBox(
-        isRefreshing = state.isLoading,
-        onRefresh = { onAction(ChartsActions.OnRefresh) },
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
             .fillMaxSize()
             .padding(horizontal = dimensionResource(R.dimen.chart_padding_medium))

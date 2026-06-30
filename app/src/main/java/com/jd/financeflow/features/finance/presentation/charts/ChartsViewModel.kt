@@ -42,8 +42,6 @@ class ChartsViewModel(
             is ChartsActions.OnClearError -> {
                 _state.update { it.copy(error = null) }
             }
-
-            is ChartsActions.OnRefresh -> {}
         }
     }
 
