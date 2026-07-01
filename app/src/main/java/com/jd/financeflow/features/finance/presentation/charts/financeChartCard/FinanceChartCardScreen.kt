@@ -28,14 +28,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jd.financeflow.R
 import com.jd.financeflow.features.core.presentation.UiText
 import com.jd.financeflow.features.core.presentation.components.formatCurrency
+import com.jd.financeflow.features.finance.domain.models.FinanceInterval
 import com.jd.financeflow.features.finance.domain.models.chart.LineChartData
 import com.jd.financeflow.features.finance.domain.models.chart.PieChartData
 import com.jd.financeflow.features.finance.presentation.charts.components.FinanceLineChart
 import com.jd.financeflow.features.finance.presentation.charts.components.FinancePieChart
 
 
-// Monthly finance line chart labels
-private val lineLabels = listOf("1", "15", "31")
+// Line chart labels
+private val monthlyLineLabels = listOf("1", "15", "31")
+private val annualLineLabels = listOf("1", "6", "12")
 
 // Colors for Income
 private val incomeChartColors = listOf(
@@ -77,8 +79,9 @@ fun FinanceChartCard(
     val state = viewModel.state.collectAsStateWithLifecycle()
 
     FinanceChartCardView(
-        state = state.value,
         title = title,
+        state = state.value,
+        interval = viewModel.interval,
         modifier = modifier
     )
 }
@@ -88,18 +91,19 @@ fun FinanceChartCard(
  *
  * @param title Title
  * @param state Finance chart card state
+ * @param interval Interval of the chart
  * @param modifier Modifier
+ * @param verticalScrollState Vertical scroll state
  */
 @Composable
 fun FinanceChartCardView(
     title: String,
     state: FinanceChartCardState,
+    interval: FinanceInterval,
     modifier: Modifier = Modifier,
     verticalScrollState: ScrollState = rememberScrollState()
 ) {
-    Column(
-        modifier = modifier.verticalScroll(verticalScrollState)
-    ) {
+    Column(modifier = modifier.verticalScroll(verticalScrollState)) {
         Text(
             text = title,
             style = MaterialTheme.typography.headlineSmall,
@@ -127,8 +131,7 @@ fun FinanceChartCardView(
                 Text(
                     text = formatCurrency(state.balance, state.currencyCode),
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = MaterialTheme.colorScheme.primary
+                    fontWeight = FontWeight.ExtraBold
                 )
             }
         }
@@ -159,7 +162,7 @@ fun FinanceChartCardView(
                         values = state.expenseTransactions,
                     ),
                 ),
-                labels = lineLabels,
+                labels = if (interval == FinanceInterval.Monthly) monthlyLineLabels else annualLineLabels,
                 currencyCode = state.currencyCode,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -223,6 +226,7 @@ fun FinanceChartCardViewPreview() {
                 .padding(8.dp)
         ) { innerPadding ->
             FinanceChartCardView(
+                title = "Jan 2026",
                 state = FinanceChartCardState(
                     balance = 100.0,
                     dataAvailable = true,
@@ -235,7 +239,7 @@ fun FinanceChartCardViewPreview() {
                         Pair(UiText.DynamicString("Other"), 100.0),
                     )
                 ),
-                title = "Jan 2026",
+                interval = FinanceInterval.Monthly,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(innerPadding)

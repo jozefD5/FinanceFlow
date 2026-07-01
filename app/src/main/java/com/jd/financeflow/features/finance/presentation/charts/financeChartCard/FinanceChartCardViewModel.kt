@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlin.collections.component1
+import kotlin.collections.component2
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,23 +22,26 @@ import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.finance.domain.FinanceRepository
 import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
+import com.jd.financeflow.features.finance.domain.models.FinanceInterval
 import com.jd.financeflow.features.finance.domain.models.FinanceType
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
 import com.jd.financeflow.features.finance.presentation.components.monthlyCashFlow
 import com.jd.financeflow.features.finance.presentation.components.toUiText
 import com.jd.financeflow.features.finance.presentation.components.totalByCategoryRange
 
+
 /**
  * Finance chart card view model
  *
  * @param repository Finance repository
  * @param startTimeMs Start time in milliseconds
+ * @param interval Interval of the chart
  * @param currencyCode Currency code, e.g. "EUR" for Euro
  */
 class FinanceChartCardViewModel(
     private val repository: FinanceRepository,
     private val startTimeMs: Long,
-    // private val interval - TODO, this will allow to switch between weekly, 6month and annual
+    val interval: FinanceInterval,
     private val currencyCode: String = "EUR",
 ) : ViewModel() {
     private val _state = MutableStateFlow(FinanceChartCardState(currencyCode = currencyCode))
@@ -71,7 +76,17 @@ class FinanceChartCardViewModel(
     /**
      * Refresh chart data with latest finance data
      */
-    private fun refreshChart() = viewModelScope.launch {
+    private fun refreshChart() {
+        when (interval) {
+            FinanceInterval.Monthly -> calculateMonthlyInterval()
+            else -> {}
+        }
+    }
+
+    /**
+     * Calculate monthly interval data
+     */
+    private fun calculateMonthlyInterval() = viewModelScope.launch {
         _state.update { it.copy(isLoading = true) }
 
         // Get latest finance list from repository and split it into income and expense

@@ -10,4 +10,6 @@ data class ChartsState(
     val isLoading: Boolean = false,
     val error: UiText? = null,
     val currencyCode: String = "EUR",
+
+    val selectedIntervalIndex: Int = 0,
 )

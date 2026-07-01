@@ -12,6 +12,7 @@ import com.jd.financeflow.features.finance.data.localStorageDataSource.LocalStor
 import com.jd.financeflow.features.finance.data.repository.FinanceRepositoryImpl
 import com.jd.financeflow.features.finance.domain.FinanceRepository
 import com.jd.financeflow.features.finance.domain.models.FilterConfiguration
+import com.jd.financeflow.features.finance.domain.models.FinanceInterval
 import com.jd.financeflow.features.finance.presentation.charts.ChartsViewModel
 import com.jd.financeflow.features.finance.presentation.charts.financeChartCard.FinanceChartCardViewModel
 import com.jd.financeflow.features.finance.presentation.financeDetails.FinanceDetailsViewModel
@@ -62,13 +63,14 @@ val appModule = module {
     }
 
     viewModel { (currencyCode: String) ->
-        ChartsViewModel(currencyCode = currencyCode,)
+        ChartsViewModel(currencyCode = currencyCode)
     }
 
-    viewModel { (startTimeMs: Long, currencyCode: String) ->
+    viewModel { (startTimeMs: Long, interval: FinanceInterval, currencyCode: String) ->
         FinanceChartCardViewModel(
             repository = get(),
             startTimeMs = startTimeMs,
+            interval = interval,
             currencyCode = currencyCode
         )
     }

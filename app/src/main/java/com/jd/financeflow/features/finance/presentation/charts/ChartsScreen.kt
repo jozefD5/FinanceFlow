@@ -1,27 +1,34 @@
 package com.jd.financeflow.features.finance.presentation.charts
 
-import androidx.compose.foundation.layout.Column
 import java.time.LocalDate
-import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.time.ZoneOffset
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 import com.jd.financeflow.R
+import com.jd.financeflow.features.finance.domain.models.FinanceInterval
 import com.jd.financeflow.features.finance.presentation.charts.financeChartCard.FinanceChartCard
+import org.koin.core.parameter.parametersOf
 
 
 /**
@@ -65,46 +72,80 @@ fun ChartsView(
     onAction: (ChartsActions) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val intervalOptions = listOf(
+        "Monthly",
+        "Annual"
+    )
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
             .fillMaxSize()
             .padding(horizontal = dimensionResource(R.dimen.chart_padding_medium))
     ) {
-        val pagerState = rememberPagerState(
-            initialPage = initialPage,
-            pageCount = { totalMonths }
-        )
 
-        HorizontalPager(
-            state = pagerState,
-            key = { page -> page },
-            modifier = Modifier.fillMaxSize()
-        ) { page ->
-            // Calculate the offset relative to our middle starting point.
-            val monthOffset = page - initialPage
-            val targetMonth = baseDate.plusMonths(monthOffset.toLong())
-
-            // Convert LocalDate to Epoch Milliseconds (UTC)
-            val epochMillis =
-                targetMonth.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli()
-
-            FinanceChartCard(
-                title = targetMonth.format(monthFormatter),
-                viewModel = koinViewModel(
-                    key = targetMonth.toString(),
-                    parameters = {
-                        parametersOf(
-                            epochMillis,
-                            state.currencyCode
-                        )
-                    }
-                ),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(dimensionResource(R.dimen.padding_medium))
-            )
+        SingleChoiceSegmentedButtonRow(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            intervalOptions.forEachIndexed { index, string ->
+                SegmentedButton(
+                    shape = SegmentedButtonDefaults.itemShape(
+                        index = index,
+                        count = intervalOptions.size
+                    ),
+                    selected = state.selectedIntervalIndex == index,
+                    onClick = { onAction(ChartsActions.OnTabSelected(index)) },
+                    label = { Text(string) }
+                )
+            }
         }
+
+        when (state.selectedIntervalIndex) {
+            0 -> {
+                val monthlyPagerState = rememberPagerState(
+                    initialPage = initialPage,
+                    pageCount = { totalMonths }
+                )
+
+                HorizontalPager(
+                    state = monthlyPagerState,
+                    key = { page -> page },
+                    pageSpacing = 2.dp,
+                    modifier = Modifier.fillMaxSize()
+                ) { page ->
+                    // Calculate the offset relative to our middle starting point.
+                    val monthOffset = page - initialPage
+                    val targetMonth = baseDate.plusMonths(monthOffset.toLong())
+
+                    // Convert LocalDate to Epoch Milliseconds (UTC)
+                    val epochMillis =
+                        targetMonth.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli()
+
+                    FinanceChartCard(
+                        title = targetMonth.format(monthFormatter),
+                        viewModel = koinViewModel(
+                            key = targetMonth.toString(),
+                            parameters = {
+                                parametersOf(
+                                    epochMillis,
+                                    FinanceInterval.Monthly,
+                                    state.currencyCode
+                                )
+                            }
+                        ),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(dimensionResource(R.dimen.padding_medium))
+                    )
+                }
+            }
+
+            1 -> {
+                Text("COMPONENT")
+            }
+        }
+
+
     }
 }
 
