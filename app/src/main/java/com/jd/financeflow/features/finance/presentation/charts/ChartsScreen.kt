@@ -24,11 +24,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 import com.jd.financeflow.R
 import com.jd.financeflow.features.finance.domain.models.FinanceInterval
 import com.jd.financeflow.features.finance.presentation.charts.financeChartCard.FinanceChartCard
-import org.koin.core.parameter.parametersOf
 
 
 /**
@@ -47,9 +47,10 @@ fun ChartsScreen(
     ChartsView(
         state = state.value,
         initialPage = viewModel.initialPage,
-        totalMonths = viewModel.totalMonths,
+        totalPages = viewModel.totalPages,
         baseDate = viewModel.baseData,
         monthFormatter = viewModel.monthFormatter,
+        yearFormatter = viewModel.yearFormatter,
         onAction = viewModel::onAction,
         modifier = modifier
     )
@@ -60,15 +61,21 @@ fun ChartsScreen(
  *
  * @param state View state
  * @param onAction Action handler
+ * @param initialPage Initial page to start with
+ * @param totalPages Total number of pages to display
+ * @param baseDate Base date to start with (e.g. 1st of the current month)
+ * @param monthFormatter Month formatter to use for displaying dates as title
+ * @param yearFormatter Year formatter to use for displaying dates as title
  * @param modifier Modifier
  */
 @Composable
 fun ChartsView(
     state: ChartsState,
     initialPage: Int,
-    totalMonths: Int,
+    totalPages: Int,
     baseDate: LocalDate,
     monthFormatter: DateTimeFormatter,
+    yearFormatter: DateTimeFormatter,
     onAction: (ChartsActions) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -83,7 +90,6 @@ fun ChartsView(
             .fillMaxSize()
             .padding(horizontal = dimensionResource(R.dimen.chart_padding_medium))
     ) {
-
         SingleChoiceSegmentedButtonRow(
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -101,10 +107,11 @@ fun ChartsView(
         }
 
         when (state.selectedIntervalIndex) {
+            // Monthly intervals
             0 -> {
                 val monthlyPagerState = rememberPagerState(
                     initialPage = initialPage,
-                    pageCount = { totalMonths }
+                    pageCount = { totalPages }
                 )
 
                 HorizontalPager(
@@ -124,7 +131,7 @@ fun ChartsView(
                     FinanceChartCard(
                         title = targetMonth.format(monthFormatter),
                         viewModel = koinViewModel(
-                            key = targetMonth.toString(),
+                            key = "monthly_${targetMonth}",
                             parameters = {
                                 parametersOf(
                                     epochMillis,
@@ -140,12 +147,45 @@ fun ChartsView(
                 }
             }
 
+            // Annual intervals
             1 -> {
-                Text("COMPONENT")
+                val annualPagerState = rememberPagerState(
+                    initialPage = initialPage,
+                    pageCount = { totalPages }
+                )
+
+                HorizontalPager(
+                    state = annualPagerState,
+                    key = { page -> page },
+                    pageSpacing = 2.dp,
+                    modifier = Modifier.fillMaxSize()
+                ) { page ->
+                    val yearOffset = page - initialPage
+                    // Ensure we are looking at the start of the year for annual view
+                    val targetYear = baseDate.plusYears(yearOffset.toLong()).withDayOfYear(1)
+
+                    val epochMillis =
+                        targetYear.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli()
+
+                    FinanceChartCard(
+                        title = targetYear.format(yearFormatter),
+                        viewModel = koinViewModel(
+                            key = "annual_${targetYear.year}",
+                            parameters = {
+                                parametersOf(
+                                    epochMillis,
+                                    FinanceInterval.Annually,
+                                    state.currencyCode
+                                )
+                            }
+                        ),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(dimensionResource(R.dimen.padding_medium))
+                    )
+                }
             }
         }
-
-
     }
 }
 
@@ -157,9 +197,10 @@ fun ChartsViewPreview() {
             ChartsView(
                 state = ChartsState(),
                 initialPage = 0,
-                totalMonths = 120,
+                totalPages = 120,
                 baseDate = LocalDate.now(),
                 monthFormatter = DateTimeFormatter.ofPattern("MMM yyyy"),
+                yearFormatter = DateTimeFormatter.ofPattern("yyyy"),
                 onAction = {},
                 modifier = Modifier.padding(innerPadding)
             )

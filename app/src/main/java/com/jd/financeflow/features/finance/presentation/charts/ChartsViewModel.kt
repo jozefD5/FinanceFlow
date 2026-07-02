@@ -13,19 +13,20 @@ import androidx.lifecycle.ViewModel
 /**
  * Finance charts view model
  *
- * @param totalMonths Total number of months to display
+ * @param totalPages Total number of pages to display
  * @param currencyCode Currency code, e.g. "EUR" for Euro
  */
 class ChartsViewModel(
-    val totalMonths: Int = 120,
+    val totalPages: Int = 120,
     private val currencyCode: String = "EUR",
 ) : ViewModel() {
     // Calculate the initial page based on the current month
-    val initialPage: Int = totalMonths / 2
+    val initialPage: Int = totalPages / 2
 
     // Force the base date to always be the 1st of the current month
     val baseData: LocalDate = LocalDate.now().withDayOfMonth(1)
     val monthFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM yyyy")
+    val yearFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy")
 
     // Main UI state
     private val _state = MutableStateFlow(

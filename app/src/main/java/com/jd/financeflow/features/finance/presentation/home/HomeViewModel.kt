@@ -16,7 +16,7 @@ import com.jd.financeflow.features.core.domain.Result
 import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.finance.domain.FinanceRepository
 import com.jd.financeflow.features.finance.domain.models.FinanceType
-import com.jd.financeflow.features.finance.presentation.components.annualTotalByCategory
+import com.jd.financeflow.features.finance.presentation.components.annualTotalByCategoryRange
 
 
 /**
@@ -83,9 +83,9 @@ class HomeViewModel(
 
         // Annual total by category
         val incomeCategoryTotalDeferred =
-            async(Dispatchers.Default) { annualTotalByCategory(incomes) }
+            async(Dispatchers.Default) { annualTotalByCategoryRange(incomes) }
         val expenseCategoryTotalDeferred =
-            async(Dispatchers.Default) { annualTotalByCategory(expenses) }
+            async(Dispatchers.Default) { annualTotalByCategoryRange(expenses) }
 
         // Categories
         val totalIncome = incomeCategoryTotalDeferred

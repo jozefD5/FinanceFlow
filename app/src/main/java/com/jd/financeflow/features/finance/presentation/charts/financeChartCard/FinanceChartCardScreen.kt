@@ -81,7 +81,7 @@ fun FinanceChartCard(
     FinanceChartCardView(
         title = title,
         state = state.value,
-        interval = viewModel.interval,
+        interval = viewModel.chartInterval,
         modifier = modifier
     )
 }

@@ -25,9 +25,10 @@ import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceInterval
 import com.jd.financeflow.features.finance.domain.models.FinanceType
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
+import com.jd.financeflow.features.finance.presentation.components.annualCashFlow
 import com.jd.financeflow.features.finance.presentation.components.monthlyCashFlow
 import com.jd.financeflow.features.finance.presentation.components.toUiText
-import com.jd.financeflow.features.finance.presentation.components.totalByCategoryRange
+import com.jd.financeflow.features.finance.presentation.components.monthlyTotalByCategoryRange
 
 
 /**
@@ -41,7 +42,7 @@ import com.jd.financeflow.features.finance.presentation.components.totalByCatego
 class FinanceChartCardViewModel(
     private val repository: FinanceRepository,
     private val startTimeMs: Long,
-    val interval: FinanceInterval,
+    private val interval: FinanceInterval,
     private val currencyCode: String = "EUR",
 ) : ViewModel() {
     private val _state = MutableStateFlow(FinanceChartCardState(currencyCode = currencyCode))
@@ -55,6 +56,8 @@ class FinanceChartCardViewModel(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = _state.value
         )
+
+    val chartInterval = interval
 
     /**
      * On action handler
@@ -79,6 +82,7 @@ class FinanceChartCardViewModel(
     private fun refreshChart() {
         when (interval) {
             FinanceInterval.Monthly -> calculateMonthlyInterval()
+            FinanceInterval.Annually -> calculateAnnualInterval()
             else -> {}
         }
     }
@@ -125,20 +129,19 @@ class FinanceChartCardViewModel(
             )
         }
         val incomeCategoryDiffered = async(Dispatchers.Default) {
-            totalByCategoryRange(
+            monthlyTotalByCategoryRange(
                 items = incomes,
                 year = year,
                 month = month
             )
         }
         val expenseCategoryDiffered = async(Dispatchers.Default) {
-            totalByCategoryRange(
+            monthlyTotalByCategoryRange(
                 items = expenses,
                 year = year,
                 month = month
             )
         }
-
 
         // Get final values and calculate total
         val income = incomeDiffered.await()
@@ -194,5 +197,53 @@ class FinanceChartCardViewModel(
                 expenseCategories = expenseCategories
             )
         }
+    }
+
+    /**
+     * Calculate annual interval data
+     */
+    private fun calculateAnnualInterval() = viewModelScope.launch {
+        // Get latest finance list from repository and split it into income and expense
+        val finances = when (val result = repository.getFinances()) {
+            is Result.Success -> result.data
+            is Result.Error -> {
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        error = result.error.toUiText()
+                    )
+                }
+                return@launch
+            }
+        }
+        val (incomes, expenses) = finances.partition { it.category.type == FinanceType.INCOME }
+
+        // Convert start time to year and month
+        val zonedDateTime = Instant.ofEpochMilli(startTimeMs).atZone(ZoneId.systemDefault())
+        val year = zonedDateTime.year
+
+        // Calculate cash flow asynchronously
+        val incomeCashFlowDiffered = async(Dispatchers.Default) {
+            annualCashFlow(incomes, year)
+        }
+        val expenseCashFlowDiffered = async(Dispatchers.Default) {
+            annualCashFlow(expenses, year)
+        }
+
+        val income = incomeCashFlowDiffered.await()
+        val expense = expenseCashFlowDiffered.await()
+        val balance = income.sum() - expense.sum()
+
+        _state.update {
+            it.copy(
+                isLoading = false,
+                dataAvailable = income.sum() > 0 || expense.sum() > 0,
+                balance = balance,
+                incomeTransactions = income,
+                expenseTransactions = expense
+            )
+        }
+
+
     }
 }
