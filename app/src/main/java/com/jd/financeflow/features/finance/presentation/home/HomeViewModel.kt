@@ -1,5 +1,7 @@
 package com.jd.financeflow.features.finance.presentation.home
 
+import java.time.LocalDate
+
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
@@ -16,7 +18,7 @@ import com.jd.financeflow.features.core.domain.Result
 import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.finance.domain.FinanceRepository
 import com.jd.financeflow.features.finance.domain.models.FinanceType
-import com.jd.financeflow.features.finance.presentation.components.annualTotalByCategoryRange
+import com.jd.financeflow.features.finance.presentation.components.annualCashFlow
 
 
 /**
@@ -65,6 +67,7 @@ class HomeViewModel(
     private fun refresh() = viewModelScope.launch {
         _state.update { it.copy(isLoading = true) }
 
+        val year = LocalDate.now().year
         val finances = when (val result = repository.getFinances()) {
             is Result.Success -> result.data
             is Result.Error -> {
@@ -83,18 +86,13 @@ class HomeViewModel(
 
         // Annual total by category
         val incomeCategoryTotalDeferred =
-            async(Dispatchers.Default) { annualTotalByCategoryRange(incomes) }
+            async(Dispatchers.Default) { annualCashFlow(incomes, year) }
         val expenseCategoryTotalDeferred =
-            async(Dispatchers.Default) { annualTotalByCategoryRange(expenses) }
+            async(Dispatchers.Default) { annualCashFlow(expenses, year) }
 
         // Categories
-        val totalIncome = incomeCategoryTotalDeferred
-            .await()
-            .values.sum()
-
-        val totalExpense = expenseCategoryTotalDeferred
-            .await()
-            .values.sum()
+        val totalIncome = incomeCategoryTotalDeferred.await().sum()
+        val totalExpense = expenseCategoryTotalDeferred.await().sum()
 
         // Update state
         _state.update {

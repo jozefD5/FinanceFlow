@@ -141,7 +141,7 @@ fun FinanceListView(
                             )
                         )
                         Text(
-                            text = stringResource(R.string.filter_balance_label),
+                            text = stringResource(R.string.finance_balance_label),
                             style = MaterialTheme.typography.bodySmall,
                             modifier = Modifier.padding(
                                 horizontal = dimensionResource(R.dimen.padding_large),

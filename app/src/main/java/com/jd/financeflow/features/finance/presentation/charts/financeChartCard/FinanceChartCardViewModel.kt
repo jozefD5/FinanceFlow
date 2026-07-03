@@ -26,6 +26,7 @@ import com.jd.financeflow.features.finance.domain.models.FinanceInterval
 import com.jd.financeflow.features.finance.domain.models.FinanceType
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
 import com.jd.financeflow.features.finance.presentation.components.annualCashFlow
+import com.jd.financeflow.features.finance.presentation.components.annualTotalByCategory
 import com.jd.financeflow.features.finance.presentation.components.monthlyCashFlow
 import com.jd.financeflow.features.finance.presentation.components.toUiText
 import com.jd.financeflow.features.finance.presentation.components.monthlyTotalByCategoryRange
@@ -46,7 +47,6 @@ class FinanceChartCardViewModel(
     private val currencyCode: String = "EUR",
 ) : ViewModel() {
     private val _state = MutableStateFlow(FinanceChartCardState(currencyCode = currencyCode))
-
     val state = _state
         .onStart {
             refreshChart()
@@ -184,15 +184,13 @@ class FinanceChartCardViewModel(
                 )
             }
 
-        val dataAvailable = income.sum() > 0 || expense.sum() > 0
-
         _state.update {
             it.copy(
                 isLoading = false,
-                dataAvailable = dataAvailable,
+                dataAvailable = income.sum() > 0 || expense.sum() > 0,
+                balance = finalBalance,
                 incomeTransactions = income,
                 expenseTransactions = expense,
-                balance = finalBalance,
                 incomeCategories = incomeCategories,
                 expenseCategories = expenseCategories
             )
@@ -222,17 +220,61 @@ class FinanceChartCardViewModel(
         val zonedDateTime = Instant.ofEpochMilli(startTimeMs).atZone(ZoneId.systemDefault())
         val year = zonedDateTime.year
 
-        // Calculate cash flow asynchronously
-        val incomeCashFlowDiffered = async(Dispatchers.Default) {
+        // Calculate key values asynchronously
+        val incomeDiffered = async(Dispatchers.Default) {
             annualCashFlow(incomes, year)
         }
-        val expenseCashFlowDiffered = async(Dispatchers.Default) {
+        val expenseDiffered = async(Dispatchers.Default) {
             annualCashFlow(expenses, year)
         }
+        val incomeCategoryDiffered = async(Dispatchers.Default) {
+            annualTotalByCategory(incomes, year)
+        }
+        val expenseCategoryDiffered = async(Dispatchers.Default) {
+            annualTotalByCategory(expenses, year)
+        }
 
-        val income = incomeCashFlowDiffered.await()
-        val expense = expenseCashFlowDiffered.await()
+        // Get final values and calculate total
+        val income = incomeDiffered.await()
+        val expense = expenseDiffered.await()
         val balance = income.sum() - expense.sum()
+
+        val incomeCategories = incomeCategoryDiffered
+            .await()
+            .map { (order, amount) ->
+                val category = when (order) {
+                    IncomeCategory.Salary.ordinal -> IncomeCategory.Salary
+                    IncomeCategory.Bonus.ordinal -> IncomeCategory.Bonus
+                    IncomeCategory.Commission.ordinal -> IncomeCategory.Commission
+                    IncomeCategory.Benefit.ordinal -> IncomeCategory.Benefit
+                    IncomeCategory.Investment.ordinal -> IncomeCategory.Investment
+                    else -> IncomeCategory.Other
+                }
+                Pair(
+                    FinanceCategory.Income(category).toUiText(),
+                    amount
+                )
+            }
+
+        val expenseCategories = expenseCategoryDiffered
+            .await()
+            .map { (order, amount) ->
+                val category = when (order) {
+                    ExpenseCategory.Housing.ordinal -> ExpenseCategory.Housing
+                    ExpenseCategory.Utility.ordinal -> ExpenseCategory.Utility
+                    ExpenseCategory.Food.ordinal -> ExpenseCategory.Food
+                    ExpenseCategory.Transport.ordinal -> ExpenseCategory.Transport
+                    ExpenseCategory.Health.ordinal -> ExpenseCategory.Health
+                    ExpenseCategory.Education.ordinal -> ExpenseCategory.Education
+                    ExpenseCategory.Entertainment.ordinal -> ExpenseCategory.Entertainment
+                    else -> ExpenseCategory.Other
+                }
+                Pair(
+                    FinanceCategory.Expense(category).toUiText(),
+                    amount
+                )
+            }
+
 
         _state.update {
             it.copy(
@@ -240,10 +282,10 @@ class FinanceChartCardViewModel(
                 dataAvailable = income.sum() > 0 || expense.sum() > 0,
                 balance = balance,
                 incomeTransactions = income,
-                expenseTransactions = expense
+                expenseTransactions = expense,
+                incomeCategories = incomeCategories,
+                expenseCategories = expenseCategories
             )
         }
-
-
     }
 }

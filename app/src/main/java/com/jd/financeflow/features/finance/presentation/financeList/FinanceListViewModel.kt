@@ -1,5 +1,7 @@
 package com.jd.financeflow.features.finance.presentation.financeList
 
+import java.time.LocalDate
+
 import kotlinx.coroutines.async
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.StateFlow
@@ -35,11 +37,18 @@ import com.jd.financeflow.features.finance.domain.models.Finance
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceType
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
-import com.jd.financeflow.features.finance.presentation.components.calculateAnnualAmount
+import com.jd.financeflow.features.finance.presentation.components.annualCashFlow
 
 
 private const val TAG = "FinanceListViewModel"
 
+/**
+ * Finance list view model.
+ *
+ * @param repository Finance repository
+ * @param currencyCode Currency code, e.g. "EUR" for Euro
+ * @param filterConfiguration Filter configuration
+ */
 class FinanceListViewModel(
     private val repository: FinanceRepository,
     private val currencyCode: String,
@@ -346,10 +355,5 @@ class FinanceListViewModel(
      * @return the balance of the finances
      */
     private suspend fun calculateBalance(finances: List<Finance>): Double =
-        withContext(Dispatchers.Default) {
-            finances.sumOf { item ->
-                val annualAmount = calculateAnnualAmount(item)
-                if (item.category.type == FinanceType.INCOME) annualAmount else -annualAmount
-            }
-        }
+        annualCashFlow(items = finances, year = LocalDate.now().year).sum()
 }

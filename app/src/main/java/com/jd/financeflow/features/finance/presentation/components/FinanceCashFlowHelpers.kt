@@ -1,8 +1,8 @@
 package com.jd.financeflow.features.finance.presentation.components
 
-import java.time.LocalDate
 import java.time.YearMonth
 import java.time.ZoneId
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -16,6 +16,7 @@ import com.jd.financeflow.features.finance.domain.models.FinanceInterval
  * Calculate monthly cash flow for a given list of finances for a specific month and year.
  *
  * Note, method is expecting data to be grouped by finance type before use, income or expense.
+ *
  * @param items list of finances, e.g. income or expense
  * @param year the year
  * @param month the month (1-12)
@@ -32,7 +33,8 @@ fun monthlyCashFlow(
 
     val zoneId = ZoneId.systemDefault()
     val monthStartMs = yearMonth.atDay(1).atStartOfDay(zoneId).toInstant().toEpochMilli()
-    val nextMonthStartMs = yearMonth.plusMonths(1).atDay(1).atStartOfDay(zoneId).toInstant().toEpochMilli()
+    val nextMonthStartMs =
+        yearMonth.plusMonths(1).atDay(1).atStartOfDay(zoneId).toInstant().toEpochMilli()
 
     for (item in items) {
         if (item.timeStampMs >= nextMonthStartMs) continue
@@ -61,7 +63,8 @@ fun monthlyCashFlow(
             FinanceInterval.Weekly -> {
                 val targetDayOfWeek = itemDate.dayOfWeek
                 val firstDayOfMonth = yearMonth.atDay(1)
-                val firstOccurrenceOffset = (targetDayOfWeek.value - firstDayOfMonth.dayOfWeek.value + 7) % 7
+                val firstOccurrenceOffset =
+                    (targetDayOfWeek.value - firstDayOfMonth.dayOfWeek.value + 7) % 7
 
                 var dayIdx = firstOccurrenceOffset
                 while (dayIdx < daysInMonth) {
@@ -79,21 +82,21 @@ fun monthlyCashFlow(
             }
 
             FinanceInterval.Quarterly -> {
-                if ((month - itemMonth) % 3 == 0) {
+                if (Math.floorMod(month - itemMonth, 3) == 0) {
                     val dayToApply = minOf(itemDay, daysInMonth)
                     result[dayToApply - 1] += amount
                 }
             }
 
             FinanceInterval.SemiAnnually -> {
-                if ((month - itemMonth) % 6 == 0) {
+                if (Math.floorMod(month - itemMonth, 6) == 0) {
                     val dayToApply = minOf(itemDay, daysInMonth)
                     result[dayToApply - 1] += amount
                 }
             }
 
             FinanceInterval.Annually -> {
-                if (month == itemMonth) {
+                if (month == itemMonth || Math.floorMod(month - itemMonth, 12) == 0) {
                     val dayToApply = minOf(itemDay, daysInMonth)
                     result[dayToApply - 1] += amount
                 }
@@ -105,6 +108,8 @@ fun monthlyCashFlow(
 
 /**
  * Calculate total amount by category for a specific month and year.
+ *
+ * Note, method is expecting data to be grouped by finance type before use, income or expense.
  *
  * @param items list of finances
  * @param year the year
@@ -135,6 +140,8 @@ fun monthlyTotalByCategoryRange(
  *
  * This function runs calculations for each month in parallel using [Dispatchers.Default].
  *
+ * Note, method is expecting data to be grouped by finance type before use, income or expense.
+ *
  * @param items list of finances
  * @param year the year
  * @return list of monthly totals (size 12)
@@ -153,8 +160,40 @@ suspend fun annualCashFlow(
     }.awaitAll()
 }
 
+/**
+ * Calculate the annual total by category for a given list of finances for a specific year.
+ *
+ * This function runs calculations for each month in parallel using [Dispatchers.Default].
+ *
+ * Note, method is expecting data to be grouped by finance type before use, income or expense.
+ *
+ * @param items list of finances
+ * @param year the year
+ * @return map of category order to total amount
+ */
+suspend fun annualTotalByCategory(
+    items: List<Finance>,
+    year: Int
+): Map<Int, Double> = withContext(Dispatchers.Default) {
+    val totals = mutableMapOf<Int, Double>()
 
+    // Get monthly category totals for each month
+    val monthlyCategoryTotal = (1..12).map { month ->
+        // Get monthly totals for this month and year
+        async {
+            monthlyTotalByCategoryRange(items = items, year = year, month = month)
+        }
+    }.awaitAll()
 
+    // Map categories to annual context
+    monthlyCategoryTotal.forEach { categoryTotals ->
+        categoryTotals.forEach { (category, amount) ->
+            totals[category] = (totals[category] ?: 0.0) + amount
+        }
+    }
+
+    return@withContext totals
+}
 
 /**
  * Helper to calculate the contribution of a finance item to a specific month.
@@ -205,57 +244,8 @@ private fun calculateContributionForMonth(
         }
 
         FinanceInterval.Monthly -> amount
-        FinanceInterval.Quarterly -> if ((month - itemMonth) % 3 == 0) amount else 0.0
-        FinanceInterval.SemiAnnually -> if ((month - itemMonth) % 6 == 0) amount else 0.0
-        FinanceInterval.Annually -> if (month == itemMonth) amount else 0.0
+        FinanceInterval.Quarterly -> if (Math.floorMod(month - itemMonth, 3) == 0) amount else 0.0
+        FinanceInterval.SemiAnnually -> if (Math.floorMod(month - itemMonth, 6) == 0) amount else 0.0
+        FinanceInterval.Annually -> if (Math.floorMod(month - itemMonth, 12) == 0) amount else 0.0
     }
-}
-
-//------------------------------------------------------------------
-
-/**
- * Calculates the total annual amount for a single finance item based on its interval and start date.
- *
- * @param item the finance item
- * @param year the year to calculate for
- * @return total annual amount
- */
-fun calculateAnnualAmount(
-    item: Finance,
-    year: Int = LocalDate.now().year
-): Double {
-    val zoneId = ZoneId.systemDefault()
-    return (1..12).sumOf { month ->
-        calculateContributionForMonth(item, year, month, zoneId)
-    }
-}
-
-/**
- * Annual total by category, grouped by finance type. Get total financial amount by category and interval.
- * Returns a map of category order to total annual amount for the specified year.
- *
- * Note, method is expecting data to be grouped by finance type before use, income or expense.
- *
- * @param items finance items used for processing
- * @param year the year to calculate for
- * @return map containing category order and total amount
- */
-fun annualTotalByCategoryRange(
-    items: List<Finance>,
-    year: Int = LocalDate.now().year
-): Map<Int, Double> {
-    val zoneId = ZoneId.systemDefault()
-    val totals = mutableMapOf<Int, Double>()
-
-    for (item in items) {
-        var itemAnnualTotal = 0.0
-        for (month in 1..12) {
-            itemAnnualTotal += calculateContributionForMonth(item, year, month, zoneId)
-        }
-        if (itemAnnualTotal != 0.0) {
-            val order = item.category.order
-            totals[order] = (totals[order] ?: 0.0) + itemAnnualTotal
-        }
-    }
-    return totals
 }

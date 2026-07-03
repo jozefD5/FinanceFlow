@@ -68,6 +68,7 @@
     <string name="delete_finance_item_title">Delete finance item?</string>
     <string name="delete_finance_item_text">Are you sure you want to delete this finance item?</string>
 
+    <string name="finance_balance_label">Current annual balance</string>
     <string name="filter_type_both_note">Select Income or Expense to filter by specific categories</string>
     <string name="filter_sort_switch_label">Sort by</string>
     <string name="filter_category_switch_label">Category</string>
@@ -76,8 +77,6 @@
     <string name="filter_max_range_label">Max</string>
     <string name="filter_reset_button_label">Reset</string>
     <string name="filter_apply_button_label">Apply filter</string>
-    <string name="filter_balance_label">Current balance</string>
-
 
     <string name="chart_total_title">Total</string>
     <string name="chart_average_value_label">Average</string>

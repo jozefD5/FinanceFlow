@@ -89,6 +89,14 @@ fun FinancePieChart(
     }
 }
 
+/**
+ * Pie chart section, contains pie chart and total value
+ *
+ * @param items Items (chart data) to display, each item represents single pie slice
+ * @param onItemClick Item click handler
+ * @param currencyCode currency code, e.g. "EUR" for Euro
+ * @param modifier Modifier
+ */
 @Composable
 private fun PieChartSection(
     items: List<PieChartData>,
@@ -165,8 +173,14 @@ private fun PieChartSection(
     }
 }
 
-
-fun PieChartData.toFinancialProportionBarData(
+/**
+ * Convert pie chart data to financial proportion bar data
+ *
+ * @param total Total of all pie chart data
+ * @param currencyCode currency code, e.g. "EUR" for Euro
+ * @return Financial proportion bar data
+ */
+private fun PieChartData.toFinancialProportionBarData(
     total: Double,
     currencyCode: String,
 ): FinancialProportionBarData {
