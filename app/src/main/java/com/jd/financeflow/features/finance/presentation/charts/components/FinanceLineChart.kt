@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -105,7 +106,10 @@ fun FinanceLineChart(
         ),
         labelHelperProperties = LabelHelperProperties(
             enabled = enableLabelHelperProperties,
-            textStyle = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+            textStyle = MaterialTheme.typography.labelSmall.copy(
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center
+            ),
         ),
         gridProperties = GridProperties(
             enabled = true,

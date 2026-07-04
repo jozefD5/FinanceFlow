@@ -161,8 +161,14 @@ fun FinanceChartCardView(
                         color = Color(0xFFF44336), // Standard MD Red
                         values = state.expenseTransactions,
                     ),
+                    LineChartData(
+                        label = stringResource(R.string.finance_balance_title),
+                        color = Color(0xFF2196F3), // Standard MD Blue
+                        values = state.balanceLevel,
+                    )
                 ),
                 labels = if (interval == FinanceInterval.Monthly) monthlyLineLabels else annualLineLabels,
+                enableLabelHelperProperties = true,
                 currencyCode = state.currencyCode,
                 modifier = Modifier
                     .fillMaxWidth()

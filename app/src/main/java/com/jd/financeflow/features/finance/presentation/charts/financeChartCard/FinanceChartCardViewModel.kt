@@ -148,6 +148,14 @@ class FinanceChartCardViewModel(
         val expense = expenseDiffered.await()
         val finalBalance = income.sum() - expense.sum()
 
+        var balanceRecord = 0.0
+        val balanceLevel = DoubleArray(income.size)
+        income.forEachIndexed { index, transaction ->
+            val result = (transaction + balanceRecord) - (expense.getOrNull(index) ?: 0.0)
+            balanceLevel[index] = result
+            balanceRecord = result
+        }
+
         val incomeCategories = incomeCategoryDiffered
             .await()
             .map { (order, amount) ->
@@ -191,6 +199,7 @@ class FinanceChartCardViewModel(
                 balance = finalBalance,
                 incomeTransactions = income,
                 expenseTransactions = expense,
+                balanceLevel = balanceLevel.toList(),
                 incomeCategories = incomeCategories,
                 expenseCategories = expenseCategories
             )
@@ -239,6 +248,11 @@ class FinanceChartCardViewModel(
         val expense = expenseDiffered.await()
         val balance = income.sum() - expense.sum()
 
+        val balanceLevel = DoubleArray(income.size)
+        income.forEachIndexed { index, transaction ->
+            balanceLevel[index] = transaction - (expense.getOrNull(index) ?: 0.0)
+        }
+
         val incomeCategories = incomeCategoryDiffered
             .await()
             .map { (order, amount) ->
@@ -275,7 +289,6 @@ class FinanceChartCardViewModel(
                 )
             }
 
-
         _state.update {
             it.copy(
                 isLoading = false,
@@ -283,6 +296,7 @@ class FinanceChartCardViewModel(
                 balance = balance,
                 incomeTransactions = income,
                 expenseTransactions = expense,
+                balanceLevel = balanceLevel.toList(),
                 incomeCategories = incomeCategories,
                 expenseCategories = expenseCategories
             )

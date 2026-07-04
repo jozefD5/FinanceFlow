@@ -14,6 +14,7 @@ data class FinanceChartCardState(
     val balance: Double = 0.0,
     val incomeTransactions: List<Double> = emptyList(),
     val expenseTransactions: List<Double> = emptyList(),
+    val balanceLevel: List<Double> = emptyList(),
 
     val incomeCategories: List<Pair<UiText, Double>> = emptyList(),
     val expenseCategories: List<Pair<UiText, Double>> = emptyList(),
