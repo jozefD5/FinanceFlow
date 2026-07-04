@@ -241,9 +241,7 @@ fun FinanceListView(
                     },
                     onItemLongClick = {
                         onAction(
-                            FinanceListActions.OnSelectedDeleteFinanceItem(
-                                showDialog = true, finance = it
-                            )
+                            FinanceListActions.OnSelectedDeleteFinanceItem(showDialog = true, finance = it)
                         )
                     },
                     modifier = Modifier

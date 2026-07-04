@@ -35,18 +35,18 @@ import com.jd.financeflow.features.finance.presentation.components.zonedDateTime
  * Displays a list of finances in a lazy column.
  *
  * @param finances the list of finances to display
+ * @param modifier the modifier to apply to the list
  * @param onItemClick the action to perform when an item is clicked
  * @param onItemLongClick the action to perform when an item is long clicked
- * @param modifier the modifier to apply to the list
  * @param currencyCode the currency code to use e.g. EUR for Euro or USD for US Dollar
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FinanceList(
     finances: List<Finance>,
-    onItemClick: (Finance) -> Unit,
-    onItemLongClick: (Finance) -> Unit,
     modifier: Modifier = Modifier,
+    onItemClick: ((Finance) -> Unit)? = null,
+    onItemLongClick: ((Finance) -> Unit)? = null,
     currencyCode: String = "EUR",
 ) {
     // Group and sort finances by month and year.

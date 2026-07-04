@@ -28,18 +28,18 @@ import com.jd.financeflow.features.finance.domain.models.IncomeCategory
  * Displays a finance item with the given information as list item.
  *
  * @param finance the finance item to display
+ * @param modifier the modifier to apply to the item
  * @param onClicked the action to perform when the item is clicked
  * @param onLongClicked the action to perform when the item is long clicked
- * @param modifier the modifier to apply to the item
  * @param currencyCode the currency code to use e.g. EUR for Euro or USD for US Dollar
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun FinanceListItem(
     finance: Finance,
-    onClicked: (finance: Finance) -> Unit,
-    onLongClicked: (finance: Finance) -> Unit,
     modifier: Modifier = Modifier,
+    onClicked: ((finance: Finance) -> Unit)? = null,
+    onLongClicked: ((finance: Finance) -> Unit)? = null,
     currencyCode: String = "EUR",
 ) {
     Surface(
@@ -48,8 +48,9 @@ fun FinanceListItem(
         modifier = modifier
             .clip(RoundedCornerShape(16.dp))
             .combinedClickable(
-                onClick = { onClicked(finance) },
-                onLongClick = { onLongClicked(finance) }
+                enabled = !(onClicked == null && onLongClicked == null),
+                onClick = { onClicked?.invoke(finance) },
+                onLongClick = { onLongClicked?.invoke(finance) }
             )
     ) {
         ListItem(
@@ -60,14 +61,15 @@ fun FinanceListItem(
                     style = MaterialTheme.typography.titleMediumEmphasized
                 )
             },
-            supportingContent = finance.description?.takeIf { it.isNotBlank() }?.let { description ->
-                {
-                    Text(
-                        text = description,
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-            },
+            supportingContent = finance.description?.takeIf { it.isNotBlank() }
+                ?.let { description ->
+                    {
+                        Text(
+                            text = description,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                },
             leadingContent = {
                 CircleInitialAvatar(name = finance.title)
             },

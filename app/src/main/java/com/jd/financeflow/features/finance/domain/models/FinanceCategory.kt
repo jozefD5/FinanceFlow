@@ -4,8 +4,8 @@ package com.jd.financeflow.features.finance.domain.models
  * Represents the type of transaction, either `Income` or `Expense`.
  */
 enum class FinanceType {
-    INCOME,
-    EXPENSE
+    EXPENSE,
+    INCOME
 }
 
 /**

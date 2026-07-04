@@ -172,6 +172,7 @@ class FinanceChartCardViewModel(
                     amount
                 )
             }
+            .sortedByDescending { it.second }
 
         val expenseCategories = expenseCategoryDiffered
             .await()
@@ -191,6 +192,7 @@ class FinanceChartCardViewModel(
                     amount
                 )
             }
+            .sortedByDescending { it.second }
 
         _state.update {
             it.copy(
@@ -269,6 +271,7 @@ class FinanceChartCardViewModel(
                     amount
                 )
             }
+            .sortedByDescending { it.second }
 
         val expenseCategories = expenseCategoryDiffered
             .await()
@@ -288,6 +291,7 @@ class FinanceChartCardViewModel(
                     amount
                 )
             }
+            .sortedByDescending { it.second }
 
         _state.update {
             it.copy(

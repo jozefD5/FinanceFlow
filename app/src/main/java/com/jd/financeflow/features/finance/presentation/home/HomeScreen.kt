@@ -132,8 +132,6 @@ fun HomeView(
             FinanceList(
                 finances = state.recentTransactions,
                 currencyCode = state.currencyCode,
-                onItemClick = {},
-                onItemLongClick = {},
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = dimensionResource(R.dimen.padding_medium))

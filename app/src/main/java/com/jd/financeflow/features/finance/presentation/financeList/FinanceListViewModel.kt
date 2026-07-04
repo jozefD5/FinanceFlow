@@ -218,7 +218,7 @@ class FinanceListViewModel(
                 _state.update {
                     it.copy(
                         filterConfiguration = currentConfig.copy(
-                            maxAmountLimit = cachedFilteredFinances.maxOf { item -> item.amount },
+                            maxAmountLimit = cachedFilteredFinances.maxOfOrNull { item -> item.amount } ?: 0.0,
                             miniAmountLimit = 0.0
                         )
                     )
