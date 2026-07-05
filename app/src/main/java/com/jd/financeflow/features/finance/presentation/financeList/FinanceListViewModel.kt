@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.CancellationException
 import kotlin.math.ceil
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -242,6 +243,10 @@ class FinanceListViewModel(
                 )
             }
         }.getOrElse { error ->
+            if (error is CancellationException) {
+                throw error
+            }
+
             Log.e(TAG, "Error refreshing finance list", error)
             _state.update {
                 it.copy(isLoading = false, error = DataError.Local.UNKNOWN.toUiText())

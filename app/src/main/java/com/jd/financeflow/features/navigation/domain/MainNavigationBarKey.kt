@@ -3,12 +3,12 @@ package com.jd.financeflow.features.navigation.domain
 import kotlinx.serialization.Serializable
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Leaderboard
-import androidx.compose.material.icons.filled.TableRows
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Leaderboard
-import androidx.compose.material.icons.outlined.TableRows
+import androidx.compose.material.icons.filled.Analytics
+import androidx.compose.material.icons.filled.SpaceDashboard
+import androidx.compose.material.icons.filled.Wallet
+import androidx.compose.material.icons.outlined.Analytics
+import androidx.compose.material.icons.outlined.SpaceDashboard
+import androidx.compose.material.icons.outlined.Wallet
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation3.runtime.NavKey
@@ -26,22 +26,22 @@ sealed interface MainNavigationBarKey : NavKey {
 
     @Serializable
     data object MainTab : MainNavigationBarKey {
-        override val icon: ImageVector = Icons.Outlined.Home
-        override val selectedIcon: ImageVector = Icons.Filled.Home
+        override val icon: ImageVector = Icons.Outlined.SpaceDashboard
+        override val selectedIcon: ImageVector = Icons.Filled.SpaceDashboard
         override val labelResourceId = R.string.home_tab_label
     }
 
     @Serializable
     data object FinanceListTab : MainNavigationBarKey {
-        override val icon: ImageVector = Icons.Outlined.TableRows
-        override val selectedIcon: ImageVector = Icons.Filled.TableRows
+        override val icon: ImageVector = Icons.Outlined.Wallet
+        override val selectedIcon: ImageVector = Icons.Filled.Wallet
         override val labelResourceId = R.string.finances_tab_label
     }
 
     @Serializable
     data object ChartTab : MainNavigationBarKey {
-        override val icon: ImageVector = Icons.Outlined.Leaderboard
-        override val selectedIcon: ImageVector = Icons.Filled.Leaderboard
+        override val icon: ImageVector = Icons.Outlined.Analytics
+        override val selectedIcon: ImageVector = Icons.Filled.Analytics
         override val labelResourceId = R.string.charts_tab_label
     }
 

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">FinanceFlow</string>
 
-    <string name="home_tab_label">Home</string>
+    <string name="home_tab_label">Overview</string>
     <string name="finances_tab_label">Finances</string>
     <string name="charts_tab_label">Charts</string>
 
