@@ -5,7 +5,6 @@
     <string name="finances_tab_label">Finances</string>
     <string name="charts_tab_label">Charts</string>
 
-    <string name="recent_transactions_title">Recent Transactions</string>
     <string name="add_finance_button_label">Add finance</string>
     <string name="save_title">Save</string>
     <string name="cancel_title">Cancel</string>
@@ -89,6 +88,7 @@
     <string name="chart_year_label">Year</string>
     <string name="chart_month_label">Month</string>
     <string name="no_data_available_label">No data available</string>
+    <string name="see_all_transactions_label">See all</string>
 
 
 </resources>

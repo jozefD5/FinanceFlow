@@ -137,6 +137,9 @@ fun MainNavigation(
                                     onAddFinanceClicked = {
                                         homeBackStack.add(HomeRootKey.FinanceDetailsScreen)
                                     },
+                                    onAllActivityClicked = {
+                                        currentBarKey = MainNavigationBarKey.FinanceListTab
+                                    },
                                     modifier = Modifier.fillMaxSize()
                                 )
                             }

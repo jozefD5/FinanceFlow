@@ -58,6 +58,8 @@ class HomeViewModel(
             }
 
             is HomeActions.OnAddFinanceClicked -> {}
+
+            is HomeActions.OnAllActivityClicked -> {}
         }
     }
 
@@ -84,15 +86,15 @@ class HomeViewModel(
         // Group finances by finance type
         val (incomes, expenses) = finances.partition { it.category.type == FinanceType.INCOME }
 
-        // Annual total by category
-        val incomeCategoryTotalDeferred =
+        // Annual total by finance type
+        val incomeTotalDeferred =
             async(Dispatchers.Default) { annualCashFlow(incomes, year) }
-        val expenseCategoryTotalDeferred =
+        val expenseTotalDeferred =
             async(Dispatchers.Default) { annualCashFlow(expenses, year) }
 
         // Categories
-        val totalIncome = incomeCategoryTotalDeferred.await().sum()
-        val totalExpense = expenseCategoryTotalDeferred.await().sum()
+        val totalIncome = incomeTotalDeferred.await().sum()
+        val totalExpense = expenseTotalDeferred.await().sum()
 
         // Update state
         _state.update {
@@ -103,7 +105,7 @@ class HomeViewModel(
                 expense = totalExpense,
                 recentTransactions = finances
                     .sortedByDescending { items -> items.timeStampMs }
-                    .take(5)
+                    .take(10)
             )
         }
     }

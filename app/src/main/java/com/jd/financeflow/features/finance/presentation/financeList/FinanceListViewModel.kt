@@ -3,6 +3,7 @@ package com.jd.financeflow.features.finance.presentation.financeList
 import java.time.LocalDate
 
 import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onEach
@@ -201,13 +202,11 @@ class FinanceListViewModel(
                     }
                 )
 
-                // Start filtering in parallel
-                val filteredFinancesDeferred = async {
+                // Start tasks in parallel on background threads
+                val filteredFinancesDeferred = async(Dispatchers.Default) {
                     filterFinances(cachedAllFinances, updatedConfig)
                 }
-
-                // Start calculating balance in parallel
-                val balanceDeferred = async {
+                val balanceDeferred = async(Dispatchers.Default) {
                     calculateBalance(cachedAllFinances)
                 }
 
@@ -219,21 +218,23 @@ class FinanceListViewModel(
                 _state.update {
                     it.copy(
                         filterConfiguration = currentConfig.copy(
-                            maxAmountLimit = cachedFilteredFinances.maxOfOrNull { item -> item.amount } ?: 0.0,
+                            maxAmountLimit = cachedFilteredFinances.maxOfOrNull { item -> item.amount }
+                                ?: 0.0,
                             miniAmountLimit = 0.0
                         )
                     )
                 }
             } else {
-                balance = calculateBalance(cachedFilteredFinances)
+                balance = calculateBalance(cachedAllFinances)
             }
 
-            // Filter by query if provided
-            val queriedFinances = cachedFilteredFinances
-                .filter { item ->
+            // Filter by query if provided on background thread
+            val queriedFinances = withContext(Dispatchers.Default) {
+                cachedFilteredFinances.filter { item ->
                     item.title.contains(query ?: "", ignoreCase = true) ||
                             item.description?.contains(query ?: "", ignoreCase = true) == true
                 }
+            }
 
             _state.update {
                 it.copy(
@@ -359,6 +360,16 @@ class FinanceListViewModel(
      * @param finances the list of finances to be calculated
      * @return the balance of the finances
      */
-    private suspend fun calculateBalance(finances: List<Finance>): Double =
-        annualCashFlow(items = finances, year = LocalDate.now().year).sum()
+    private suspend fun calculateBalance(finances: List<Finance>): Double = coroutineScope {
+        val year = LocalDate.now().year
+
+        // Group finances by finance type
+        val (incomes, expenses) = finances.partition { it.category.type == FinanceType.INCOME }
+
+        // Annual total
+        val incomeTotalDeferred = async { annualCashFlow(incomes, year) }
+        val expenseTotalDeferred = async { annualCashFlow(expenses, year) }
+
+        incomeTotalDeferred.await().sum() - expenseTotalDeferred.await().sum()
+    }
 }
