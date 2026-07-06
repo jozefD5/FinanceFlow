@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ShowChart
 import androidx.compose.material.icons.outlined.ShowChart
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -139,7 +140,7 @@ fun FinanceChartCardView(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     Icon(
-                        imageVector = Icons.Outlined.ShowChart,
+                        imageVector = Icons.AutoMirrored.Outlined.ShowChart,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier
