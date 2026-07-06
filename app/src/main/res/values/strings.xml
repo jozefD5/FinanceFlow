@@ -89,6 +89,8 @@
     <string name="chart_month_label">Month</string>
     <string name="no_data_available_label">No data available</string>
     <string name="see_all_transactions_label">See all</string>
+    <string name="recent_activity_label">Recent activity</string>
+    <string name="no_recent_transactions_label">No recent transactions yet</string>
 
 
 </resources>

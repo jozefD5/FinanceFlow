@@ -1,11 +1,11 @@
 package com.jd.financeflow.features.finance.presentation.home
 
+import androidx.compose.runtime.Stable
+
 import com.jd.financeflow.features.core.presentation.UiText
 import com.jd.financeflow.features.finance.domain.models.Finance
 
-/**
- * Data class representing the state of the home screen.
- */
+@Stable
 data class HomeState(
     // General
     val isLoading: Boolean = false,
