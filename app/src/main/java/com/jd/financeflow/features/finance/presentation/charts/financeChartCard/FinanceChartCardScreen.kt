@@ -2,6 +2,7 @@ package com.jd.financeflow.features.finance.presentation.charts.financeChartCard
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,18 +10,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ShowChart
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -34,42 +40,31 @@ import com.jd.financeflow.features.finance.domain.models.chart.PieChartData
 import com.jd.financeflow.features.finance.presentation.charts.components.FinanceLineChart
 import com.jd.financeflow.features.finance.presentation.charts.components.FinancePieChart
 
-
-// Line chart labels
 private val monthlyLineLabels = listOf("1", "15", "31")
 private val annualLineLabels = listOf("1", "6", "12")
 
-// Colors for Income
 private val incomeChartColors = listOf(
-    Color(0xFF2E7D32), // Forest Green
-    Color(0xFF00BFA5), // Teal A700
-    Color(0xFF00B0FF), // Light Blue A700
-    Color(0xFF64DD17), // Light Green A700
-    Color(0xFF00E5FF), // Cyan A400
-    Color(0xFF1DE9B6), // Teal A400
-    Color(0xFF76FF03), // Light Green A400
-    Color(0xFF00E676)  // Green A400
+    Color(0xFF2E7D32),
+    Color(0xFF00BFA5),
+    Color(0xFF00B0FF),
+    Color(0xFF64DD17),
+    Color(0xFF00E5FF),
+    Color(0xFF1DE9B6),
+    Color(0xFF76FF03),
+    Color(0xFF00E676),
 )
 
-// Colors for Expenses
 private val expenseChartColors = listOf(
-    Color(0xFFC62828), // Red 800
-    Color(0xFFFF7043), // Deep Orange 400
-    Color(0xFFAB47BC), // Purple 400
-    Color(0xFFFFCA28), // Amber 400
-    Color(0xFFEC407A), // Pink 400
-    Color(0xFF7E57C2), // Deep Purple 400
-    Color(0xFFFF5252), // Red A200
-    Color(0xFFFFAB40)  // Orange A200
+    Color(0xFFC62828),
+    Color(0xFFFF7043),
+    Color(0xFFAB47BC),
+    Color(0xFFFFCA28),
+    Color(0xFFEC407A),
+    Color(0xFF7E57C2),
+    Color(0xFFFF5252),
+    Color(0xFFFFAB40),
 )
 
-/**
- * Finance chart card
- *
- * @param title Title
- * @param modifier Modifier
- * @param viewModel View model
- */
 @Composable
 fun FinanceChartCard(
     title: String,
@@ -82,101 +77,111 @@ fun FinanceChartCard(
         title = title,
         state = state.value,
         interval = viewModel.chartInterval,
-        modifier = modifier
+        modifier = modifier,
     )
 }
 
-/**
- * Finance chart card view
- *
- * @param title Title
- * @param state Finance chart card state
- * @param interval Interval of the chart
- * @param modifier Modifier
- * @param verticalScrollState Vertical scroll state
- */
 @Composable
 fun FinanceChartCardView(
     title: String,
     state: FinanceChartCardState,
     interval: FinanceInterval,
     modifier: Modifier = Modifier,
-    verticalScrollState: ScrollState = rememberScrollState()
+    verticalScrollState: ScrollState = rememberScrollState(),
 ) {
-    Column(modifier = modifier.verticalScroll(verticalScrollState)) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-
-        HorizontalDivider(
-            thickness = 1.dp,
-            color = MaterialTheme.colorScheme.outlineVariant,
-            modifier = Modifier.padding(vertical = 16.dp)
-        )
-
-        if (state.dataAvailable) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier.verticalScroll(verticalScrollState),
+    ) {
+        // ── Period header card ────────────────────────────────────────────
+        ElevatedCard(modifier = Modifier.fillMaxWidth()) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth()
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 16.dp),
             ) {
                 Text(
-                    text = stringResource(R.string.finance_balance_title),
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    text = title,
+                    style = MaterialTheme.typography.headlineSmall.copy(
+                        fontWeight = FontWeight.Bold,
+                    ),
                 )
-
-                Text(
-                    text = formatCurrency(state.balance, state.currencyCode),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.ExtraBold
-                )
+                if (state.dataAvailable) {
+                    Column(horizontalAlignment = Alignment.End) {
+                        Text(
+                            text = stringResource(R.string.finance_balance_title),
+                            style = MaterialTheme.typography.labelSmall,
+                            modifier = Modifier.alpha(0.65f),
+                        )
+                        Text(
+                            text = formatCurrency(state.balance, state.currencyCode),
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = FontWeight.ExtraBold,
+                            ),
+                        )
+                    }
+                }
             }
         }
 
-        Spacer(Modifier.padding(8.dp))
-
+        // ── No-data state ─────────────────────────────────────────────────
         if (!state.dataAvailable) {
-            Text(
-                text = stringResource(R.string.no_data_available_label),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
+            Box(
+                contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 48.dp)
-            )
+                    .padding(vertical = 64.dp),
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.ShowChart,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier
+                            .size(48.dp)
+                            .alpha(0.4f),
+                    )
+                    Text(
+                        text = stringResource(R.string.no_data_available_label),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
         } else {
+            // ── Line chart ────────────────────────────────────────────────
             FinanceLineChart(
                 items = listOf(
                     LineChartData(
                         label = stringResource(R.string.finance_type_income),
-                        color = Color(0xFF4CAF50), // Standard MD Green
+                        color = Color(0xFF4CAF50),
                         values = state.incomeTransactions,
                     ),
                     LineChartData(
                         label = stringResource(R.string.finance_type_expense),
-                        color = Color(0xFFF44336), // Standard MD Red
+                        color = Color(0xFFF44336),
                         values = state.expenseTransactions,
                     ),
                     LineChartData(
                         label = stringResource(R.string.finance_balance_title),
-                        color = Color(0xFF2196F3), // Standard MD Blue
+                        color = Color(0xFF2196F3),
                         values = state.balanceLevel,
-                    )
+                    ),
                 ),
                 labels = if (interval == FinanceInterval.Monthly) monthlyLineLabels else annualLineLabels,
                 enableLabelHelperProperties = true,
                 currencyCode = state.currencyCode,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(250.dp)
+                    .height(250.dp),
             )
 
-            Spacer(Modifier.height(24.dp))
-
+            // ── Income pie chart ──────────────────────────────────────────
             FinancePieChart(
                 title = stringResource(R.string.finance_type_income),
                 items = state.incomeCategories.mapIndexedNotNull { index, it ->
@@ -186,19 +191,16 @@ fun FinanceChartCardView(
                             color = incomeChartColors[index % incomeChartColors.size],
                             selectedColor = MaterialTheme.colorScheme.primaryContainer,
                             data = it.second,
-                            selected = false
+                            selected = false,
                         )
-                    } else {
-                        null
-                    }
+                    } else null
                 },
                 onItemClick = {},
                 currencyCode = state.currencyCode,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
 
-            Spacer(Modifier.height(24.dp))
-
+            // ── Expense pie chart ─────────────────────────────────────────
             FinancePieChart(
                 title = stringResource(R.string.finance_type_expense),
                 items = state.expenseCategories.mapIndexedNotNull { index, it ->
@@ -208,29 +210,25 @@ fun FinanceChartCardView(
                             color = expenseChartColors[index % expenseChartColors.size],
                             selectedColor = MaterialTheme.colorScheme.errorContainer,
                             data = it.second,
-                            selected = false
+                            selected = false,
                         )
-                    } else {
-                        null
-                    }
+                    } else null
                 },
                 onItemClick = {},
                 currencyCode = state.currencyCode,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
+
+            Spacer(Modifier.height(8.dp))
         }
     }
 }
 
 @Preview
 @Composable
-fun FinanceChartCardViewPreview() {
+private fun FinanceChartCardViewPreview() {
     MaterialTheme {
-        Scaffold(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp)
-        ) { innerPadding ->
+        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             FinanceChartCardView(
                 title = "Jan 2026",
                 state = FinanceChartCardState(
@@ -243,12 +241,13 @@ fun FinanceChartCardViewPreview() {
                         Pair(UiText.DynamicString("Investment"), 250.0),
                         Pair(UiText.DynamicString("Freelance"), 100.0),
                         Pair(UiText.DynamicString("Other"), 100.0),
-                    )
+                    ),
                 ),
                 interval = FinanceInterval.Monthly,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(innerPadding)
+                    .padding(16.dp),
             )
         }
     }

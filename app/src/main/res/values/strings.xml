@@ -91,6 +91,11 @@
     <string name="see_all_transactions_label">See all</string>
     <string name="recent_activity_label">Recent activity</string>
     <string name="no_recent_transactions_label">No recent transactions yet</string>
+    <string name="screen_title_filter">Filter transactions</string>
+    <string name="screen_title_transaction_details">Transaction details</string>
+    <string name="screen_title_charts">Charts</string>
+    <string name="charts_subtitle">Swipe to browse periods</string>
+    <string name="filter_active_label">Filter active</string>
 
 
 </resources>

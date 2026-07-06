@@ -1,10 +1,10 @@
 package com.jd.financeflow.features.finance.presentation.charts
 
+import androidx.compose.runtime.Stable
+
 import com.jd.financeflow.features.core.presentation.UiText
 
-/**
- * Finance charts view state
- */
+@Stable
 data class ChartsState(
     // General
     val isLoading: Boolean = false,

@@ -1,12 +1,12 @@
 package com.jd.financeflow.features.finance.presentation.financeList
 
+import androidx.compose.runtime.Stable
+
 import com.jd.financeflow.features.core.presentation.UiText
 import com.jd.financeflow.features.finance.domain.models.FilterConfiguration
 import com.jd.financeflow.features.finance.domain.models.Finance
 
-/**
- * Represents the state of the FinanceList screen.
- */
+@Stable
 data class FinanceListState(
     val isLoading: Boolean = false,
     val error: UiText? = null,
