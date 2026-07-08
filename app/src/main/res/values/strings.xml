@@ -93,9 +93,8 @@
     <string name="no_recent_transactions_label">No recent transactions yet</string>
     <string name="screen_title_filter">Filter transactions</string>
     <string name="screen_title_transaction_details">Transaction details</string>
+    <string name="content_description_back">Back</string>
     <string name="screen_title_charts">Charts</string>
     <string name="charts_subtitle">Swipe to browse periods</string>
-    <string name="filter_active_label">Filter active</string>
-
 
 </resources>

@@ -24,8 +24,6 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -118,7 +116,6 @@ fun FinanceListView(
                     BalanceSummaryCard(
                         balance = state.currentBalance,
                         currencyCode = state.currencyCode,
-                        isFilterActive = state.filterConfiguration != null,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp, vertical = 8.dp),
@@ -299,7 +296,6 @@ fun FinanceListView(
 private fun BalanceSummaryCard(
     balance: Double,
     currencyCode: String,
-    isFilterActive: Boolean,
     modifier: Modifier = Modifier,
 ) {
     ElevatedCard(modifier = modifier) {
@@ -320,29 +316,6 @@ private fun BalanceSummaryCard(
                     text = formatCurrency(balance, currencyCode),
                     style = MaterialTheme.typography.headlineSmall.copy(
                         fontWeight = FontWeight.Bold,
-                    ),
-                )
-            }
-            if (isFilterActive) {
-                AssistChip(
-                    onClick = {},
-                    label = {
-                        Text(
-                            text = stringResource(R.string.filter_active_label),
-                            style = MaterialTheme.typography.labelSmall,
-                        )
-                    },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.FilterList,
-                            contentDescription = null,
-                            modifier = Modifier.size(AssistChipDefaults.IconSize),
-                        )
-                    },
-                    colors = AssistChipDefaults.assistChipColors(
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                        labelColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                        leadingIconContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                     ),
                 )
             }

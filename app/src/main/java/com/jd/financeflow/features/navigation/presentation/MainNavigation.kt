@@ -21,6 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.runtime.NavEntryDecorator
+import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
@@ -72,6 +74,13 @@ fun MainNavigation(
         is MainNavigationBarKey.ChartTab -> chartsBackStack
     }
 
+    // Shared across every tab's NavDisplay so ViewModels and saveable UI state
+    // (e.g. scroll position) survive switching tabs instead of being torn down.
+    val entryDecorators: List<NavEntryDecorator<NavKey>> = listOf(
+        rememberSaveableStateHolderNavEntryDecorator(),
+        rememberViewModelStoreNavEntryDecorator()
+    )
+
     // Content of the main navigation bar
     Scaffold(
         modifier = modifier,
@@ -108,25 +117,26 @@ fun MainNavigation(
             }
         }
     ) { innerPadding ->
-        NavDisplay(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            backStack = currentBackStack,
-            onBack = {
-                currentBackStack.removeLastOrNull()
-            },
-            transitionSpec = {
-                fadeIn(animationSpec = tween(200)) togetherWith fadeOut(tween(200))
-            },
-            entryDecorators = listOf(
-                rememberSaveableStateHolderNavEntryDecorator(),
-                rememberViewModelStoreNavEntryDecorator()
-            )
-        ) { key ->
-            when (key) {
-                // Main screen destinations
-                is HomeRootKey -> {
+        val displayModifier = Modifier
+            .fillMaxSize()
+            .padding(innerPadding)
+
+        // Each tab gets its own NavDisplay call site with a stable backStack
+        // reference, so switching tabs never looks like a "pop" to NavDisplay's
+        // internal diffing (which would tear down ViewModels/saveable state).
+        when (currentBarKey) {
+            is MainNavigationBarKey.MainTab -> {
+                NavDisplay(
+                    modifier = displayModifier,
+                    backStack = homeBackStack,
+                    onBack = {
+                        homeBackStack.removeLastOrNull()
+                    },
+                    transitionSpec = {
+                        fadeIn(animationSpec = tween(200)) togetherWith fadeOut(tween(200))
+                    },
+                    entryDecorators = entryDecorators
+                ) { key ->
                     when (key) {
                         is HomeRootKey.HomeScreen -> {
                             NavEntry(key = key) {
@@ -157,17 +167,30 @@ fun MainNavigation(
                                         homeBackStack.removeLastOrNull()
                                     },
                                     onBackNavigation = {
-                                        currentBackStack.removeLastOrNull()
+                                        homeBackStack.removeLastOrNull()
                                     },
                                     modifier = Modifier.fillMaxSize()
                                 )
                             }
                         }
+
+                        else -> throw IllegalArgumentException("Invalid NavKey: $key")
                     }
                 }
+            }
 
-                // Finance screen destinations
-                is FinanceRootKey -> {
+            is MainNavigationBarKey.FinanceListTab -> {
+                NavDisplay(
+                    modifier = displayModifier,
+                    backStack = financeListBackStack,
+                    onBack = {
+                        financeListBackStack.removeLastOrNull()
+                    },
+                    transitionSpec = {
+                        fadeIn(animationSpec = tween(200)) togetherWith fadeOut(tween(200))
+                    },
+                    entryDecorators = entryDecorators
+                ) { key ->
                     when (key) {
                         is FinanceRootKey.FinanceListScreen -> {
                             NavEntry(key = key) {
@@ -217,7 +240,7 @@ fun MainNavigation(
                                         financeListBackStack.removeLastOrNull()
                                     },
                                     onBackNavigation = {
-                                        currentBackStack.removeLastOrNull()
+                                        financeListBackStack.removeLastOrNull()
                                     },
                                     modifier = Modifier.fillMaxSize()
                                 )
@@ -238,23 +261,36 @@ fun MainNavigation(
                                 FinanceListFilterScreen(
                                     viewModel = viewModel,
                                     onApplyFilter = { config ->
-                                        currentBackStack.clear()
-                                        currentBackStack.add(
+                                        financeListBackStack.clear()
+                                        financeListBackStack.add(
                                             FinanceRootKey.FinanceListScreen(config)
                                         )
                                     },
                                     onBackNavigation = {
-                                        currentBackStack.removeLastOrNull()
+                                        financeListBackStack.removeLastOrNull()
                                     },
                                     modifier = Modifier.fillMaxSize()
                                 )
                             }
                         }
+
+                        else -> throw IllegalArgumentException("Invalid NavKey: $key")
                     }
                 }
+            }
 
-                // Chart screen destinations
-                is ChartsRootKey -> {
+            is MainNavigationBarKey.ChartTab -> {
+                NavDisplay(
+                    modifier = displayModifier,
+                    backStack = chartsBackStack,
+                    onBack = {
+                        chartsBackStack.removeLastOrNull()
+                    },
+                    transitionSpec = {
+                        fadeIn(animationSpec = tween(200)) togetherWith fadeOut(tween(200))
+                    },
+                    entryDecorators = entryDecorators
+                ) { key ->
                     when (key) {
                         is ChartsRootKey.Charts -> {
                             NavEntry(key = key) {
@@ -268,10 +304,10 @@ fun MainNavigation(
                                 )
                             }
                         }
+
+                        else -> throw IllegalArgumentException("Invalid NavKey: $key")
                     }
                 }
-
-                else -> throw IllegalArgumentException("Invalid NavKey: $key")
             }
         }
     }

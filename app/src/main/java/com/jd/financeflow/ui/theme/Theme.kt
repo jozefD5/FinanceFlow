@@ -1,7 +1,9 @@
 package com.jd.financeflow.ui.theme
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -251,6 +253,7 @@ val unspecified_scheme = ColorFamily(
     Color.Unspecified, Color.Unspecified, Color.Unspecified, Color.Unspecified
 )
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun FinanceFlowTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -263,7 +266,7 @@ fun FinanceFlowTheme(
           val context = LocalContext.current
           if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
       }
-      
+
       darkTheme -> darkScheme
       else -> lightScheme
   }
@@ -271,6 +274,7 @@ fun FinanceFlowTheme(
   MaterialTheme(
     colorScheme = colorScheme,
     typography = AppTypography,
+    motionScheme = MotionScheme.expressive(),
     content = content
   )
 }
