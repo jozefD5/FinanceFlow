@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -25,29 +26,23 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LoadingIndicator
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -106,38 +101,32 @@ fun FinanceDetailsView(
     focusManager: FocusManager = LocalFocusManager.current,
     scrollState: ScrollState = rememberScrollState(),
 ) {
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-
-    Scaffold(
+    Column(
         modifier = modifier
-            .fillMaxSize()
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.screen_title_transaction_details),
-                        style = MaterialTheme.typography.titleMediumEmphasized.copy(
-                            fontWeight = FontWeight.Bold,
-                        ),
+    ) {
+        TopAppBar(
+            title = {
+                Text(
+                    text = stringResource(R.string.screen_title_transaction_details),
+                    style = MaterialTheme.typography.titleMediumEmphasized.copy(
+                        fontWeight = FontWeight.Bold,
+                    ),
+                )
+            },
+            navigationIcon = {
+                IconButton(onClick = { onAction(FinanceDetailsActions.OnBackNavigationClicked) }) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
+                        contentDescription = stringResource(R.string.content_description_back),
                     )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { onAction(FinanceDetailsActions.OnBackNavigationClicked) }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
-                            contentDescription = stringResource(R.string.content_description_back),
-                        )
-                    }
-                },
-                scrollBehavior = scrollBehavior,
-            )
-        },
-    ) { innerPadding ->
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            windowInsets = WindowInsets(0, 0, 0, 0)
+        )
+
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+            modifier = Modifier.fillMaxSize()
         ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -198,133 +187,111 @@ fun FinanceDetailsView(
                     }
                 }
 
-                ElevatedCard(modifier = Modifier.fillMaxWidth()) {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                    ) {
-                        OutlinedTextField(
-                            value = state.title,
-                            onValueChange = { onAction(FinanceDetailsActions.OnUpdateTitle(it)) },
-                            label = { Text(stringResource(R.string.add_finance_title_label)) },
-                            isError = state.invalidTitle,
-                            textStyle = MaterialTheme.typography.bodyLarge,
-                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                            keyboardActions = KeyboardActions(
-                                onNext = { focusManager.moveFocus(FocusDirection.Down) },
-                            ),
-                            shape = MaterialTheme.shapes.medium,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                        OutlinedTextField(
-                            value = state.description,
-                            onValueChange = { onAction(FinanceDetailsActions.OnUpdateDescription(it)) },
-                            label = { Text(stringResource(R.string.add_finance_title_description)) },
-                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                            keyboardActions = KeyboardActions(
-                                onNext = { focusManager.moveFocus(FocusDirection.Down) },
-                            ),
-                            maxLines = 3,
-                            shape = MaterialTheme.shapes.medium,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                    }
-                }
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedTextField(
+                        value = state.title,
+                        onValueChange = { onAction(FinanceDetailsActions.OnUpdateTitle(it)) },
+                        label = { Text(stringResource(R.string.add_finance_title_label)) },
+                        isError = state.invalidTitle,
+                        textStyle = MaterialTheme.typography.bodyLarge,
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                        keyboardActions = KeyboardActions(
+                            onNext = { focusManager.moveFocus(FocusDirection.Down) },
+                        ),
+                        shape = MaterialTheme.shapes.medium,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
 
-                ElevatedCard(modifier = Modifier.fillMaxWidth()) {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                    ) {
-                        OutlinedTextField(
-                            value = state.amount,
-                            onValueChange = { onAction(FinanceDetailsActions.OnUpdateAmount(it)) },
-                            label = { Text(stringResource(R.string.add_finance_title_amount)) },
-                            prefix = {
-                                Text(Currency.getInstance(state.currencyCode).symbol.toString())
-                            },
-                            isError = state.invalidAmount,
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Number,
-                                imeAction = ImeAction.Next,
-                            ),
-                            keyboardActions = KeyboardActions(
-                                onNext = { focusManager.moveFocus(FocusDirection.Down) },
-                            ),
-                            shape = MaterialTheme.shapes.medium,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
+                    OutlinedTextField(
+                        value = state.description,
+                        onValueChange = { onAction(FinanceDetailsActions.OnUpdateDescription(it)) },
+                        label = { Text(stringResource(R.string.add_finance_title_description)) },
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                        keyboardActions = KeyboardActions(
+                            onNext = { focusManager.moveFocus(FocusDirection.Down) },
+                        ),
+                        maxLines = 3,
+                        shape = MaterialTheme.shapes.medium,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
 
-                        DataPickerField(
-                            value = state.startDate,
-                            onValueChange = { selectedDate ->
-                                if (selectedDate != null) {
-                                    onAction(FinanceDetailsActions.OnUpdateStartDate(selectedDate))
-                                }
-                            },
-                            label = stringResource(R.string.add_finance_title_start_date),
-                            placeholder = stringResource(R.string.add_finance_title_start_date_placeholder),
-                            shape = MaterialTheme.shapes.medium,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
+                    OutlinedTextField(
+                        value = state.amount,
+                        onValueChange = { onAction(FinanceDetailsActions.OnUpdateAmount(it)) },
+                        label = { Text(stringResource(R.string.add_finance_title_amount)) },
+                        prefix = {
+                            Text(Currency.getInstance(state.currencyCode).symbol.toString())
+                        },
+                        isError = state.invalidAmount,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next,
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = { focusManager.moveFocus(FocusDirection.Down) },
+                        ),
+                        shape = MaterialTheme.shapes.medium,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
 
-                        LargeDropdownMenu(
-                            label = stringResource(R.string.add_finance_title_interval),
-                            selectedIndex = state.financeIntervalIndex,
-                            items = FinanceInterval.entries.map { it.toUiText().asString() },
-                            onItemSelected = { index, _ ->
-                                onAction(FinanceDetailsActions.OnUpdateFinanceInterval(index))
-                            },
-                            shape = MaterialTheme.shapes.medium,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
+                    DataPickerField(
+                        value = state.startDate,
+                        onValueChange = { selectedDate ->
+                            if (selectedDate != null) {
+                                onAction(FinanceDetailsActions.OnUpdateStartDate(selectedDate))
+                            }
+                        },
+                        label = stringResource(R.string.add_finance_title_start_date),
+                        placeholder = stringResource(R.string.add_finance_title_start_date_placeholder),
+                        shape = MaterialTheme.shapes.medium,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
 
-                        LargeDropdownMenu(
-                            label = stringResource(R.string.add_finance_title_category),
-                            selectedIndex = state.financeCategoryIndex,
-                            items = if (state.financeTypeIndex == FinanceType.INCOME.ordinal) {
-                                IncomeCategory.entries.map { FinanceCategory.Income(it) }
-                            } else {
-                                ExpenseCategory.entries.map { FinanceCategory.Expense(it) }
-                            }.map { it.toUiText().asString() },
-                            onItemSelected = { index, _ ->
-                                onAction(FinanceDetailsActions.OnUpdateFinanceCategory(index))
-                            },
-                            shape = MaterialTheme.shapes.medium,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                    }
+                    LargeDropdownMenu(
+                        label = stringResource(R.string.add_finance_title_interval),
+                        selectedIndex = state.financeIntervalIndex,
+                        items = FinanceInterval.entries.map { it.toUiText().asString() },
+                        onItemSelected = { index, _ ->
+                            onAction(FinanceDetailsActions.OnUpdateFinanceInterval(index))
+                        },
+                        shape = MaterialTheme.shapes.medium,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+
+                    LargeDropdownMenu(
+                        label = stringResource(R.string.add_finance_title_category),
+                        selectedIndex = state.financeCategoryIndex,
+                        items = if (state.financeTypeIndex == FinanceType.INCOME.ordinal) {
+                            IncomeCategory.entries.map { FinanceCategory.Income(it) }
+                        } else {
+                            ExpenseCategory.entries.map { FinanceCategory.Expense(it) }
+                        }.map { it.toUiText().asString() },
+                        onItemSelected = { index, _ ->
+                            onAction(FinanceDetailsActions.OnUpdateFinanceCategory(index))
+                        },
+                        shape = MaterialTheme.shapes.medium,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
                 }
             }
 
             Spacer(Modifier.height(8.dp))
 
-            val saveButtonHeight = ButtonDefaults.MediumContainerHeight
             Button(
                 onClick = { onAction(FinanceDetailsActions.OnSaveFinance()) },
                 enabled = !state.isLoading,
                 shapes = ButtonDefaults.shapes(),
-                contentPadding = ButtonDefaults.contentPaddingFor(saveButtonHeight),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
-                    .height(saveButtonHeight),
+                    .padding(horizontal = 8.dp, vertical = 16.dp)
             ) {
-                if (state.isLoading) {
-                    LoadingIndicator(
-                        color = LocalContentColor.current,
-                        modifier = Modifier.size(ButtonDefaults.iconSizeFor(saveButtonHeight)),
-                    )
-                } else {
-                    Text(
-                        text = stringResource(R.string.save_title),
-                        style = ButtonDefaults.textStyleFor(saveButtonHeight),
-                    )
-                }
+                Text(
+                    text = stringResource(R.string.save_title),
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
             }
         }
     }

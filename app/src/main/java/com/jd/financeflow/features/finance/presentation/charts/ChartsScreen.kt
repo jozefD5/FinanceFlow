@@ -70,7 +70,7 @@ fun ChartsView(
     Column(
         modifier = modifier.fillMaxSize(),
     ) {
-        // ── Header ────────────────────────────────────────────────────────
+        // Header
         Column(
             verticalArrangement = Arrangement.spacedBy(2.dp),
             modifier = Modifier
@@ -90,7 +90,7 @@ fun ChartsView(
             )
         }
 
-        // ── Interval selector ─────────────────────────────────────────────
+        // Interval selector
         SingleChoiceSegmentedButtonRow(
             modifier = Modifier
                 .fillMaxWidth()
@@ -109,7 +109,7 @@ fun ChartsView(
             }
         }
 
-        // ── Pager ─────────────────────────────────────────────────────────
+        // Pager
         when (state.selectedIntervalIndex) {
             0 -> {
                 val monthlyPagerState = rememberPagerState(

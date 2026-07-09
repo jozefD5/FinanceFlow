@@ -143,7 +143,10 @@ fun <T> LargeDropdownMenu(
                     val listState = rememberLazyListState()
                     if (selectedIndex > -1) {
                         LaunchedEffect("ScrollToSelected") {
-                            listState.scrollToItem(index = selectedIndex)
+                            val scrollIndex = if (notSetLabel != null) selectedIndex + 1 else selectedIndex
+                            if (scrollIndex < items.size + (if (notSetLabel != null) 1 else 0)) {
+                                listState.scrollToItem(index = scrollIndex)
+                            }
                         }
                     }
 

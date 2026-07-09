@@ -12,6 +12,7 @@ import androidx.lifecycle.viewModelScope
 
 import com.jd.financeflow.features.core.domain.DataError
 import com.jd.financeflow.features.core.presentation.toUiText
+import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
 import com.jd.financeflow.features.finance.domain.models.FilterConfiguration
 import com.jd.financeflow.features.finance.domain.models.FinanceType
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
@@ -111,10 +112,18 @@ class FinanceListFilterViewModel(
         val selectedTypeIndex = config.type?.ordinal ?: 0
 
         val selectedIncomeCategories =
-            config.selectedIncomeIndexes ?: currentState.selectedIncomeCategories
+            if (config.selectedIncomeIndexes != null && config.selectedIncomeIndexes.size == IncomeCategory.entries.size) {
+                config.selectedIncomeIndexes
+            } else {
+                currentState.selectedIncomeCategories
+            }
 
         val selectedExpenseCategories =
-            config.selectedExpenseIndexes ?: currentState.selectedExpenseCategories
+            if (config.selectedExpenseIndexes != null && config.selectedExpenseIndexes.size == ExpenseCategory.entries.size) {
+                config.selectedExpenseIndexes
+            } else {
+                currentState.selectedExpenseCategories
+            }
 
         val miniAmountLimit = config.miniAmountLimit?.toFloat() ?: currentState.minimumAmount
         val maxAmountLimit = config.maxAmountLimit?.toFloat() ?: currentState.maximumAmount
@@ -240,7 +249,7 @@ class FinanceListFilterViewModel(
                 selectedTypeIndex = 0,
                 enableCategories = false,
                 selectedIncomeCategories = IncomeCategory.entries.map { true },
-                selectedExpenseCategories = IncomeCategory.entries.map { true },
+                selectedExpenseCategories = ExpenseCategory.entries.map { true },
                 enableAmountRange = false,
                 selectedAmountRangeMini = currentState.minimumAmount,
                 selectedAmountRangeMax = currentState.maximumAmount
