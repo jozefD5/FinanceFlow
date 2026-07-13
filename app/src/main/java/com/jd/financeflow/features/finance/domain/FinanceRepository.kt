@@ -50,26 +50,4 @@ interface FinanceRepository {
      * @return [EmptyResult] on success or [DataError.Local] on failure.
      */
     suspend fun deleteFinance(finance: Finance): EmptyResult<DataError.Local>
-
-    /**
-     * Retrieves the total income or expense for a specific type of financial transactions.
-     *
-     * @param type The type of transactions to retrieve the total for. If not provided, the total
-     * for all types will be calculated.
-     * @param category The category of the transactions to retrieve the total for. If not provided,
-     * the total for all categories will be calculated.
-     * @return The total as a [Double] value on success or [DataError.Local] on failure.
-     */
-    suspend fun getTotal(
-        type: FinanceType? = null,
-        category: FinanceCategory? = null
-    ): Result<Double, DataError.Local>
-
-    /**
-     * Retrieve the total financial amount as an average monthly value for given category
-     *
-     * @param category category type use to filter finances
-     * @return Total monthly finance amount
-     */
-    suspend fun totalMonthly(category: FinanceCategory): Result<Double, DataError.Local>
 }

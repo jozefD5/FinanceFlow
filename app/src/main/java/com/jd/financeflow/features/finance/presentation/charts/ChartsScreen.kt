@@ -1,289 +1,203 @@
 package com.jd.financeflow.features.finance.presentation.charts
 
-import java.time.Month
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.ZoneOffset
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CardDefaults
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MultiChoiceSegmentedButtonRow
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.compose.ui.platform.LocalLocale
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 import com.jd.financeflow.R
-import com.jd.financeflow.features.finance.domain.models.chart.LineChartData
-import com.jd.financeflow.features.finance.domain.models.chart.PieChartData
-import com.jd.financeflow.features.finance.presentation.charts.components.ChartLegendItem
-import com.jd.financeflow.features.finance.presentation.charts.components.ChartLegendItemGrid
-import com.jd.financeflow.features.finance.presentation.charts.components.FinanceLineChart
-import com.jd.financeflow.features.finance.presentation.charts.components.FinancePieChart
+import com.jd.financeflow.features.finance.domain.models.FinanceInterval
+import com.jd.financeflow.features.finance.presentation.charts.financeChartCard.FinanceChartCard
 
-// Monthly finance line chart labels
-private val lineLabels = listOf("1", "6", "11", "16", "21", "26", "31")
-
-// High-contrast colors for Income (Alternating distinct hues: Green, Blue, Lime, Teal)
-private val incomeChartColors = listOf(
-    Color(0xFF2E7D32), // Forest Green
-    Color(0xFF0288D1), // Light Blue
-    Color(0xFF9E9D24), // Olive/Lime
-    Color(0xFF00897B), // Teal
-    Color(0xFF1565C0), // Denim Blue
-    Color(0xFF558B2F), // Light Green
-    Color(0xFF00ACC1), // Cyan
-    Color(0xFF004D40)  // Deep Pine
-)
-
-// High-contrast colors for Expenses (Alternating distinct hues: Red, Purple, Orange, Pink)
-private val expenseChartColors = listOf(
-    Color(0xFFC62828), // Red
-    Color(0xFF6A1B9A), // Purple
-    Color(0xFFEF6C00), // Orange
-    Color(0xFFAD1457), // Pink/Magenta
-    Color(0xFF4527A0), // Deep Indigo
-    Color(0xFFD84315), // Deep Orange/Rust
-    Color(0xFF283593), // Indigo
-    Color(0xFF880E4F)  // Maroon
-)
-
-/**
- * Finance charts screen
- *
- * @param modifier Modifier
- * @param viewModel View model
- */
 @Composable
 fun ChartsScreen(
     modifier: Modifier = Modifier,
-    viewModel: ChartsViewModel = koinViewModel()
+    viewModel: ChartsViewModel = koinViewModel(),
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
 
     ChartsView(
         state = state.value,
+        initialPage = viewModel.initialPage,
+        totalPages = viewModel.totalPages,
+        baseDate = viewModel.baseData,
+        monthFormatter = viewModel.monthFormatter,
+        yearFormatter = viewModel.yearFormatter,
         onAction = viewModel::onAction,
-        modifier = modifier
+        modifier = modifier,
     )
 }
 
-/**
- * Finance charts view
- *
- * @param state View state
- * @param onAction Action handler
- * @param modifier Modifier
- * @param verticalScrollState Vertical scroll state
- */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ChartsView(
     state: ChartsState,
+    initialPage: Int,
+    totalPages: Int,
+    baseDate: LocalDate,
+    monthFormatter: DateTimeFormatter,
+    yearFormatter: DateTimeFormatter,
     onAction: (ChartsActions) -> Unit,
     modifier: Modifier = Modifier,
-    verticalScrollState: ScrollState = rememberScrollState()
 ) {
-    val options = listOf(
-        stringResource(R.string.finance_type_income),
-        stringResource(R.string.finance_type_expense),
-        stringResource(R.string.finance_balance_title)
-    )
+    val intervalOptions = listOf("Monthly", "Annual")
 
-    PullToRefreshBox(
-        isRefreshing = state.isLoading,
-        onRefresh = { onAction(ChartsActions.OnRefresh) },
-        modifier = modifier.fillMaxWidth()
+    Column(
+        modifier = modifier.fillMaxSize(),
     ) {
+        // Header
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.chart_padding_medium)),
-            modifier = modifier
+            verticalArrangement = Arrangement.spacedBy(2.dp),
+            modifier = Modifier
                 .fillMaxWidth()
-                .padding(dimensionResource(R.dimen.padding_medium))
-                .verticalScroll(verticalScrollState)
+                .padding(horizontal = 20.dp, vertical = 12.dp),
         ) {
-            MultiChoiceSegmentedButtonRow(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                options.forEachIndexed { index, label ->
-                    SegmentedButton(
-                        shape = SegmentedButtonDefaults.itemShape(
-                            index = index,
-                            count = options.size
+            Text(
+                text = stringResource(R.string.screen_title_charts),
+                style = MaterialTheme.typography.headlineSmall.copy(
+                    fontWeight = FontWeight.Bold,
+                ),
+            )
+            Text(
+                text = stringResource(R.string.charts_subtitle),
+                style = MaterialTheme.typography.labelMedium,
+                modifier = Modifier.alpha(0.6f),
+            )
+        }
+
+        // Interval selector
+        SingleChoiceSegmentedButtonRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = dimensionResource(R.dimen.chart_padding_medium), vertical = 4.dp),
+        ) {
+            intervalOptions.forEachIndexed { index, label ->
+                SegmentedButton(
+                    shape = SegmentedButtonDefaults.itemShape(
+                        index = index,
+                        count = intervalOptions.size,
+                    ),
+                    selected = state.selectedIntervalIndex == index,
+                    onClick = { onAction(ChartsActions.OnTabSelected(index)) },
+                    label = { Text(label) },
+                )
+            }
+        }
+
+        // Pager
+        when (state.selectedIntervalIndex) {
+            0 -> {
+                val monthlyPagerState = rememberPagerState(
+                    initialPage = initialPage,
+                    pageCount = { totalPages },
+                )
+                HorizontalPager(
+                    state = monthlyPagerState,
+                    key = { page -> page },
+                    pageSpacing = 2.dp,
+                    modifier = Modifier.fillMaxSize(),
+                ) { page ->
+                    val monthOffset = page - initialPage
+                    val targetMonth = baseDate.plusMonths(monthOffset.toLong())
+                    val epochMillis =
+                        targetMonth.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli()
+
+                    FinanceChartCard(
+                        title = targetMonth.format(monthFormatter),
+                        viewModel = koinViewModel(
+                            key = "monthly_${targetMonth}",
+                            parameters = {
+                                parametersOf(
+                                    epochMillis,
+                                    FinanceInterval.Monthly,
+                                    state.currencyCode,
+                                )
+                            },
                         ),
-                        checked = state.selectedChartOptions[index],
-                        onCheckedChange = {
-                            onAction(ChartsActions.OnToggleChartOption(index))
-                        },
-                        icon = { SegmentedButtonDefaults.Icon(state.selectedChartOptions[index]) },
-                        label = { Text(text = label) },
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(dimensionResource(R.dimen.padding_medium)),
                     )
                 }
             }
 
-            OutlinedCard(
-                shape = RoundedCornerShape(
-                    dimensionResource(R.dimen.chart_round_corner_size_small)
-                ),
-                border = BorderStroke(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.outlineVariant
-                ),
-                colors = CardDefaults.outlinedCardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-                ),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                ChartLegendItemGrid(
-                    data = listOf(
-                        ChartLegendItem(
-                            label = stringResource(R.string.finance_type_income),
-                            color = Color(0xFF12C51A)
-                        ),
-                        ChartLegendItem(
-                            label = stringResource(R.string.finance_type_expense),
-                            color = Color(0xFFBE0E1F)
-                        ),
-                        ChartLegendItem(
-                            label = stringResource(R.string.finance_balance_title),
-                            color = Color(0xFF0C6EE5)
-                        )
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(dimensionResource(R.dimen.chart_padding_medium))
+            1 -> {
+                val annualPagerState = rememberPagerState(
+                    initialPage = initialPage,
+                    pageCount = { totalPages },
                 )
+                HorizontalPager(
+                    state = annualPagerState,
+                    key = { page -> page },
+                    pageSpacing = 2.dp,
+                    modifier = Modifier.fillMaxSize(),
+                ) { page ->
+                    val yearOffset = page - initialPage
+                    val targetYear = baseDate.plusYears(yearOffset.toLong()).withDayOfYear(1)
+                    val epochMillis =
+                        targetYear.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli()
+
+                    FinanceChartCard(
+                        title = targetYear.format(yearFormatter),
+                        viewModel = koinViewModel(
+                            key = "annual_${targetYear.year}",
+                            parameters = {
+                                parametersOf(
+                                    epochMillis,
+                                    FinanceInterval.Annually,
+                                    state.currencyCode,
+                                )
+                            },
+                        ),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(dimensionResource(R.dimen.padding_medium)),
+                    )
+                }
             }
-
-            FinanceLineChart(
-                title = stringResource(R.string.chart_annual_cash_flow_title),
-                items = listOf(
-                    LineChartData(
-                        label = stringResource(R.string.finance_type_income),
-                        color = Color(0xFF12C51A),
-                        values = state.yearlyCashFlowIncome,
-                        enable = state.selectedChartOptions[0]
-                    ),
-                    LineChartData(
-                        label = stringResource(R.string.finance_type_expense),
-                        color = Color(0xFFBE0E1F),
-                        values = state.yearlyCashFlowExpense,
-                        enable = state.selectedChartOptions[1]
-                    ),
-                    LineChartData(
-                        label = stringResource(R.string.finance_balance_title),
-                        color = Color(0xFF0C6EE5),
-                        values = state.yearlyCashFlowBalance,
-                        enable = state.selectedChartOptions[2]
-                    )
-                ),
-                labels = Month.entries.map {
-                    it.name.substring(0, 3)
-                        .lowercase(LocalLocale.current.platformLocale)
-                        .replaceFirstChar { char -> char.uppercase() }
-                },
-                currencyCode = state.currencyCode,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(max = 250.dp)
-            )
-
-            FinanceLineChart(
-                title = stringResource(R.string.chart_monthly_cash_flow_title),
-                items = listOf(
-                    LineChartData(
-                        label = stringResource(R.string.finance_type_income),
-                        color = Color(0xFF12C51A),
-                        values = state.avgMonthlyIncome,
-                        enable = state.selectedChartOptions[0]
-                    ),
-                    LineChartData(
-                        label = stringResource(R.string.finance_type_expense),
-                        color = Color(0xFFBE0E1F),
-                        values = state.avgMonthlyExpense,
-                        enable = state.selectedChartOptions[1]
-                    ),
-                    LineChartData(
-                        label = stringResource(R.string.finance_balance_title),
-                        color = Color(0xFF0C6EE5),
-                        values = state.avgMonthlyBalance,
-                        enable = state.selectedChartOptions[2]
-                    ),
-                ),
-                labels = lineLabels,
-                currencyCode = state.currencyCode,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(max = 250.dp)
-            )
-
-            FinancePieChart(
-                title = stringResource(R.string.chart_annual_income_title),
-                items = state.incomeCategories.mapIndexed { index, it ->
-                    PieChartData(
-                        label = it.first.asString(),
-                        color = incomeChartColors[index % incomeChartColors.size],
-                        selectedColor = MaterialTheme.colorScheme.inversePrimary,
-                        data = it.second,
-                        selected = false
-                    )
-                },
-                onItemClick = {},
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(max = 300.dp)
-            )
-
-            FinancePieChart(
-                title = stringResource(R.string.chart_annual_expense_title),
-                items = state.expenseCategories.mapIndexed { index, it ->
-                    PieChartData(
-                        label = it.first.asString(),
-                        color = expenseChartColors[index % expenseChartColors.size],
-                        selectedColor = MaterialTheme.colorScheme.inversePrimary,
-                        data = it.second,
-                        selected = false
-                    )
-                },
-                onItemClick = {},
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(max = 300.dp)
-            )
         }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun ChartsViewPreview() {
+private fun ChartsViewPreview() {
     MaterialTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             ChartsView(
                 state = ChartsState(),
+                initialPage = 0,
+                totalPages = 120,
+                baseDate = LocalDate.now(),
+                monthFormatter = DateTimeFormatter.ofPattern("MMM yyyy"),
+                yearFormatter = DateTimeFormatter.ofPattern("yyyy"),
                 onAction = {},
-                modifier = Modifier.padding(innerPadding)
+                modifier = Modifier.padding(innerPadding),
             )
         }
     }

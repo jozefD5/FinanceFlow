@@ -1,14 +1,16 @@
 package com.jd.financeflow.features.finance.presentation.financeListFilter
 
+import androidx.compose.runtime.Stable
+
 import com.jd.financeflow.features.core.presentation.UiText
 import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
 
+@Stable
 data class FinanceListFilterState(
     val error: UiText? = null,
     val currencyCode: String = "EUR",
 
-    val selectedSortIndex: Int = 0,
     val selectedTypeIndex: Int = 0,
     val enableCategories: Boolean = false,
 

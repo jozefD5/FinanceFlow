@@ -7,9 +7,6 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class FilterConfiguration(
-    // Sort order for the transactions
-    val sortOrder: SortOrder = SortOrder.NEWEST_FIRST,
-
     // Selected income and expense categories. Set both fields to null if no
     // categories are selected. Position of each element corresponds to category position of each
     // enum for the type of category (income or expense)

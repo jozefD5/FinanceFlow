@@ -1,4 +1,5 @@
 package com.jd.financeflow.ui.theme
+
 import androidx.compose.ui.graphics.Color
 
 val primaryLight = Color(0xFF004ABC)
@@ -218,6 +219,12 @@ val surfaceContainerHighDarkHighContrast = Color(0xFF393B44)
 val surfaceContainerHighestDarkHighContrast = Color(0xFF444650)
 
 
+// Custom color pallet
+val baseDarkBlue = Color(0xFF0D172A)        // Deep midnight base (Corrected Hex!)
+val topLightCyan = Color(0xFF26C6DA)        // Vibrant top right cyan/teal
+val midBrightBlue = Color(0xFF0052D4)       // Power blue accent for depth
+val bottomTeal = Color(0xFF00F2FE)          // Soft glowing bottom mint/teal hint
+val vibrantMediumBlue = Color(0xFF237096)   // Medium blue for contrast
 
 
 

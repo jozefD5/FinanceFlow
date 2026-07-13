@@ -12,10 +12,10 @@ import androidx.lifecycle.viewModelScope
 
 import com.jd.financeflow.features.core.domain.DataError
 import com.jd.financeflow.features.core.presentation.toUiText
+import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
 import com.jd.financeflow.features.finance.domain.models.FilterConfiguration
 import com.jd.financeflow.features.finance.domain.models.FinanceType
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
-import com.jd.financeflow.features.finance.domain.models.SortOrder
 
 private const val TAG = "FinanceListFilterViewModel"
 
@@ -34,13 +34,13 @@ class FinanceListFilterViewModel(
     val state = _state
         .onStart {
             if (configuration != null) {
-                applyInitialConfiguration(currencyCode, configuration)
+                applyInitialConfiguration(configuration)
             }
         }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = FinanceListFilterState(currencyCode = currencyCode)
+            initialValue = _state.value
         )
 
     /**
@@ -64,11 +64,7 @@ class FinanceListFilterViewModel(
                 resetFilter()
             }
 
-            is FinanceListFilterActions.OnUpdateSort -> {
-                _state.update {
-                    it.copy(selectedSortIndex = action.index)
-                }
-            }
+            is FinanceListFilterActions.OnBackNavigationClicked -> {}
 
             is FinanceListFilterActions.OnEnableCategories -> {
                 _state.update {
@@ -107,21 +103,27 @@ class FinanceListFilterViewModel(
     /**
      * Applies the initial configuration to the state.
      *
-     * @param currencyCode The currency code to be used.
      * @param config The initial filter configuration.
      */
-    private fun applyInitialConfiguration(
-        currencyCode: String,
-        config: FilterConfiguration
-    ) {
+    private fun applyInitialConfiguration(config: FilterConfiguration) {
+        Log.i("FinanceListFilterViewModel", "Applying initial configuration: $config")
+
         val currentState = _state.value
         val selectedTypeIndex = config.type?.ordinal ?: 0
 
         val selectedIncomeCategories =
-            config.selectedIncomeIndexes ?: currentState.selectedIncomeCategories
+            if (config.selectedIncomeIndexes != null && config.selectedIncomeIndexes.size == IncomeCategory.entries.size) {
+                config.selectedIncomeIndexes
+            } else {
+                currentState.selectedIncomeCategories
+            }
 
         val selectedExpenseCategories =
-            config.selectedExpenseIndexes ?: currentState.selectedExpenseCategories
+            if (config.selectedExpenseIndexes != null && config.selectedExpenseIndexes.size == ExpenseCategory.entries.size) {
+                config.selectedExpenseIndexes
+            } else {
+                currentState.selectedExpenseCategories
+            }
 
         val miniAmountLimit = config.miniAmountLimit?.toFloat() ?: currentState.minimumAmount
         val maxAmountLimit = config.maxAmountLimit?.toFloat() ?: currentState.maximumAmount
@@ -129,9 +131,6 @@ class FinanceListFilterViewModel(
         _state.update {
             it.copy(
                 currencyCode = currencyCode,
-
-                // Sort order
-                selectedSortIndex = config.sortOrder.ordinal,
 
                 // Selected type and categories
                 enableCategories = config.enableCategoryFilter,
@@ -208,7 +207,6 @@ class FinanceListFilterViewModel(
             val currentState = _state.value
 
             // Extract the values from the current state
-            val sortOrder = SortOrder.entries[currentState.selectedSortIndex]
             val (miniAmount, maxAmount) = if (currentState.enableAmountRange) {
                 Pair(
                     currentState.selectedAmountRangeMini.toDouble(),
@@ -226,7 +224,6 @@ class FinanceListFilterViewModel(
 
             callback.invoke(
                 FilterConfiguration(
-                    sortOrder = sortOrder,
                     enableCategoryFilter = currentState.enableCategories,
                     selectedIncomeIndexes = currentState.selectedIncomeCategories,
                     selectedExpenseIndexes = currentState.selectedExpenseCategories,
@@ -249,11 +246,10 @@ class FinanceListFilterViewModel(
         val currentState = _state.value
         _state.update {
             it.copy(
-                selectedSortIndex = 0,
                 selectedTypeIndex = 0,
                 enableCategories = false,
                 selectedIncomeCategories = IncomeCategory.entries.map { true },
-                selectedExpenseCategories = IncomeCategory.entries.map { true },
+                selectedExpenseCategories = ExpenseCategory.entries.map { true },
                 enableAmountRange = false,
                 selectedAmountRangeMini = currentState.minimumAmount,
                 selectedAmountRangeMax = currentState.maximumAmount

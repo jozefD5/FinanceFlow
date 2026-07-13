@@ -2,41 +2,51 @@ package com.jd.financeflow.features.finance.presentation.home.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.TrendingDown
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
+import androidx.compose.material.icons.filled.TrendingDown
+import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 
 import com.jd.financeflow.R
 import com.jd.financeflow.features.core.presentation.components.formatCurrency
 
 /**
- * Displays a balance card with the given value and currency code.
+ * Hero balance card showing total balance and income/expense chips.
  *
- * @param balance the balance value to display
- * @param currencyCode the currency code to use e.g. EUR for Euro or USD for US Dollar
- * @param modifier the modifier to apply to the card
- * @param color the background color of the card
- * @param textColor the text color of the card
+ * @param balance the net balance to display
+ * @param income total income value
+ * @param expense total expense value
+ * @param currencyCode ISO currency code, e.g. "EUR"
+ * @param color card container color (use Transparent when rendered on a gradient)
+ * @param textColor text and icon tint color
  */
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun BalanceCard(
     balance: Double,
@@ -45,109 +55,128 @@ fun BalanceCard(
     currencyCode: String,
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.primary,
-    textColor: Color = MaterialTheme.colorScheme.onPrimary
+    textColor: Color = MaterialTheme.colorScheme.onPrimary,
 ) {
     Card(
-        colors = CardDefaults.cardColors(
-            containerColor = color
-        ),
+        colors = CardDefaults.cardColors(containerColor = color),
         modifier = modifier,
     ) {
         Column(
-            verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .padding(dimensionResource(R.dimen.padding_medium))
+                .fillMaxWidth()
                 .background(Color.Transparent)
+                .padding(vertical = 8.dp),
         ) {
             Text(
                 text = stringResource(R.string.balance_card_label_your_balance),
-                style = MaterialTheme.typography.titleMedium.copy(
-                    color = textColor,
-                ),
-                modifier = Modifier.alpha(0.8f)
+                style = MaterialTheme.typography.labelMedium.copy(color = textColor),
+                modifier = Modifier.alpha(0.70f),
             )
+            Spacer(Modifier.height(6.dp))
             Text(
                 text = formatCurrency(balance, currencyCode),
-                style = MaterialTheme.typography.titleLarge.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = textColor
-                )
+                style = MaterialTheme.typography.displaySmall.copy(
+                    fontWeight = FontWeight.ExtraBold,
+                    color = textColor,
+                ),
             )
-
+            Spacer(Modifier.height(24.dp))
             Row(
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
-                Column {
-                    Text(
-                        text = stringResource(R.string.balance_card_label_income),
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            color = textColor,
-                        ),
-                        modifier = Modifier.alpha(0.8f)
-                    )
-                    Text(
-                        text = formatCurrency(income, currencyCode),
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            color = textColor
-                        )
-                    )
-                }
-
-                VerticalDivider(
-                    modifier = Modifier
-                        .heightIn(max = dimensionResource(R.dimen.padding_extra_extra_large))
+                FinanceSummaryChip(
+                    label = stringResource(R.string.balance_card_label_income),
+                    amount = formatCurrency(income, currencyCode),
+                    icon = Icons.AutoMirrored.Filled.TrendingUp,
+                    iconTint = Color(0xFF66BB6A),
+                    textColor = textColor,
+                    modifier = Modifier.weight(1f),
                 )
-
-                Column {
-                    Text(
-                        text = stringResource(R.string.balance_card_label_expense),
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            color = textColor,
-                        ),
-                        modifier = Modifier.alpha(0.8f)
-                    )
-                    Text(
-                        text = formatCurrency(expense, currencyCode),
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            color = textColor
-                        )
-                    )
-                }
+                Spacer(Modifier.width(10.dp))
+                FinanceSummaryChip(
+                    label = stringResource(R.string.balance_card_label_expense),
+                    amount = formatCurrency(expense, currencyCode),
+                    icon = Icons.AutoMirrored.Filled.TrendingDown,
+                    iconTint = Color(0xFFEF5350),
+                    textColor = textColor,
+                    modifier = Modifier.weight(1f),
+                )
             }
         }
     }
 }
 
-@Preview
 @Composable
-fun BalanceCardPreview() {
-    MaterialTheme {
-        Scaffold(
-            containerColor = Color.Gray
-        ) { innerPadding ->
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
+private fun FinanceSummaryChip(
+    label: String,
+    amount: String,
+    icon: ImageVector,
+    iconTint: Color,
+    textColor: Color,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        shape = RoundedCornerShape(16.dp),
+        color = Color.White.copy(alpha = 0.12f),
+        modifier = modifier,
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
                 modifier = Modifier
-                    .padding(innerPadding)
-                    .fillMaxWidth()
+                    .size(34.dp)
+                    .background(iconTint.copy(alpha = 0.20f), RoundedCornerShape(10.dp)),
             ) {
-                BalanceCard(
-                    balance = 100_000.0,
-                    income = 150_000.0,
-                    expense = 50_000.0,
-                    currencyCode = "EUR",
-                    modifier = Modifier
-                        .padding(dimensionResource(R.dimen.padding_extra_extra_large))
-                        .fillMaxWidth()
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = iconTint,
+                    modifier = Modifier.size(18.dp),
                 )
             }
+            Column {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.labelSmall.copy(color = textColor),
+                    modifier = Modifier.alpha(0.70f),
+                )
+                Text(
+                    text = amount,
+                    style = MaterialTheme.typography.titleSmall.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        color = textColor,
+                    ),
+                    maxLines = 1,
+                )
+            }
+        }
+    }
+}
+
+@Preview(showBackground = false)
+@Composable
+private fun BalanceCardPreview() {
+    MaterialTheme {
+        Surface(
+            color = Color(0xFF0D172A),
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            BalanceCard(
+                balance = 100_000.0,
+                income = 150_000.0,
+                expense = 50_000.0,
+                currencyCode = "EUR",
+                color = Color.Transparent,
+                textColor = Color.White,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
+            )
         }
     }
 }

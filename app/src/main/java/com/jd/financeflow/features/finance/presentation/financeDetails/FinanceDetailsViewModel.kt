@@ -48,7 +48,7 @@ class FinanceDetailsViewModel(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = FinanceDetailsState(currencyCode = currencyCode)
+            initialValue = _state.value
         )
 
     /**
@@ -69,6 +69,8 @@ class FinanceDetailsViewModel(
             is FinanceDetailsActions.OnSaveFinance -> {
                 saveFinance(action.action)
             }
+
+            is FinanceDetailsActions.OnBackNavigationClicked -> {}
 
             is FinanceDetailsActions.OnUpdateTitle -> {
                 _state.update {
@@ -209,7 +211,7 @@ class FinanceDetailsViewModel(
             val sanitizedValue = sanitizeAmountInput(amount)
             val formattedForDisplay = formatAmountForDisplay(sanitizedValue)
 
-            // 3. Final validation against a comprehensive regex for valid numerical patterns
+            // Final validation against a comprehensive regex for valid numerical patterns
             // This regex ensures:
             // - Allows "0" or "0.XX"
             // - Allows positive integers "1" or "123"

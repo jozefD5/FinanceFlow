@@ -7,4 +7,5 @@ sealed interface HomeActions {
     data object OnClearError : HomeActions
     data object OnRefreshBalance : HomeActions
     data object OnAddFinanceClicked : HomeActions
+    data object OnAllActivityClicked : HomeActions
 }

@@ -5,6 +5,5 @@ package com.jd.financeflow.features.finance.presentation.charts
  */
 sealed interface ChartsActions {
     data object OnClearError : ChartsActions
-    data object OnRefresh : ChartsActions
-    data class OnToggleChartOption(val index: Int) : ChartsActions
+    data class OnTabSelected(val index: Int) : ChartsActions
 }

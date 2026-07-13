@@ -1,10 +1,10 @@
 package com.jd.financeflow.features.finance.presentation.financeDetails
 
+import androidx.compose.runtime.Stable
+
 import com.jd.financeflow.features.core.presentation.UiText
 
-/**
- * Represents the state of the finance transaction details screen.
- */
+@Stable
 data class FinanceDetailsState(
     val isLoading: Boolean = false,
     val error: UiText? = null,

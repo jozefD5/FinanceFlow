@@ -2,71 +2,64 @@ package com.jd.financeflow.features.finance.presentation.financeList
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
-import androidx.compose.material.icons.automirrored.outlined.Sort
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBar
+import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.SearchBarDefaults
-import androidx.compose.material3.SearchBarState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.focus.onFocusEvent
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import org.koin.androidx.compose.koinViewModel
 
 import com.jd.financeflow.R
 import com.jd.financeflow.features.core.presentation.components.ErrorDialog
+import com.jd.financeflow.features.core.presentation.components.formatCurrency
 import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
 import com.jd.financeflow.features.finance.domain.models.Finance
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceInterval
 import com.jd.financeflow.features.finance.domain.models.IncomeCategory
-import com.jd.financeflow.features.finance.presentation.financeList.components.FinanceList
-import com.jd.financeflow.ui.theme.primaryLightMediumContrast
+import com.jd.financeflow.features.finance.presentation.components.financeList.FinanceList
 
-/**
- * Screen for displaying a list of finance transactions.
- *
- * @param modifier modifier to be applied
- * @param onFinanceClicked callback for when an item is clicked
- * @param onFilterClicked callback for when the filter button is clicked
- * @param onAddFinanceClicked callback for when the add button is clicked
- * @param viewModel view model to be used
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FinanceListScreen(
@@ -74,7 +67,7 @@ fun FinanceListScreen(
     onFinanceClicked: (id: Int) -> Unit = {},
     onFilterClicked: () -> Unit = {},
     onAddFinanceClicked: () -> Unit = {},
-    viewModel: FinanceListViewModel = koinViewModel()
+    viewModel: FinanceListViewModel = koinViewModel(),
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
 
@@ -90,246 +83,251 @@ fun FinanceListScreen(
                 is FinanceListActions.OnFinanceItemClicked -> onFinanceClicked(action.id)
                 is FinanceListActions.OnFilterClicked -> onFilterClicked()
                 is FinanceListActions.OnAddFinanceClicked -> onAddFinanceClicked()
-
                 else -> viewModel.onAction(action)
             }
         },
-        modifier = modifier
+        modifier = modifier,
     )
 }
 
-/**
- * View for displaying a list of finance transactions.
- *
- * @param state state to be displayed
- * @param onAction action to be performed when item is clicked
- * @param modifier modifier to be applied
- */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun FinanceListView(
     state: FinanceListState,
     onAction: (FinanceListActions) -> Unit,
     modifier: Modifier = Modifier,
-    searchBarState: SearchBarState = rememberSearchBarState()
 ) {
-    PullToRefreshBox(
-        isRefreshing = state.isLoading,
-        onRefresh = { onAction(FinanceListActions.OnRefresh) },
-        modifier = modifier
-            .background(primaryLightMediumContrast)
-            .fillMaxWidth()
-    ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
-            modifier = modifier.fillMaxWidth()
+    Box(modifier = modifier) {
+        PullToRefreshBox(
+            isRefreshing = state.isLoading,
+            onRefresh = { onAction(FinanceListActions.OnRefresh) },
+            modifier = Modifier.fillMaxSize(),
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        vertical = dimensionResource(R.dimen.padding_large),
-                        horizontal = dimensionResource(R.dimen.padding_medium),
-                    )
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier.fillMaxWidth(),
             ) {
-                SearchBar(
-                    state = searchBarState,
-                    inputField = {
-                        SearchBarDefaults.InputField(
-                            query = state.searchQuery,
-                            onQueryChange = {
-                                onAction(FinanceListActions.OnUpdateSearchQuery(it))
-                            },
-                            onSearch = {
-                                onAction(FinanceListActions.OnSearch)
-                            },
-                            leadingIcon = {
-                                if (state.isSearching) {
-                                    IconButton(onClick = {
-                                        onAction(
-                                            FinanceListActions.OnEnableSearch(
-                                                false
-                                            )
-                                        )
-                                    }) {
-                                        Icon(
-                                            Icons.AutoMirrored.Filled.ArrowBackIos,
-                                            contentDescription = null
-                                        )
-                                    }
-                                } else {
-                                    Icon(Icons.Default.Search, contentDescription = null)
-                                }
-                            },
-                            trailingIcon = {
-                                if (state.searchQuery.isNotBlank()) {
-                                    IconButton(
-                                        onClick = {
-                                            onAction(FinanceListActions.OnUpdateSearchQuery(""))
-                                        }
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Clear,
-                                            contentDescription = null,
-                                        )
-                                    }
-                                }
-                            },
-                            expanded = state.isSearching,
-                            onExpandedChange = { toggle ->
-                                onAction(FinanceListActions.OnEnableSearch(toggle))
-                            },
-                            placeholder = { Text(stringResource(R.string.search_query_placeholder)) }
-                        )
-                    },
-                    modifier = Modifier
-                        .weight(0.8f)
-                        .alpha(0.85f)
-                )
-
+                // Balance summary — hidden while searching to give search full focus
                 AnimatedVisibility(
                     visible = !state.isSearching,
-                    enter = fadeIn() + expandHorizontally(),
+                    enter = fadeIn() + expandVertically(),
                     exit = fadeOut() + shrinkVertically(),
-                    modifier = Modifier.weight(0.2f)
                 ) {
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        IconButton(
-                            onClick = {
-                                onAction(FinanceListActions.OnFilterClicked)
-                            },
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Outlined.Sort,
-                                contentDescription = null,
-                                tint = Color(0xFFFFFFFF)
-                            )
-                        }
+                    BalanceSummaryCard(
+                        balance = state.currentBalance,
+                        currencyCode = state.currencyCode,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                    )
+                }
 
-                        IconButton(
-                            onClick = {
-                                onAction(FinanceListActions.OnAddFinanceClicked)
-                            },
+                // Search bar + filter button
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                ) {
+                    DockedSearchBar(
+                        inputField = {
+                            SearchBarDefaults.InputField(
+                                query = state.searchQuery,
+                                onQueryChange = { onAction(FinanceListActions.OnUpdateSearchQuery(it)) },
+                                onSearch = {},
+                                leadingIcon = {
+                                    if (state.isSearching) {
+                                        IconButton(onClick = {
+                                            onAction(FinanceListActions.OnEnableSearch(false))
+                                        }) {
+                                            Icon(
+                                                Icons.AutoMirrored.Filled.ArrowBackIos,
+                                                contentDescription = null,
+                                            )
+                                        }
+                                    } else {
+                                        Icon(Icons.Default.Search, contentDescription = null)
+                                    }
+                                },
+                                trailingIcon = {
+                                    if (state.searchQuery.isNotBlank()) {
+                                        IconButton(onClick = {
+                                            onAction(FinanceListActions.OnUpdateSearchQuery(""))
+                                        }) {
+                                            Icon(
+                                                imageVector = Icons.Default.Clear,
+                                                contentDescription = null,
+                                            )
+                                        }
+                                    }
+                                },
+                                expanded = state.isSearching,
+                                onExpandedChange = {
+                                    onAction(FinanceListActions.OnEnableSearch(it))
+                                },
+                                placeholder = { Text(stringResource(R.string.search_query_placeholder)) },
+                            )
+                        },
+                        expanded = false,
+                        onExpandedChange = {},
+                        content = {},
+                        modifier = Modifier.weight(1f),
+                    )
+
+                    AnimatedVisibility(
+                        visible = !state.isSearching,
+                        enter = fadeIn() + expandHorizontally(),
+                        exit = fadeOut() + shrinkHorizontally(),
+                    ) {
+                        OutlinedButton(
+                            onClick = { onAction(FinanceListActions.OnFilterClicked) },
+                            contentPadding = PaddingValues(0.dp),
+                            modifier = Modifier.height(SearchBarDefaults.InputFieldHeight),
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Add,
+                                imageVector = Icons.Default.FilterList,
                                 contentDescription = null,
-                                tint = Color(0xFFFFFFFF)
+                                modifier = Modifier.size(24.dp),
                             )
                         }
                     }
                 }
-            }
 
-            Surface(
-                shape = RoundedCornerShape(
-                    topStart = dimensionResource(R.dimen.padding_extra_extra_large),
-                    topEnd = dimensionResource(R.dimen.padding_extra_extra_large)
-                ),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .onFocusEvent { focusState ->
-                        if (focusState.isFocused) {
-                            onAction(FinanceListActions.OnEnableSearch(false))
-                        }
-                    }
-            ) {
                 FinanceList(
                     finances = state.finances,
                     currencyCode = state.currencyCode,
-                    onItemClick = {
-                        onAction(FinanceListActions.OnFinanceItemClicked(it.id))
-                    },
+                    onItemClick = { onAction(FinanceListActions.OnFinanceItemClicked(it.id)) },
                     onItemLongClick = {
                         onAction(
                             FinanceListActions.OnSelectedDeleteFinanceItem(
-                                shoeDialog = true,
-                                finance = it
+                                showDialog = true,
+                                finance = it,
                             )
                         )
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(dimensionResource(R.dimen.padding_large))
+                        .padding(horizontal = 16.dp),
                 )
             }
         }
-    }
 
-    if (state.showDeleteDialog) {
-        AlertDialog(
-            icon = {},
-            title = { Text(text = stringResource(R.string.delete_finance_item_title)) },
-            text = {
-                Column {
-                    Text(
-                        text = stringResource(R.string.delete_finance_item_text),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    state.selectedDeleteFinance?.title?.let {
+        FloatingActionButton(
+            onClick = { onAction(FinanceListActions.OnAddFinanceClicked) },
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp),
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Add,
+                contentDescription = null,
+            )
+        }
+
+        if (state.showDeleteDialog) {
+            AlertDialog(
+                title = { Text(text = stringResource(R.string.delete_finance_item_title)) },
+                text = {
+                    Column {
                         Text(
-                            text = it,
-                            style = MaterialTheme.typography.bodyMediumEmphasized,
-                            color = MaterialTheme.colorScheme.error
+                            text = stringResource(R.string.delete_finance_item_text),
+                            style = MaterialTheme.typography.bodyMedium,
                         )
-                    }
-                }
-            },
-            onDismissRequest = {
-                onAction(
-                    FinanceListActions.OnSelectedDeleteFinanceItem(
-                        shoeDialog = false,
-                        finance = null
-                    )
-                )
-            },
-            dismissButton = {
-                OutlinedButton(
-                    onClick = {
-                        onAction(
-                            FinanceListActions.OnSelectedDeleteFinanceItem(
-                                shoeDialog = false,
-                                finance = null
+                        state.selectedDeleteFinance?.title?.let {
+                            Text(
+                                text = it,
+                                style = MaterialTheme.typography.bodyMediumEmphasized,
+                                color = MaterialTheme.colorScheme.error,
                             )
-                        )
-                    }
-                ) {
-                    Text(stringResource(R.string.dismiss_title))
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        state.selectedDeleteFinance?.let {
-                            onAction(FinanceListActions.OnFinanceItemDelete(it))
                         }
                     }
-                ) {
-                    Text(stringResource(R.string.confirm_title))
-                }
-            }
-        )
-    }
+                },
+                onDismissRequest = {
+                    onAction(
+                        FinanceListActions.OnSelectedDeleteFinanceItem(
+                            showDialog = false,
+                            finance = null,
+                        )
+                    )
+                },
+                dismissButton = {
+                    OutlinedButton(
+                        onClick = {
+                            onAction(
+                                FinanceListActions.OnSelectedDeleteFinanceItem(
+                                    showDialog = false,
+                                    finance = null,
+                                )
+                            )
+                        },
+                    ) {
+                        Text(stringResource(R.string.dismiss_title))
+                    }
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            state.selectedDeleteFinance?.let {
+                                onAction(FinanceListActions.OnFinanceItemDelete(it))
+                            }
+                        },
+                    ) {
+                        Text(stringResource(R.string.confirm_title))
+                    }
+                },
+            )
+        }
 
-    if (state.error != null) {
-        ErrorDialog(
-            content = state.error.asString(),
-            onConfirmation = { onAction(FinanceListActions.OnClearError) },
-            onDismiss = { onAction(FinanceListActions.OnClearError) }
-        )
+        if (state.error != null) {
+            ErrorDialog(
+                content = state.error.asString(),
+                onConfirmation = { onAction(FinanceListActions.OnClearError) },
+                onDismiss = { onAction(FinanceListActions.OnClearError) },
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun BalanceSummaryCard(
+    balance: Double,
+    currencyCode: String,
+    modifier: Modifier = Modifier,
+) {
+    ElevatedCard(modifier = modifier) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 16.dp),
+        ) {
+            Column {
+                Text(
+                    text = stringResource(R.string.finance_balance_label),
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier.alpha(0.65f),
+                )
+                Text(
+                    text = formatCurrency(balance, currencyCode),
+                    style = MaterialTheme.typography.headlineSmall.copy(
+                        fontWeight = FontWeight.Bold,
+                    ),
+                )
+            }
+        }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
-fun FinanceListViewPreview() {
+private fun FinanceListViewPreview() {
     val currentUnixTime = System.currentTimeMillis()
-
     val finances = listOf(
         Finance(
             title = "Salary",
@@ -345,15 +343,7 @@ fun FinanceListViewPreview() {
             amount = 5_000.0,
             timeStampMs = currentUnixTime,
             interval = FinanceInterval.Quarterly,
-            category = FinanceCategory.Income(IncomeCategory.Bonus)
-        ),
-        Finance(
-            title = "Investment",
-            description = "",
-            amount = 1000.0,
-            timeStampMs = currentUnixTime,
-            interval = FinanceInterval.Quarterly,
-            category = FinanceCategory.Income(IncomeCategory.Investment)
+            category = FinanceCategory.Income(IncomeCategory.Bonus),
         ),
         Finance(
             title = "Housing",
@@ -361,22 +351,21 @@ fun FinanceListViewPreview() {
             amount = 500.0,
             timeStampMs = currentUnixTime,
             interval = FinanceInterval.Monthly,
-            category = FinanceCategory.Expense(ExpenseCategory.Housing)
-        )
+            category = FinanceCategory.Expense(ExpenseCategory.Housing),
+        ),
     )
 
     MaterialTheme {
         Scaffold { innerPadding ->
             FinanceListView(
                 state = FinanceListState(
-                    isLoading = true,
+                    isLoading = false,
                     currencyCode = "EUR",
+                    currentBalance = 14_500.0,
                     finances = finances,
-                    searchQuery = "abc123",
-                    //error = DataError.Local.UNKNOWN.toUiText()
                 ),
                 onAction = {},
-                modifier = Modifier.padding(innerPadding)
+                modifier = Modifier.padding(innerPadding),
             )
         }
     }

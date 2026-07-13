@@ -56,7 +56,7 @@ fun CircleInitialAvatar(
         Text(
             text = "$initialFirst$initialSecond",
             style = MaterialTheme.typography.titleMediumEmphasized,
-            color = Color.Black
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }

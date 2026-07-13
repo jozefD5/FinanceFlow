@@ -1,12 +1,10 @@
 <resources>
     <string name="app_name">FinanceFlow</string>
 
-    <string name="home_tab_label">Home</string>
+    <string name="home_tab_label">Overview</string>
     <string name="finances_tab_label">Finances</string>
     <string name="charts_tab_label">Charts</string>
 
-    <string name="income_overview_title">Income overview</string>
-    <string name="expense_overview_title">Expense overview</string>
     <string name="add_finance_button_label">Add finance</string>
     <string name="save_title">Save</string>
     <string name="cancel_title">Cancel</string>
@@ -15,7 +13,7 @@
     <string name="confirm_title">Confirm</string>
     <string name="search_query_placeholder">Search</string>
 
-    <string name="balance_card_label_your_balance">Your annual balance</string>
+    <string name="balance_card_label_your_balance">Current Year Balance</string>
     <string name="balance_card_label_income">Income</string>
     <string name="balance_card_label_expense">Expense</string>
 
@@ -59,6 +57,7 @@
     <string name="add_finance_title_start_date">Date</string>
     <string name="add_finance_title_start_date_placeholder">Select date</string>
 
+    <string name="finance_interval_one_time">One-time</string>
     <string name="finance_interval_daily">Daily"</string>
     <string name="finance_interval_weekly">Weekly</string>
     <string name="finance_interval_monthly">Monthly</string>
@@ -68,6 +67,7 @@
     <string name="delete_finance_item_title">Delete finance item?</string>
     <string name="delete_finance_item_text">Are you sure you want to delete this finance item?</string>
 
+    <string name="finance_balance_label">Current annual balance</string>
     <string name="filter_type_both_note">Select Income or Expense to filter by specific categories</string>
     <string name="filter_sort_switch_label">Sort by</string>
     <string name="filter_category_switch_label">Category</string>
@@ -84,6 +84,17 @@
     <string name="chart_annual_cash_flow_title">Annual Cash Flow</string>
     <string name="chart_annual_income_title">Annual Income</string>"
     <string name="chart_annual_expense_title">Annual Expense</string>
-
+    <string name="budget_rollover_label">Budget Rollover</string>
+    <string name="chart_year_label">Year</string>
+    <string name="chart_month_label">Month</string>
+    <string name="no_data_available_label">No data available</string>
+    <string name="see_all_transactions_label">See all</string>
+    <string name="recent_activity_label">Recent activity</string>
+    <string name="no_recent_transactions_label">No recent transactions yet</string>
+    <string name="screen_title_filter">Filter transactions</string>
+    <string name="screen_title_transaction_details">Transaction details</string>
+    <string name="content_description_back">Back</string>
+    <string name="screen_title_charts">Charts</string>
+    <string name="charts_subtitle">Swipe to browse periods</string>
 
 </resources>

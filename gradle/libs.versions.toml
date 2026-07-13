@@ -1,25 +1,25 @@
 [versions]
 agp = "9.2.1"
-kotlin = "2.3.21"
-coreKtx = "1.18.0"
+kotlin = "2.4.0"
+coreKtx = "1.19.0"
 junit = "4.13.2"
 junitVersion = "1.3.0"
 espressoCore = "3.7.0"
-lifecycleRuntimeKtx = "2.10.0"
+lifecycleRuntimeKtx = "2.11.0"
 activityCompose = "1.13.0"
-composeBom = "2026.05.00"
-google-fonts = "1.11.1"
-material3-expressive = "1.5.0-alpha14"
+composeBom = "2026.06.00"
+google-fonts = "1.11.3"
+material3-expressive = "1.5.0-alpha22"
 material-icons = "1.7.8"
 material-icons-extended = "1.7.8"
 kotlinx-datetime = "0.8.0"
 kotlinx-serialization-json = "1.11.0"
-kotlin-serialization = "2.3.21"
-koin = "4.2.1"
-nav3Core = "1.1.1"
-lifecycleViewmodelNav3 = "2.10.0"
+kotlin-serialization = "2.4.0"
+koin = "4.2.2"
+nav3Core = "1.1.3"
+lifecycleViewmodelNav3 = "2.11.0"
 kotlinxSerializationCore = "1.11.0"
-material3AdaptiveNav3 = "1.3.0-alpha08"
+material3AdaptiveNav3 = "1.3.0-rc01"
 roomDatabase = "2.8.4"
 ksp = "2.3.4"
 charts = "0.2.5"
@@ -49,6 +49,7 @@ androidx-compose-material3-expressive = {module = "androidx.compose.material3:ma
 androidx-compose-material-icons = { module = "androidx.compose.material:material-icons-core", version.ref = "material-icons"}
 androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "material-icons-extended"}
 androidx-compose-ui-text = { module = "androidx.compose.ui:ui-text-google-fonts", version.ref = "google-fonts" }
+androidx-compose-material3-window-size = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "material3AdaptiveNav3" }
 
 # Navigation 3
 # Core Navigation 3 libraries
