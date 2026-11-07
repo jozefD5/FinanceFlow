@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.core.data.database
+package com.jd.financeflow.features.core.data.localStorageDataSource.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

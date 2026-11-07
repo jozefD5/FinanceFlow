@@ -2,7 +2,7 @@ package com.jd.financeflow.features.finance.data.localStorageDataSource
 
 import com.jd.financeflow.features.core.domain.result.DataError
 import com.jd.financeflow.features.core.domain.result.Result
-import com.jd.financeflow.features.core.data.database.FinanceDao
+import com.jd.financeflow.features.core.data.localStorageDataSource.database.FinanceDao
 import com.jd.financeflow.features.finance.data.mappers.toEntity
 import com.jd.financeflow.features.finance.data.mappers.toFinance
 import com.jd.financeflow.features.finance.domain.models.Finance

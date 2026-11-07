@@ -6,8 +6,8 @@ import org.koin.dsl.module
 import org.koin.core.module.dsl.viewModel
 import org.koin.android.ext.koin.androidApplication
 
-import com.jd.financeflow.features.core.data.database.FinanceDatabase
-import com.jd.financeflow.features.core.data.database.FinanceFactory
+import com.jd.financeflow.features.core.data.localStorageDataSource.database.FinanceDatabase
+import com.jd.financeflow.features.core.data.localStorageDataSource.database.FinanceFactory
 import com.jd.financeflow.features.finance.data.localStorageDataSource.LocalStorageDataSource
 import com.jd.financeflow.features.finance.data.repository.FinanceRepositoryImpl
 import com.jd.financeflow.features.finance.domain.FinanceRepository
