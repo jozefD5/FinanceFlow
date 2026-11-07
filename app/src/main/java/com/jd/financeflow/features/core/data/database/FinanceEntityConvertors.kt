@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.finance.data.database
+package com.jd.financeflow.features.core.data.database
 
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -7,8 +7,8 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 import androidx.room.TypeConverter
-import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
 
+import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceInterval
 import com.jd.financeflow.features.finance.domain.models.FinanceType

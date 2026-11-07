@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.finance.data.database
+package com.jd.financeflow.features.core.data.database
 
 import androidx.room.Dao
 import androidx.room.Delete

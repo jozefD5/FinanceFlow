@@ -1,10 +1,10 @@
-package com.jd.financeflow.features.core.domain
+package com.jd.financeflow.features.core.domain.result
 
 /**
  * A sealed interface representing a result of an operation that can either be a [Success] or an [Error].
  *
  * @param D The type of the successful data.
- * @param E The type of the error, which must be a subtype of [com.jd.financeflow.features.core.domain.Error].
+ * @param E The type of the error, which must be a subtype of [com.jd.financeflow.features.core.domain.result.Error].
  */
 sealed interface Result<out D, out E : Error> {
     /**
@@ -18,10 +18,10 @@ sealed interface Result<out D, out E : Error> {
     /**
      * Represents a failed result.
      *
-     * @param E The type of the error, which must be a subtype of [com.jd.financeflow.features.core.domain.Error].
+     * @param E The type of the error, which must be a subtype of [com.jd.financeflow.features.core.domain.result.Error].
      * @property error The error that occurred.
      */
-    data class Error<out E : com.jd.financeflow.features.core.domain.Error>(val error: E) :
+    data class Error<out E : com.jd.financeflow.features.core.domain.result.Error>(val error: E) :
         Result<Nothing, E>
 }
 

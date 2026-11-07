@@ -54,7 +54,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 
 import com.jd.financeflow.R
-import com.jd.financeflow.features.core.domain.DataError
+import com.jd.financeflow.features.core.domain.result.DataError
 import com.jd.financeflow.features.finance.domain.models.FinanceCategory
 import com.jd.financeflow.features.finance.domain.models.FinanceInterval
 import com.jd.financeflow.features.core.presentation.components.LargeDropdownMenu

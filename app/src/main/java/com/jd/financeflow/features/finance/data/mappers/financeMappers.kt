@@ -1,6 +1,6 @@
 package com.jd.financeflow.features.finance.data.mappers
 
-import com.jd.financeflow.features.finance.data.database.FinanceEntity
+import com.jd.financeflow.features.core.data.database.FinanceEntity
 import com.jd.financeflow.features.finance.domain.models.Finance
 
 /**
@@ -15,6 +15,7 @@ fun Finance.toEntity(): FinanceEntity {
         description = this.description,
         amount = this.amount,
         startDate = this.timeStampMs,
+        endDataDate = null, // TODO, fi. It should be set by user or default to NULL
         interval = this.interval,
         category = this.category,
         createdAt = this.createdAt,

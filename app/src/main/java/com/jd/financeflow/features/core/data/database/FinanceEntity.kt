@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.finance.data.database
+package com.jd.financeflow.features.core.data.database
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -13,7 +13,8 @@ import com.jd.financeflow.features.finance.domain.models.FinanceInterval
  * @property title The title or description of the transaction.
  * @property description Additional details or notes about the transaction.
  * @property amount The monetary value of the transaction.
- * @property startDate The timestamp indicating when the transaction started (optional).
+ * @property startDate The timestamp indicating when the transaction started.
+ * @property endDataDate The timestamp indicating when the transaction re-occurrence ended.
  * @property interval The frequency or interval at which the transaction occurs.
  * @property category The category or type of the transaction
  * @property createdAt The timestamp indicating when the transaction was created or updated at last.
@@ -26,6 +27,7 @@ data class FinanceEntity(
     val description: String?,
     val amount: Double,
     val startDate: Long,
+    val endDataDate: Long?,
     val interval: FinanceInterval,
     val category: FinanceCategory,
     val createdAt: Long = System.currentTimeMillis()

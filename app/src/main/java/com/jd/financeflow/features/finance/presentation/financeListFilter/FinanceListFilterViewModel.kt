@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.stateIn
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
-import com.jd.financeflow.features.core.domain.DataError
+import com.jd.financeflow.features.core.domain.result.DataError
 import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
 import com.jd.financeflow.features.finance.domain.models.FilterConfiguration

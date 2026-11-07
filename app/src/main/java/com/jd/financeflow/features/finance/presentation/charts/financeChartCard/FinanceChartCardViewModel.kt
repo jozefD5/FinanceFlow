@@ -17,7 +17,7 @@ import kotlin.collections.component2
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
-import com.jd.financeflow.features.core.domain.Result
+import com.jd.financeflow.features.core.domain.result.Result
 import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.finance.domain.FinanceRepository
 import com.jd.financeflow.features.finance.domain.models.ExpenseCategory

@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.finance.data.database
+package com.jd.financeflow.features.core.data.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
@@ -16,7 +16,6 @@ import androidx.room.TypeConverters
     StringFinanceCategoryConverter::class
 )
 abstract class FinanceDatabase : RoomDatabase() {
-
     /**
      * Provides access to finance transaction Data Access Object.
      *

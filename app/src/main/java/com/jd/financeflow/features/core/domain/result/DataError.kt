@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.core.domain
+package com.jd.financeflow.features.core.domain.result
 
 /**
  * Data error implementation of [Error] interface

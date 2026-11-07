@@ -1,7 +1,7 @@
 package com.jd.financeflow.features.core.presentation
 
 import com.jd.financeflow.R
-import com.jd.financeflow.features.core.domain.DataError
+import com.jd.financeflow.features.core.domain.result.DataError
 
 /**
  * Converts a [DataError] to a [UiText] object.
