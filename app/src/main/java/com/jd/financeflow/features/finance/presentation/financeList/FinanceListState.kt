@@ -4,7 +4,7 @@ import androidx.compose.runtime.Stable
 
 import com.jd.financeflow.features.core.presentation.UiText
 import com.jd.financeflow.features.finance.domain.models.FilterConfiguration
-import com.jd.financeflow.features.finance.domain.models.Finance
+import com.jd.financeflow.features.core.domain.finance.Finance
 
 @Stable
 data class FinanceListState(

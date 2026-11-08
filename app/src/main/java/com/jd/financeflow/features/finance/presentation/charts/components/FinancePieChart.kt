@@ -34,8 +34,8 @@ import ir.ehsannarmani.compose_charts.models.LabelHelperProperties
 import com.jd.financeflow.R
 import com.jd.financeflow.features.core.presentation.components.formatCurrency
 import com.jd.financeflow.features.finance.domain.models.chart.PieChartData
-import com.jd.financeflow.features.finance.presentation.home.components.FinancialProportionBarData
-import com.jd.financeflow.features.finance.presentation.home.components.LinearProgressWidgetList
+import com.jd.financeflow.features.home.presentation.components.FinancialProportionBarData
+import com.jd.financeflow.features.home.presentation.components.LinearProgressWidgetList
 
 /**
  * Finance pie chart for displaying different finance data such as income and expenses

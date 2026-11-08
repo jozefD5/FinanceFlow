@@ -4,7 +4,7 @@ import com.jd.financeflow.features.core.domain.result.DataError
 import com.jd.financeflow.features.core.domain.result.EmptyResult
 import com.jd.financeflow.features.core.domain.result.Result
 import com.jd.financeflow.features.finance.data.localStorageDataSource.LocalStorageDataSource
-import com.jd.financeflow.features.finance.domain.models.Finance
+import com.jd.financeflow.features.core.domain.finance.Finance
 import com.jd.financeflow.features.finance.domain.FinanceRepository
 
 /**

@@ -1,6 +1,6 @@
 package com.jd.financeflow.features.finance.presentation.financeList
 
-import com.jd.financeflow.features.finance.domain.models.Finance
+import com.jd.financeflow.features.core.domain.finance.Finance
 
 /**
  * Actions that can be performed by the FinanceList screen.

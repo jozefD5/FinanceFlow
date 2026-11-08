@@ -18,13 +18,13 @@ import com.jd.financeflow.features.core.domain.result.Result
 import com.jd.financeflow.features.core.domain.result.onError
 import com.jd.financeflow.features.core.domain.result.onSuccess
 import com.jd.financeflow.features.core.presentation.toUiText
-import com.jd.financeflow.features.finance.domain.models.Finance
-import com.jd.financeflow.features.finance.domain.models.FinanceCategory
-import com.jd.financeflow.features.finance.domain.models.FinanceInterval
+import com.jd.financeflow.features.core.domain.finance.Finance
+import com.jd.financeflow.features.core.domain.finance.FinanceCategory
+import com.jd.financeflow.features.core.domain.finance.FinanceInterval
 import com.jd.financeflow.features.finance.domain.FinanceRepository
-import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
-import com.jd.financeflow.features.finance.domain.models.IncomeCategory
-import com.jd.financeflow.features.finance.domain.models.FinanceType
+import com.jd.financeflow.features.core.domain.finance.ExpenseCategory
+import com.jd.financeflow.features.core.domain.finance.IncomeCategory
+import com.jd.financeflow.features.core.domain.finance.FinanceType
 
 /**
  * View model for the finance transaction details screen. Responsible for adding new transaction or modifying

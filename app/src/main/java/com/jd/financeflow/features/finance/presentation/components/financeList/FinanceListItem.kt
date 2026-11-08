@@ -19,10 +19,11 @@ import androidx.compose.ui.unit.dp
 
 import com.jd.financeflow.features.core.presentation.components.CircleInitialAvatar
 import com.jd.financeflow.features.core.presentation.components.formatCurrency
-import com.jd.financeflow.features.finance.domain.models.Finance
-import com.jd.financeflow.features.finance.domain.models.FinanceCategory
-import com.jd.financeflow.features.finance.domain.models.FinanceInterval
-import com.jd.financeflow.features.finance.domain.models.IncomeCategory
+import com.jd.financeflow.features.core.domain.finance.Finance
+import com.jd.financeflow.features.core.domain.finance.ExpenseCategory
+import com.jd.financeflow.features.core.domain.finance.FinanceCategory
+import com.jd.financeflow.features.core.domain.finance.FinanceInterval
+import com.jd.financeflow.features.core.domain.finance.IncomeCategory
 
 /**
  * Displays a finance item with the given information as list item.
@@ -135,7 +136,7 @@ fun FinanceListItemNoDescriptionPreview() {
                 amount = 5.50,
                 interval = FinanceInterval.Monthly,
                 timeStampMs = System.currentTimeMillis(),
-                category = FinanceCategory.Expense(com.jd.financeflow.features.finance.domain.models.ExpenseCategory.Entertainment)
+                category = FinanceCategory.Expense(ExpenseCategory.Entertainment)
             ),
             onClicked = {},
             onLongClicked = {}

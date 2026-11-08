@@ -1,10 +1,10 @@
 package com.jd.financeflow.features.finance.presentation.components
 
 import com.jd.financeflow.R
-import com.jd.financeflow.features.finance.domain.models.FinanceCategory
+import com.jd.financeflow.features.core.domain.finance.FinanceCategory
 import com.jd.financeflow.features.core.presentation.UiText
-import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
-import com.jd.financeflow.features.finance.domain.models.IncomeCategory
+import com.jd.financeflow.features.core.domain.finance.ExpenseCategory
+import com.jd.financeflow.features.core.domain.finance.IncomeCategory
 
 /**
  * Converts a [FinanceCategory] to a [UiText] object.

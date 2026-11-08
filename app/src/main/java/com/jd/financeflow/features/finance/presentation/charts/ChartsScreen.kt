@@ -31,7 +31,7 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 import com.jd.financeflow.R
-import com.jd.financeflow.features.finance.domain.models.FinanceInterval
+import com.jd.financeflow.features.core.domain.finance.FinanceInterval
 import com.jd.financeflow.features.finance.presentation.charts.financeChartCard.FinanceChartCard
 
 @Composable

@@ -23,11 +23,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-import com.jd.financeflow.features.finance.domain.models.ExpenseCategory
-import com.jd.financeflow.features.finance.domain.models.Finance
-import com.jd.financeflow.features.finance.domain.models.FinanceCategory
-import com.jd.financeflow.features.finance.domain.models.FinanceInterval
-import com.jd.financeflow.features.finance.domain.models.IncomeCategory
+import com.jd.financeflow.features.core.domain.finance.ExpenseCategory
+import com.jd.financeflow.features.core.domain.finance.Finance
+import com.jd.financeflow.features.core.domain.finance.FinanceCategory
+import com.jd.financeflow.features.core.domain.finance.FinanceInterval
+import com.jd.financeflow.features.core.domain.finance.IncomeCategory
 import com.jd.financeflow.features.finance.presentation.components.zonedDateTime
 
 

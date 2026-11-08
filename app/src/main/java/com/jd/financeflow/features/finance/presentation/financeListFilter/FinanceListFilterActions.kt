@@ -1,7 +1,7 @@
 package com.jd.financeflow.features.finance.presentation.financeListFilter
 
 import com.jd.financeflow.features.finance.domain.models.FilterConfiguration
-import com.jd.financeflow.features.finance.domain.models.FinanceType
+import com.jd.financeflow.features.core.domain.finance.FinanceType
 
 sealed interface FinanceListFilterActions {
     data object OnClearError : FinanceListFilterActions
