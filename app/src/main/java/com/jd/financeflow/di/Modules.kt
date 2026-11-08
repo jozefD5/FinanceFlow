@@ -11,7 +11,7 @@ import com.jd.financeflow.features.core.data.localDataSource.database.FinanceFac
 import com.jd.financeflow.features.core.domain.localDataSource.LocalFinanceDataSource
 import com.jd.financeflow.features.core.data.localDataSource.LocalFinanceDataSourceDefault
 
-import com.jd.financeflow.features.home.data.repository.HomeRepositoryDefault
+import com.jd.financeflow.features.home.data.HomeRepositoryDefault
 import com.jd.financeflow.features.home.domain.HomeRepository
 import com.jd.financeflow.features.home.presentation.HomeViewModel
 

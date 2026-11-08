@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.home.data.repository
+package com.jd.financeflow.features.home.data
 
 import kotlinx.coroutines.CancellationException
 
@@ -15,7 +15,7 @@ import com.jd.financeflow.features.home.domain.HomeRepository
  * @property localDataSource The local data source used to access finance items.
  */
 class HomeRepositoryDefault(
-    val localDataSource: LocalFinanceDataSource
+    private val localDataSource: LocalFinanceDataSource
 ) : HomeRepository {
     /**
      * Retrieves a list of all financial transactions sorted by creation date descending.
