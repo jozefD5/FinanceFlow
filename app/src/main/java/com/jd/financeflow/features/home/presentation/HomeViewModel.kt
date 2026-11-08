@@ -33,6 +33,9 @@ class HomeViewModel(
     private val clock: Clock = Clock.systemDefaultZone()
 ) : ViewModel() {
     private val _state = MutableStateFlow(HomeState())
+    /**
+     * State flow representing the UI state of the home screen.
+     */
     val state = _state
         .onStart {
             refresh()

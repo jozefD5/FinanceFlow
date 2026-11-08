@@ -9,9 +9,19 @@ import com.jd.financeflow.features.core.domain.finance.Finance
 import com.jd.financeflow.features.home.domain.HomeRepository
 
 
+/**
+ * Default implementation of [HomeRepository] that fetches financial transactions from a local data source.
+ *
+ * @property localDataSource The local data source used to access finance items.
+ */
 class HomeRepositoryDefault(
     val localDataSource: LocalFinanceDataSource
 ) : HomeRepository {
+    /**
+     * Retrieves a list of all financial transactions sorted by creation date descending.
+     *
+     * @return A [Result] containing a list of [Finance] objects on success, or [DataError.Local] on failure.
+     */
     override suspend fun getFinances(): Result<List<Finance>, DataError.Local> {
         return try {
             when (val result = localDataSource.getAllItems()) {

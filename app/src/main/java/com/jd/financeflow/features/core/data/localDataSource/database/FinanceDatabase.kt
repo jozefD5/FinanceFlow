@@ -24,9 +24,12 @@ abstract class FinanceDatabase : RoomDatabase() {
     abstract fun financeDao(): FinanceDao
 
     /**
-     * Companion object to provide access to the database name.
+     * Companion object to provide access to database constants.
      */
     companion object {
+        /**
+         * The file name of the Room database.
+         */
         const val DATABASE_NAME = "finance_db"
     }
 }

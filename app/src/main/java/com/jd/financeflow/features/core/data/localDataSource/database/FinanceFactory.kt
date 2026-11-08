@@ -11,6 +11,11 @@ import androidx.room.RoomDatabase
 class FinanceFactory(
     private val context: Context
 ) {
+    /**
+     * Creates and returns a Room database builder for [FinanceDatabase].
+     *
+     * @return A [RoomDatabase.Builder] configured for [FinanceDatabase].
+     */
     fun create(): RoomDatabase.Builder<FinanceDatabase> {
         val appContext = context.applicationContext
         val dbFile = appContext.getDatabasePath(FinanceDatabase.DATABASE_NAME)

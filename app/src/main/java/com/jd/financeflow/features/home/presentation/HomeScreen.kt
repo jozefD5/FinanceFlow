@@ -59,6 +59,14 @@ import com.jd.financeflow.features.finance.presentation.components.financeList.F
 import com.jd.financeflow.features.home.presentation.components.BalanceCard
 import com.jd.financeflow.ui.theme.FinanceFlowTheme
 
+/**
+ * Composable function for the Home screen, providing state collection and view rendering.
+ *
+ * @param modifier The modifier for this composable.
+ * @param viewModel The view model for the home screen.
+ * @param onAddFinanceClicked Callback invoked when add finance is clicked.
+ * @param onAllActivityClicked Callback invoked when see all activity is clicked.
+ */
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
@@ -81,6 +89,13 @@ fun HomeScreen(
     )
 }
 
+/**
+ * Stateless view for the Home screen.
+ *
+ * @param state The current UI state ([HomeState]).
+ * @param onAction Callback to handle user actions ([HomeActions]).
+ * @param modifier The modifier for this composable.
+ */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun HomeView(

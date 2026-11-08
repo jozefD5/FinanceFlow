@@ -18,11 +18,23 @@ import com.jd.financeflow.features.core.domain.finance.IncomeCategory
  * Converts between [FinanceInterval] and its integer representation.
  */
 object IntFinanceIntervalConverter {
+    /**
+     * Converts a [FinanceInterval] to its integer value.
+     *
+     * @param value The [FinanceInterval] to convert.
+     * @return The integer representation of the interval.
+     */
     @TypeConverter
     fun fromFinanceInterval(value: FinanceInterval): Int {
         return value.value
     }
 
+    /**
+     * Converts an integer to a [FinanceInterval].
+     *
+     * @param value The integer value to convert.
+     * @return The corresponding [FinanceInterval].
+     */
     @TypeConverter
     fun toFinanceInterval(value: Int): FinanceInterval {
         return FinanceInterval.entries.first { it.value == value }
@@ -33,6 +45,12 @@ object IntFinanceIntervalConverter {
  * Converts between [FinanceType] and its JSON (string) representation.
  */
 object StringFinanceCategoryConverter {
+    /**
+     * Converts a [FinanceCategory] to its JSON string representation.
+     *
+     * @param value The [FinanceCategory] to convert.
+     * @return The JSON string representation of the category.
+     */
     @TypeConverter
     fun fromFinanceCategory(value: FinanceCategory): String {
         return when (value) {
@@ -52,6 +70,12 @@ object StringFinanceCategoryConverter {
         }
     }
 
+    /**
+     * Converts a JSON string representation to a [FinanceCategory].
+     *
+     * @param value The JSON string to convert.
+     * @return The corresponding [FinanceCategory].
+     */
     @TypeConverter
     fun toFinanceCategory(value: String): FinanceCategory {
         val json = Json.parseToJsonElement(value)

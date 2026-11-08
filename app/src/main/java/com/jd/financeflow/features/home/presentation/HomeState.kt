@@ -5,6 +5,17 @@ import androidx.compose.runtime.Stable
 import com.jd.financeflow.features.core.presentation.UiText
 import com.jd.financeflow.features.core.domain.finance.Finance
 
+/**
+ * Represents the UI state of the home screen.
+ *
+ * @property isLoading Whether data is currently loading.
+ * @property error An optional error message or resource to display ([UiText]).
+ * @property currencyCode The ISO currency code used for formatting.
+ * @property balance The net financial balance.
+ * @property income The total income amount.
+ * @property expense The total expense amount.
+ * @property recentTransactions The list of recent financial transactions.
+ */
 @Stable
 data class HomeState(
     // General

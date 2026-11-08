@@ -5,6 +5,9 @@ import com.jd.financeflow.features.core.domain.result.DataError.Local
 import com.jd.financeflow.features.core.domain.result.Result
 import com.jd.financeflow.features.core.domain.finance.Finance
 
+/**
+ * Repository interface for managing home screen data and financial transactions.
+ */
 interface HomeRepository {
     /**
      * Retrieves a list of all financial transactions.

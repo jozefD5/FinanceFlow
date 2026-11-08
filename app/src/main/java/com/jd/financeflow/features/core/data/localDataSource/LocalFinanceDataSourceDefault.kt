@@ -16,10 +16,21 @@ import com.jd.financeflow.features.core.domain.finance.Finance
 
 private const val TAG = "LocalFinanceDataSourceDefault"
 
+/**
+ * Default implementation of [LocalFinanceDataSource] that interacts with the Room database
+ * via [FinanceDao].
+ *
+ * @property financeDao The data access object used for database operations.
+ */
 class LocalFinanceDataSourceDefault(
     private val financeDao: FinanceDao
 ) : LocalFinanceDataSource {
 
+    /**
+     * Retrieves all finance items from the local database.
+     *
+     * @return A [Result] containing a list of [Finance] objects on success, or a [DataError.Local] on failure.
+     */
     override suspend fun getAllItems(): Result<List<Finance>, DataError.Local> {
         return try {
             Result.Success(
@@ -32,6 +43,12 @@ class LocalFinanceDataSourceDefault(
         }
     }
 
+    /**
+     * Retrieves a finance item by its unique identifier.
+     *
+     * @param id The unique identifier of the finance item.
+     * @return A [Result] containing the [Finance] object on success, or a [DataError.Local] on failure.
+     */
     override suspend fun getItemById(id: Int): Result<Finance, DataError.Local> {
         return try {
             val item =
@@ -45,6 +62,12 @@ class LocalFinanceDataSourceDefault(
         }
     }
 
+    /**
+     * Inserts a new finance item into the local database.
+     *
+     * @param item The [Finance] object to insert.
+     * @return An [EmptyResult] indicating success, or a [DataError.Local] on failure.
+     */
     override suspend fun insertItem(item: Finance): EmptyResult<DataError.Local> {
         return try {
             financeDao.insert(item.toEntity())
@@ -57,6 +80,12 @@ class LocalFinanceDataSourceDefault(
         }
     }
 
+    /**
+     * Updates an existing finance item in the local database.
+     *
+     * @param item The [Finance] object to update.
+     * @return An [EmptyResult] indicating success, or a [DataError.Local] on failure.
+     */
     override suspend fun updateItem(item: Finance): EmptyResult<DataError.Local> {
         return try {
             financeDao.update(item.toEntity())
@@ -69,6 +98,12 @@ class LocalFinanceDataSourceDefault(
         }
     }
 
+    /**
+     * Deletes a finance item from the local database.
+     *
+     * @param item The [Finance] object to delete.
+     * @return An [EmptyResult] indicating success, or a [DataError.Local] on failure.
+     */
     override suspend fun deleteItem(item: Finance): EmptyResult<DataError.Local> {
         return try {
             financeDao.delete(item.toEntity())
