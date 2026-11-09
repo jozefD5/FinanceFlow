@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.finance.presentation.financeDetails
+package com.jd.financeflow.features.financeDetails.presentation
 
 import java.util.Locale
 import java.util.UUID
@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.CancellationException
+import kotlin.text.iterator
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,28 +19,35 @@ import com.jd.financeflow.features.core.domain.result.DataError
 import com.jd.financeflow.features.core.domain.result.Result
 import com.jd.financeflow.features.core.domain.result.onError
 import com.jd.financeflow.features.core.domain.result.onSuccess
-import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.core.domain.finance.Finance
 import com.jd.financeflow.features.core.domain.finance.FinanceCategory
 import com.jd.financeflow.features.core.domain.finance.FinanceInterval
-import com.jd.financeflow.features.finance.domain.FinanceRepository
 import com.jd.financeflow.features.core.domain.finance.ExpenseCategory
 import com.jd.financeflow.features.core.domain.finance.IncomeCategory
 import com.jd.financeflow.features.core.domain.finance.FinanceType
+import com.jd.financeflow.features.core.presentation.toUiText
+import com.jd.financeflow.features.financeDetails.domain.FinanceDetailsRepository
+
 
 /**
  * View model for the finance transaction details screen. Responsible for adding new transaction or modifying
  * existing one if [financeId] is provided.
  *
- * @param financeRepository repository for finance transactions
+ * @param repository repository for finance transactions
  * @param financeId finance transaction to be modified or null for new transaction
+ * @param currencyCode ISO currency code used for displaying the amount, e.g. "EUR"
  */
 class FinanceDetailsViewModel(
-    private val financeRepository: FinanceRepository,
+    private val repository: FinanceDetailsRepository,
     private val financeId: Int? = null,
     private val currencyCode: String = "EUR"
 ) : ViewModel() {
     private val _state = MutableStateFlow(FinanceDetailsState(currencyCode = currencyCode))
+
+    /**
+     * State flow representing the UI state of the finance details screen. When [financeId] is
+     * provided, the existing transaction is loaded once collection starts.
+     */
     val state = _state
         .onStart {
             if (financeId != null) {
@@ -58,105 +67,63 @@ class FinanceDetailsViewModel(
      */
     fun onAction(action: FinanceDetailsActions) {
         when (action) {
-            is FinanceDetailsActions.ClearError -> {
-                _state.update {
-                    it.copy(
-                        error = null
-                    )
-                }
-            }
+            is FinanceDetailsActions.ClearError -> _state.update { it.copy(error = null) }
 
-            is FinanceDetailsActions.OnSaveFinance -> {
-                saveFinance(action.action)
-            }
+            is FinanceDetailsActions.OnSaveFinance -> saveFinance(action.action)
 
             is FinanceDetailsActions.OnBackNavigationClicked -> {}
 
-            is FinanceDetailsActions.OnUpdateTitle -> {
-                _state.update {
-                    it.copy(
-                        title = action.title
-                    )
-                }
+            is FinanceDetailsActions.OnUpdateTitle -> _state.update { it.copy(title = action.title) }
+
+            is FinanceDetailsActions.OnUpdateDescription -> _state.update { it.copy(description = action.description) }
+
+            is FinanceDetailsActions.OnUpdateAmount -> validateAmount(action.amount)
+
+            is FinanceDetailsActions.OnUpdateStartDate -> _state.update { it.copy(startDate = action.startDate) }
+
+            is FinanceDetailsActions.OnUpdateFinanceInterval -> _state.update {
+                it.copy(
+                    financeIntervalIndex = action.financeIntervalIndex
+                )
             }
 
-            is FinanceDetailsActions.OnUpdateDescription -> {
-                _state.update {
-                    it.copy(
-                        description = action.description
-                    )
-                }
+            is FinanceDetailsActions.OnUpdateFinanceType -> _state.update {
+                it.copy(
+                    financeTypeIndex = action.financeTypeIndex,
+                    financeCategoryIndex = 0
+                )
             }
 
-            is FinanceDetailsActions.OnUpdateAmount -> {
-                validateAmount(action.amount)
-            }
-
-            is FinanceDetailsActions.OnUpdateStartDate -> {
-                _state.update {
-                    it.copy(
-                        startDate = action.startDate
-                    )
-                }
-            }
-
-            is FinanceDetailsActions.OnUpdateFinanceInterval -> {
-                _state.update {
-                    it.copy(
-                        financeIntervalIndex = action.financeIntervalIndex
-                    )
-                }
-            }
-
-            is FinanceDetailsActions.OnUpdateFinanceType -> {
-                _state.update {
-                    it.copy(
-                        financeTypeIndex = action.financeTypeIndex,
-                        financeCategoryIndex = 0
-                    )
-                }
-            }
-
-            is FinanceDetailsActions.OnUpdateFinanceCategory -> {
-                _state.update {
-                    it.copy(
-                        financeCategoryIndex = action.financeCategoryIndex
-                    )
-                }
+            is FinanceDetailsActions.OnUpdateFinanceCategory -> _state.update {
+                it.copy(
+                    financeCategoryIndex = action.financeCategoryIndex
+                )
             }
         }
     }
 
     /**
-     * Loads existing finance transaction from the repository.
+     * Loads existing finance transaction from the repository and maps it into the form state,
+     * resolving the type and category indices from its [FinanceCategory].
      *
      * @param id id of the finance transaction
+     * @return the launched [kotlinx.coroutines.Job]
      */
     private fun loadExistingFinanceTransaction(id: Int) = viewModelScope.launch {
         _state.update { it.copy(isLoading = true) }
 
-        runCatching {
-            when (val result = financeRepository.getFinanceById(id)) {
+        try {
+            when (val result = repository.getFinanceById(id)) {
                 is Result.Success -> {
                     // Get index of the selected type and category
                     val typeIndex = when (result.data.category) {
-                        is FinanceCategory.Income -> {
-                            FinanceType.INCOME.ordinal
-                        }
-
-                        is FinanceCategory.Expense -> {
-                            FinanceType.EXPENSE.ordinal
-                        }
+                        is FinanceCategory.Income -> FinanceType.INCOME.ordinal
+                        is FinanceCategory.Expense -> FinanceType.EXPENSE.ordinal
                     }
 
                     val categoryIndex = when (result.data.category) {
-                        is FinanceCategory.Income -> {
-                            IncomeCategory.entries.indexOf(result.data.category.category)
-                        }
-
-                        is FinanceCategory.Expense -> {
-                            ExpenseCategory.entries.indexOf(result.data.category.category)
-                        }
+                        is FinanceCategory.Income -> IncomeCategory.entries.indexOf(result.data.category.category)
+                        is FinanceCategory.Expense -> ExpenseCategory.entries.indexOf(result.data.category.category)
                     }
 
                     _state.update {
@@ -178,33 +145,31 @@ class FinanceDetailsViewModel(
                     }
                 }
 
-                is Result.Error -> {
-                    _state.update {
-                        it.copy(
-                            isLoading = false,
-                            error = result.error.toUiText()
-                        )
-                    }
+                is Result.Error -> _state.update {
+                    it.copy(
+                        isLoading = false,
+                        error = result.error.toUiText()
+                    )
                 }
             }
-        }.getOrElse {
-            _state.update {
-                it.copy(
-                    isLoading = false,
-                    error = DataError.Local.UNKNOWN.toUiText()
-                )
-            }
+        } catch (e: Exception) {
+            if (e is CancellationException) throw e
+            _state.update { it.copy(isLoading = false, error = DataError.Local.UNKNOWN.toUiText()) }
         }
     }
 
     /**
-     * Updates and completes the private fun validateAmount function.
+     * Sanitizes, formats and validates the raw amount input and updates [FinanceDetailsState.amount].
      *
-     * This version separates concerns for better readability and testability:
-     * 1. `sanitizeAmountInput`: Cleans the raw user input, allowing only digits and a single decimal.
-     * 2. `formatAmountForDisplay`: Applies display-specific formatting (leading zeros, leading decimal).
-     * 3. The main `validateAmount` function then orchestrates these,
-     * and uses a refined regex for final validation before updating the state.
+     * The input is processed in steps:
+     * 1. [sanitizeAmountInput] keeps only digits and a single decimal point.
+     * 2. [formatAmountForDisplay] normalises leading zeros and a leading decimal point and limits
+     * the value to two decimal places.
+     * 3. The result is validated against a regex for non-negative amounts with up to two decimals.
+     *
+     * If validation fails, [FinanceDetailsState.error] is set to a parsing error instead.
+     *
+     * @param amount raw amount text entered by the user
      */
     private fun validateAmount(amount: String) {
         try {
@@ -228,24 +193,19 @@ class FinanceDetailsViewModel(
                     )
                 }
             } else {
-                _state.update {
-                    it.copy(
-                        error = DataError.Local.PARSING.toUiText()
-                    )
-                }
+                _state.update { it.copy(error = DataError.Local.PARSING.toUiText()) }
             }
         } catch (_: Exception) {
-            _state.update {
-                it.copy(
-                    error = DataError.Local.PARSING.toUiText()
-                )
-            }
+            _state.update { it.copy(error = DataError.Local.PARSING.toUiText()) }
         }
     }
 
     /**
      * Sanitizes raw string input to ensure it contains only digits and at most one decimal point.
      * This is the first pass to clean user input.
+     *
+     * @param input raw user input
+     * @return input stripped of all characters except digits and the first decimal point
      */
     private fun sanitizeAmountInput(input: String): String {
         val stringBuilder = StringBuilder()
@@ -263,7 +223,10 @@ class FinanceDetailsViewModel(
 
     /**
      * Formats the sanitized amount string for display purposes, handling common input patterns
-     * like leading zeros and leading decimal points.
+     * like leading zeros and leading decimal points, and truncates to two decimal places.
+     *
+     * @param sanitizedAmount amount already cleaned by [sanitizeAmountInput]
+     * @return amount formatted for display, or an empty string for empty input
      */
     private fun formatAmountForDisplay(sanitizedAmount: String): String {
         if (sanitizedAmount.isEmpty()) return ""
@@ -289,9 +252,14 @@ class FinanceDetailsViewModel(
     }
 
     /**
-     * Saves the finance to the repository.
+     * Validates the form and saves the finance to the repository.
+     *
+     * A blank title or amount marks the corresponding field as invalid and aborts the save. Otherwise
+     * a [Finance] is built from the current state and inserted when [financeId] is null, or updated
+     * when editing an existing transaction.
      *
      * @param onSuccessAction action to be performed on success if not null
+     * @return the launched [kotlinx.coroutines.Job]
      */
     private fun saveFinance(onSuccessAction: (() -> Unit)? = null) = viewModelScope.launch {
         val currentState = _state.value
@@ -344,9 +312,9 @@ class FinanceDetailsViewModel(
             )
 
             val result = if (financeId == null) {
-                financeRepository.insertFinance(finance)
+                repository.insertFinance(finance)
             } else {
-                financeRepository.updateFinance(finance)
+                repository.updateFinance(finance)
             }
 
             result

@@ -17,24 +17,30 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
 import com.jd.financeflow.features.core.domain.result.Result
-import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.core.domain.finance.FinanceType
-import com.jd.financeflow.features.finance.presentation.components.annualCashFlow
+import com.jd.financeflow.features.core.presentation.toUiText
+import com.jd.financeflow.features.core.presentation.financeCashFlowHelpers.annualCashFlow
 import com.jd.financeflow.features.home.domain.HomeRepository
 
 
 /**
  * View model for the home screen.
  *
+ * Loads all finance transactions on first subscription and derives the annual income, expense and
+ * balance totals for the current year together with the list of most recent transactions.
+ *
  * @param repository repository for finance transactions
+ * @param clock clock used to resolve the current year, injectable for testing
  */
 class HomeViewModel(
     private val repository: HomeRepository,
     private val clock: Clock = Clock.systemDefaultZone()
 ) : ViewModel() {
     private val _state = MutableStateFlow(HomeState())
+
     /**
-     * State flow representing the UI state of the home screen.
+     * State flow representing the UI state of the home screen. Triggers an initial [refresh] when
+     * collection starts and stays active for 5 seconds after the last subscriber disappears.
      */
     val state = _state
         .onStart {
@@ -65,6 +71,12 @@ class HomeViewModel(
 
     /**
      * Refreshes the balance and recent transactions.
+     *
+     * Fetches all finances from [repository], computes the current year's annual income and expense
+     * totals on [Dispatchers.Default] and keeps the 10 most recent transactions by timestamp.
+     * On failure, [HomeState.error] is populated instead.
+     *
+     * @return the launched [kotlinx.coroutines.Job]
      */
     private fun refresh() = viewModelScope.launch {
         _state.update { it.copy(isLoading = true) }

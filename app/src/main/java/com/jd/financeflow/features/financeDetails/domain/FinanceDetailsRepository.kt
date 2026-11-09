@@ -6,6 +6,10 @@ import com.jd.financeflow.features.core.domain.result.DataError.Local
 import com.jd.financeflow.features.core.domain.result.EmptyResult
 import com.jd.financeflow.features.core.domain.result.Result
 
+/**
+ * Repository interface for reading, creating and updating a single financial transaction on the
+ * finance details screen.
+ */
 interface FinanceDetailsRepository {
     /**
      * Retrieves a specific financial transaction by its unique identifier.

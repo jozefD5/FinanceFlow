@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.finance.presentation.financeDetails
+package com.jd.financeflow.features.financeDetails.presentation
 
 import android.icu.util.Currency
 import androidx.compose.animation.AnimatedVisibility
@@ -63,8 +63,17 @@ import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.core.domain.finance.ExpenseCategory
 import com.jd.financeflow.features.core.domain.finance.IncomeCategory
 import com.jd.financeflow.features.core.domain.finance.FinanceType
-import com.jd.financeflow.features.finance.presentation.financeDetails.components.DataPickerField
+import com.jd.financeflow.features.financeDetails.presentation.components.DataPickerField
 
+/**
+ * Composable function for the finance details screen, providing state collection and view
+ * rendering. Used both for adding a new transaction and editing an existing one.
+ *
+ * @param modifier The modifier for this composable.
+ * @param onSuccessfulAdd Callback invoked after the transaction has been saved successfully.
+ * @param onBackNavigation Callback invoked when the back navigation button is clicked.
+ * @param viewModel The view model for the finance details screen.
+ */
 @Composable
 fun FinanceDetailsScreen(
     modifier: Modifier = Modifier,
@@ -92,6 +101,18 @@ fun FinanceDetailsScreen(
     )
 }
 
+/**
+ * Stateless view for the finance details screen.
+ *
+ * Renders a top app bar, an animated error banner, the income/expense type selector, the form
+ * fields (title, description, amount, start date, interval, category) and the save button.
+ *
+ * @param state The current UI state ([FinanceDetailsState]).
+ * @param onAction Callback to handle user actions ([FinanceDetailsActions]).
+ * @param modifier The modifier for this composable.
+ * @param focusManager Focus manager used to move focus between fields on IME "next" action.
+ * @param scrollState Scroll state of the form content.
+ */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun FinanceDetailsView(

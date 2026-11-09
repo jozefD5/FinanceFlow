@@ -17,10 +17,10 @@ import com.jd.financeflow.ui.theme.FinanceFlowTheme
 
 
 /**
- * Linear progress widget list
+ * Vertical list of [FinancialProportionBar]s, keyed by each item's label.
  *
- * @param items Items to display
- * @param modifier Modifier
+ * @param items items to display, one bar per item
+ * @param modifier the modifier to apply to the list
  */
 @Composable
 fun LinearProgressWidgetList(

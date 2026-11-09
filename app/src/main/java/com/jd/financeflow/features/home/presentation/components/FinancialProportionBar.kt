@@ -30,13 +30,13 @@ import com.jd.financeflow.features.core.presentation.components.formatCurrency
 
 
 /**
- * Data class for representing financial proportion bar data
+ * Data for a single [FinancialProportionBar].
  *
- * @param label label to be displayed
- * @param value Value of the category to display
- * @param maxValue Maximum value to be used as 100% mark for the line graph
- * @param color Color of the line graph
- * @param currencyCode Currency code to be used e.g. EUR for Euro or USD for US Dollar
+ * @property label label to be displayed
+ * @property value value of the category to display
+ * @property maxValue maximum value to be used as the 100% mark for the bar
+ * @property color color of the bar and its indicator dot
+ * @property currencyCode ISO currency code to be used, e.g. EUR for Euro or USD for US Dollar
  */
 data class FinancialProportionBarData(
     val label: String,
@@ -48,7 +48,8 @@ data class FinancialProportionBarData(
 
 
 /**
- * Displays a financial proportion bar card.
+ * Displays a labelled progress bar showing the share of [FinancialProportionBarData.value] relative
+ * to [FinancialProportionBarData.maxValue], together with the formatted amount and percentage.
  *
  * @param data the data to display
  * @param modifier the modifier to apply to the card

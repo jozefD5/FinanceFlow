@@ -42,6 +42,7 @@ import com.jd.financeflow.features.core.presentation.components.formatCurrency
  * @param income total income value
  * @param expense total expense value
  * @param currencyCode ISO currency code, e.g. "EUR"
+ * @param modifier the modifier to apply to the card
  * @param color card container color (use Transparent when rendered on a gradient)
  * @param textColor text and icon tint color
  */
@@ -105,6 +106,16 @@ fun BalanceCard(
     }
 }
 
+/**
+ * Translucent chip displaying a labelled amount with a tinted icon, used for income and expense.
+ *
+ * @param label label displayed above the amount
+ * @param amount already formatted amount text
+ * @param icon icon displayed at the start of the chip
+ * @param iconTint tint of the icon and its background
+ * @param textColor color of the label and amount text
+ * @param modifier the modifier to apply to the chip
+ */
 @Composable
 private fun FinanceSummaryChip(
     label: String,

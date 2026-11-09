@@ -26,24 +26,21 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
-import com.jd.financeflow.features.finance.presentation.charts.ChartsViewModel
-import com.jd.financeflow.features.finance.presentation.charts.ChartsScreen
 
-import org.koin.core.parameter.parametersOf
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
-import com.jd.financeflow.features.home.presentation.HomeViewModel
 import com.jd.financeflow.navigation.domain.FinanceRootKey
 import com.jd.financeflow.navigation.domain.HomeRootKey
 import com.jd.financeflow.navigation.domain.MainNavigationBarKey
-import com.jd.financeflow.features.finance.presentation.financeList.FinanceListScreen
-import com.jd.financeflow.features.finance.presentation.financeList.FinanceListViewModel
-import com.jd.financeflow.features.home.presentation.HomeScreen
-import com.jd.financeflow.features.finance.presentation.financeDetails.FinanceDetailsScreen
-import com.jd.financeflow.features.finance.presentation.financeDetails.FinanceDetailsViewModel
-import com.jd.financeflow.features.finance.presentation.financeListFilter.FinanceListFilterScreen
-import com.jd.financeflow.features.finance.presentation.financeListFilter.FinanceListFilterViewModel
 import com.jd.financeflow.navigation.domain.ChartsRootKey
+
+import com.jd.financeflow.features.home.presentation.HomeViewModel
+import com.jd.financeflow.features.home.presentation.HomeScreen
+
+import com.jd.financeflow.features.financeDetails.presentation.FinanceDetailsScreen
+import com.jd.financeflow.features.financeDetails.presentation.FinanceDetailsViewModel
+
 
 /**
  * Main navigation for the application.
@@ -144,9 +141,7 @@ fun MainNavigation(
 
                                 HomeScreen(
                                     viewModel = viewModel,
-                                    onAddFinanceClicked = {
-                                        // homeBackStack.add(HomeRootKey.FinanceDetailsScreen)
-                                    },
+                                    onAddFinanceClicked = { homeBackStack.add(HomeRootKey.FinanceDetailsScreen) },
                                     onAllActivityClicked = {
                                         // currentBarKey = MainNavigationBarKey.FinanceListTab
                                     },
@@ -155,24 +150,20 @@ fun MainNavigation(
                             }
                         }
 
-//                        is HomeRootKey.FinanceDetailsScreen -> {
-//                            NavEntry(key = key) {
-//                                val viewModel: FinanceDetailsViewModel = koinViewModel(
-//                                    parameters = { parametersOf(null, currencyCode) }
-//                                )
-//
-//                                FinanceDetailsScreen(
-//                                    viewModel = viewModel,
-//                                    onSuccessfulAdd = {
-//                                        homeBackStack.removeLastOrNull()
-//                                    },
-//                                    onBackNavigation = {
-//                                        homeBackStack.removeLastOrNull()
-//                                    },
-//                                    modifier = Modifier.fillMaxSize()
-//                                )
-//                            }
-//                        }
+                        is HomeRootKey.FinanceDetailsScreen -> {
+                            NavEntry(key = key) {
+                                val viewModel: FinanceDetailsViewModel = koinViewModel(
+                                    parameters = { parametersOf(null, currencyCode) }
+                                )
+
+                                FinanceDetailsScreen(
+                                    viewModel = viewModel,
+                                    onSuccessfulAdd = { homeBackStack.removeLastOrNull() },
+                                    onBackNavigation = { homeBackStack.removeLastOrNull() },
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+                        }
 
                         else -> throw IllegalArgumentException("Invalid NavKey: $key")
                     }

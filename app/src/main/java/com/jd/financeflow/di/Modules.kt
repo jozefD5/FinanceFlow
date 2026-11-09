@@ -15,6 +15,9 @@ import com.jd.financeflow.features.home.data.HomeRepositoryDefault
 import com.jd.financeflow.features.home.domain.HomeRepository
 import com.jd.financeflow.features.home.presentation.HomeViewModel
 
+import com.jd.financeflow.features.financeDetails.data.FinanceDetailsRepositoryDefault
+import com.jd.financeflow.features.financeDetails.domain.FinanceDetailsRepository
+import com.jd.financeflow.features.financeDetails.presentation.FinanceDetailsViewModel
 
 /**
  * Koin module for the FinanceFlow application.
@@ -29,7 +32,6 @@ val appModule = module {
 
     // Provides a [FinanceDao] instance using the provided [FinanceDatabase].
     single { get<FinanceDatabase>().financeDao() }
-
     singleOf(::LocalFinanceDataSourceDefault).bind<LocalFinanceDataSource>()
     // -------------------------------------------------------------------------------
 
@@ -38,6 +40,13 @@ val appModule = module {
     // -------------------------------------------------------------------------------
     singleOf(::HomeRepositoryDefault).bind<HomeRepository>()
     viewModel { HomeViewModel(repository = get()) }
+    // -------------------------------------------------------------------------------
+
+    // -------------------------------------------------------------------------------
+    // Finance details view
+    // -------------------------------------------------------------------------------
+    singleOf(::FinanceDetailsRepositoryDefault).bind<FinanceDetailsRepository>()
+    viewModel { FinanceDetailsViewModel(repository = get()) }
     // -------------------------------------------------------------------------------
 
 

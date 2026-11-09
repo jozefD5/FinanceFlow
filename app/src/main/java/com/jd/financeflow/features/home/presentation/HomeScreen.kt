@@ -183,6 +183,14 @@ fun HomeView(
     }
 }
 
+/**
+ * Gradient header of the home screen showing the screen title, today's date, a refresh button and
+ * the [BalanceCard].
+ *
+ * @param state the current UI state providing balance values and currency code
+ * @param onRefreshClicked callback invoked when the refresh button is clicked
+ * @param modifier the modifier for this composable
+ */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun HeroSection(
@@ -253,6 +261,12 @@ private fun HeroSection(
     }
 }
 
+/**
+ * Section header for the recent activity list with a "see all" action.
+ *
+ * @param onSeeAllClicked callback invoked when the "see all" button is clicked
+ * @param modifier the modifier for this composable
+ */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun RecentActivityHeader(
@@ -288,6 +302,11 @@ private fun RecentActivityHeader(
     }
 }
 
+/**
+ * Empty-state placeholder shown when there are no recent transactions.
+ *
+ * @param modifier the modifier for this composable
+ */
 @Composable
 private fun NoRecentTransactions(modifier: Modifier = Modifier) {
     Column(

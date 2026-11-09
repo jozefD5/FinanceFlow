@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.finance.presentation.financeDetails.components
+package com.jd.financeflow.features.financeDetails.presentation.components
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
@@ -32,10 +32,12 @@ import com.jd.financeflow.R
 
 
 /**
- * A composable that displays a date picker field.
- * @param value Value (date) to display
- * @param onValueChange Callback function to be invoked when the selected date changes. Allows to
- * retrieve the selected date.
+ * A read-only text field displaying a formatted date that opens a [DatePickerDialog] when pressed
+ * or when its trailing calendar icon is clicked.
+ *
+ * @param value Value (date in epoch milliseconds) to display, or null for no date
+ * @param onValueChange Callback invoked with the selected date in epoch milliseconds when the
+ * dialog is confirmed; null if no date was selected.
  * @param modifier Modifier to be applied to the composable.
  * @param label Label to be displayed above the date picker field.
  * @param placeholder Placeholder to be displayed when the date picker field is empty.

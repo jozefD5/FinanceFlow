@@ -39,7 +39,7 @@ import com.jd.financeflow.features.core.domain.finance.Finance
 import com.jd.financeflow.features.core.domain.finance.FinanceCategory
 import com.jd.financeflow.features.core.domain.finance.FinanceType
 import com.jd.financeflow.features.core.domain.finance.IncomeCategory
-import com.jd.financeflow.features.finance.presentation.components.annualCashFlow
+import com.jd.financeflow.features.core.presentation.financeCashFlowHelpers.annualCashFlow
 
 
 private const val TAG = "FinanceListViewModel"

@@ -25,11 +25,11 @@ import com.jd.financeflow.features.core.domain.finance.FinanceCategory
 import com.jd.financeflow.features.core.domain.finance.FinanceInterval
 import com.jd.financeflow.features.core.domain.finance.FinanceType
 import com.jd.financeflow.features.core.domain.finance.IncomeCategory
-import com.jd.financeflow.features.finance.presentation.components.annualCashFlow
-import com.jd.financeflow.features.finance.presentation.components.annualTotalByCategory
-import com.jd.financeflow.features.finance.presentation.components.monthlyCashFlow
+import com.jd.financeflow.features.core.presentation.financeCashFlowHelpers.annualCashFlow
+import com.jd.financeflow.features.core.presentation.financeCashFlowHelpers.annualTotalByCategory
+import com.jd.financeflow.features.core.presentation.financeCashFlowHelpers.monthlyCashFlow
 import com.jd.financeflow.features.finance.presentation.components.toUiText
-import com.jd.financeflow.features.finance.presentation.components.monthlyTotalByCategoryRange
+import com.jd.financeflow.features.core.presentation.financeCashFlowHelpers.monthlyTotalByCategoryRange
 
 
 /**
