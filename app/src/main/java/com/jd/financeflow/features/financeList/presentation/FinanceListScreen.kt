@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.finance.presentation.financeList
+package com.jd.financeflow.features.financeList.presentation
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally

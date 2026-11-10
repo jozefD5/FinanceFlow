@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.finance.presentation.financeList
+package com.jd.financeflow.features.financeList.presentation
 
 import com.jd.financeflow.features.core.domain.finance.Finance
 

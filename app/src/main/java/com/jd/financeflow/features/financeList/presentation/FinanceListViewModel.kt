@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.finance.presentation.financeList
+package com.jd.financeflow.features.financeList.presentation
 
 import java.time.LocalDate
 
@@ -40,6 +40,7 @@ import com.jd.financeflow.features.core.domain.finance.FinanceCategory
 import com.jd.financeflow.features.core.domain.finance.FinanceType
 import com.jd.financeflow.features.core.domain.finance.IncomeCategory
 import com.jd.financeflow.features.core.presentation.financeCashFlowHelpers.annualCashFlow
+import com.jd.financeflow.features.financeList.domain.FinanceListRepository
 
 
 private const val TAG = "FinanceListViewModel"
@@ -52,8 +53,8 @@ private const val TAG = "FinanceListViewModel"
  * @param filterConfiguration Filter configuration
  */
 class FinanceListViewModel(
-    private val repository: FinanceRepository,
-    private val currencyCode: String,
+    private val repository: FinanceListRepository,
+    private val currencyCode: String = "EUR",
     private val filterConfiguration: FilterConfiguration? = null
 ) : ViewModel() {
 
@@ -90,49 +91,32 @@ class FinanceListViewModel(
      */
     fun onAction(action: FinanceListActions) {
         when (action) {
-            is FinanceListActions.OnClearError -> {
-                _state.update { it.copy(error = null) }
-            }
-
+            is FinanceListActions.OnClearError -> _state.update { it.copy(error = null) }
             is FinanceListActions.OnAddFinanceClicked -> {}
             is FinanceListActions.OnFilterClicked -> {}
             is FinanceListActions.OnFinanceItemClicked -> {}
+            is FinanceListActions.OnEnableSearch -> _state.update { it.copy(isSearching = action.value) }
+            is FinanceListActions.OnUpdateSearchQuery -> _state.update { it.copy(searchQuery = action.value) }
+            is FinanceListActions.OnRefresh -> refreshFinanceList(
+                refresh = true,
+                query = state.value.searchQuery,
+            )
 
-            is FinanceListActions.OnEnableSearch -> {
-                _state.update { it.copy(isSearching = action.value) }
-            }
-
-            is FinanceListActions.OnUpdateSearchQuery -> {
-                _state.update { it.copy(searchQuery = action.value) }
-            }
-
-            is FinanceListActions.OnRefresh -> {
-                val currentState = state.value
-                refreshFinanceList(
-                    refresh = true,
-                    query = currentState.searchQuery,
+            is FinanceListActions.OnSelectedDeleteFinanceItem -> _state.update {
+                it.copy(
+                    showDeleteDialog = action.showDialog,
+                    selectedDeleteFinance = action.finance
                 )
             }
 
-            is FinanceListActions.OnSelectedDeleteFinanceItem -> {
-                _state.update {
-                    it.copy(
-                        showDeleteDialog = action.showDialog,
-                        selectedDeleteFinance = action.finance
-                    )
-                }
-            }
-
-            is FinanceListActions.OnFinanceItemDelete -> {
-                deleteFinance(action.finance)
-            }
+            is FinanceListActions.OnFinanceItemDelete -> deleteFinance(action.finance)
         }
     }
 
     /**
      * Observes the search query and filters the list accordingly.
      */
-    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+    @OptIn(FlowPreview::class)
     private fun observeSearchQuery() {
         _state
             .map { it.searchQuery }
@@ -141,11 +125,7 @@ class FinanceListViewModel(
             .onEach { query ->
                 when {
                     query.isBlank() -> {
-                        _state.update {
-                            it.copy(
-                                finances = cachedFilteredFinances
-                            )
-                        }
+                        _state.update { it.copy(finances = cachedFilteredFinances) }
                     }
 
                     query.length >= 2 -> {
@@ -170,7 +150,7 @@ class FinanceListViewModel(
     ) = viewModelScope.launch {
         _state.update { it.copy(isLoading = true) }
 
-        runCatching {
+        try {
             var balance: Double
 
             // Refresh cached finances if required. this allows us to respond faster to refresh and
@@ -178,15 +158,13 @@ class FinanceListViewModel(
             if (refresh) {
                 // Get all finances from local storage
                 when (val result = repository.getFinances()) {
-                    is Result.Success -> {
-                        cachedAllFinances = result.data.sortedByDescending { it.timeStampMs }
-                    }
+                    is Result.Success -> cachedAllFinances = result.data.sortedByDescending { it.timeStampMs }
 
                     is Result.Error -> {
                         _state.update {
                             it.copy(isLoading = false, error = result.error.toUiText())
                         }
-                        return@runCatching
+                        return@launch
                     }
                 }
 
@@ -243,15 +221,9 @@ class FinanceListViewModel(
                     currentBalance = balance
                 )
             }
-        }.getOrElse { error ->
-            if (error is CancellationException) {
-                throw error
-            }
-
-            Log.e(TAG, "Error refreshing finance list", error)
-            _state.update {
-                it.copy(isLoading = false, error = DataError.Local.UNKNOWN.toUiText())
-            }
+        } catch (e: Exception) {
+            if (e is CancellationException) throw e
+            _state.update { it.copy(isLoading = false, error = DataError.Local.UNKNOWN.toUiText()) }
         }
     }
 
