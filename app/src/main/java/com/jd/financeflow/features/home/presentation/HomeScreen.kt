@@ -55,7 +55,7 @@ import com.jd.financeflow.features.core.domain.finance.Finance
 import com.jd.financeflow.features.core.domain.finance.FinanceCategory
 import com.jd.financeflow.features.core.domain.finance.FinanceInterval
 import com.jd.financeflow.features.core.domain.finance.IncomeCategory
-import com.jd.financeflow.features.finance.presentation.components.financeList.FinanceListItem
+import com.jd.financeflow.features.financeList.presentation.components.FinanceListItem
 import com.jd.financeflow.features.home.presentation.components.BalanceCard
 import com.jd.financeflow.ui.theme.FinanceFlowTheme
 

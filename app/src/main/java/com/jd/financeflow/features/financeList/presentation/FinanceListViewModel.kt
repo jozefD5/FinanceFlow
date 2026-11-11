@@ -18,21 +18,18 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.CancellationException
 import kotlin.math.ceil
 import kotlin.time.Duration.Companion.milliseconds
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
 import com.jd.financeflow.features.core.domain.result.DataError
 import com.jd.financeflow.features.core.domain.result.Result
 import com.jd.financeflow.features.core.presentation.toUiText
-import com.jd.financeflow.features.finance.domain.FinanceRepository
 import com.jd.financeflow.features.core.domain.finance.ExpenseCategory
 import com.jd.financeflow.features.finance.domain.models.FilterConfiguration
 import com.jd.financeflow.features.core.domain.finance.Finance
@@ -42,8 +39,6 @@ import com.jd.financeflow.features.core.domain.finance.IncomeCategory
 import com.jd.financeflow.features.core.presentation.financeCashFlowHelpers.annualCashFlow
 import com.jd.financeflow.features.financeList.domain.FinanceListRepository
 
-
-private const val TAG = "FinanceListViewModel"
 
 /**
  * Finance list view model.

@@ -11,6 +11,8 @@ import com.jd.financeflow.features.core.data.localDataSource.database.FinanceFac
 import com.jd.financeflow.features.core.domain.localDataSource.LocalFinanceDataSource
 import com.jd.financeflow.features.core.data.localDataSource.LocalFinanceDataSourceDefault
 
+import com.jd.financeflow.features.finance.domain.models.FilterConfiguration
+
 import com.jd.financeflow.features.home.data.HomeRepositoryDefault
 import com.jd.financeflow.features.home.domain.HomeRepository
 import com.jd.financeflow.features.home.presentation.HomeViewModel
@@ -18,6 +20,10 @@ import com.jd.financeflow.features.home.presentation.HomeViewModel
 import com.jd.financeflow.features.financeDetails.data.FinanceDetailsRepositoryDefault
 import com.jd.financeflow.features.financeDetails.domain.FinanceDetailsRepository
 import com.jd.financeflow.features.financeDetails.presentation.FinanceDetailsViewModel
+
+import com.jd.financeflow.features.financeList.data.FinanceListRepositoryDefault
+import com.jd.financeflow.features.financeList.domain.FinanceListRepository
+import com.jd.financeflow.features.financeList.presentation.FinanceListViewModel
 
 /**
  * Koin module for the FinanceFlow application.
@@ -47,6 +53,19 @@ val appModule = module {
     // -------------------------------------------------------------------------------
     singleOf(::FinanceDetailsRepositoryDefault).bind<FinanceDetailsRepository>()
     viewModel { FinanceDetailsViewModel(repository = get()) }
+    // -------------------------------------------------------------------------------
+
+    // -------------------------------------------------------------------------------
+    // Finance list view
+    // -------------------------------------------------------------------------------
+    singleOf(::FinanceListRepositoryDefault).bind<FinanceListRepository>()
+    viewModel { (currencyCode: String, configuration: FilterConfiguration?) ->
+        FinanceListViewModel(
+            repository = get(),
+            currencyCode = currencyCode,
+            filterConfiguration = configuration
+        )
+    }
     // -------------------------------------------------------------------------------
 
 

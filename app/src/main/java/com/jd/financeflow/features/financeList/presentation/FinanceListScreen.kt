@@ -58,7 +58,7 @@ import com.jd.financeflow.features.core.domain.finance.Finance
 import com.jd.financeflow.features.core.domain.finance.FinanceCategory
 import com.jd.financeflow.features.core.domain.finance.FinanceInterval
 import com.jd.financeflow.features.core.domain.finance.IncomeCategory
-import com.jd.financeflow.features.finance.presentation.components.financeList.FinanceList
+import com.jd.financeflow.features.financeList.presentation.components.FinanceList
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

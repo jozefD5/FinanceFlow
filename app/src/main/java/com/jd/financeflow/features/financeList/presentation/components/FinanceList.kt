@@ -1,11 +1,10 @@
-package com.jd.financeflow.features.finance.presentation.components.financeList
+package com.jd.financeflow.features.financeList.presentation.components
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.ZoneId
 import java.time.YearMonth
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -40,7 +39,6 @@ import com.jd.financeflow.features.finance.presentation.components.zonedDateTime
  * @param onItemLongClick the action to perform when an item is long clicked
  * @param currencyCode the currency code to use e.g. EUR for Euro or USD for US Dollar
  */
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FinanceList(
     finances: List<Finance>,

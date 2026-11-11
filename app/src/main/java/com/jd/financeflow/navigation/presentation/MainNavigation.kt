@@ -40,6 +40,8 @@ import com.jd.financeflow.features.home.presentation.HomeScreen
 
 import com.jd.financeflow.features.financeDetails.presentation.FinanceDetailsScreen
 import com.jd.financeflow.features.financeDetails.presentation.FinanceDetailsViewModel
+import com.jd.financeflow.features.financeList.presentation.FinanceListScreen
+import com.jd.financeflow.features.financeList.presentation.FinanceListViewModel
 
 
 /**
@@ -141,9 +143,11 @@ fun MainNavigation(
 
                                 HomeScreen(
                                     viewModel = viewModel,
-                                    onAddFinanceClicked = { homeBackStack.add(HomeRootKey.FinanceDetailsScreen) },
+                                    onAddFinanceClicked = {
+                                        homeBackStack.add(HomeRootKey.FinanceDetailsScreen)
+                                    },
                                     onAllActivityClicked = {
-                                        // currentBarKey = MainNavigationBarKey.FinanceListTab
+                                        currentBarKey = MainNavigationBarKey.FinanceListTab
                                     },
                                     modifier = Modifier.fillMaxSize()
                                 )
@@ -170,74 +174,74 @@ fun MainNavigation(
                 }
             }
 
-//            is MainNavigationBarKey.FinanceListTab -> {
-//                NavDisplay(
-//                    modifier = displayModifier,
-//                    backStack = financeListBackStack,
-//                    onBack = {
-//                        financeListBackStack.removeLastOrNull()
-//                    },
-//                    transitionSpec = {
-//                        fadeIn(animationSpec = tween(200)) togetherWith fadeOut(tween(200))
-//                    },
-//                    entryDecorators = entryDecorators
-//                ) { key ->
-//                    when (key) {
-//                        is FinanceRootKey.FinanceListScreen -> {
-//                            NavEntry(key = key) {
-//                                val viewModel: FinanceListViewModel = koinViewModel(
-//                                    parameters = {
-//                                        parametersOf(
-//                                            currencyCode,
-//                                            key.filterConfiguration
-//                                        )
-//                                    }
-//                                )
-//
-//                                FinanceListScreen(
-//                                    viewModel = viewModel,
-//                                    onFinanceClicked = {
-//                                        financeListBackStack.add(
-//                                            FinanceRootKey.FinanceDetailsScreen(it)
-//                                        )
-//                                    },
-//                                    onAddFinanceClicked = {
-//                                        financeListBackStack.add(
-//                                            FinanceRootKey.FinanceDetailsScreen(null)
-//                                        )
-//                                    },
-//                                    onFilterClicked = {
-//                                        financeListBackStack.add(
-//                                            FinanceRootKey.FinanceFilterScreen(
-//                                                filterConfiguration = viewModel
-//                                                    .state.value.filterConfiguration
-//                                            )
-//                                        )
-//                                    },
-//                                    modifier = Modifier.fillMaxSize()
-//                                )
-//                            }
-//                        }
-//
-//                        is FinanceRootKey.FinanceDetailsScreen -> {
-//                            NavEntry(key = key) {
-//                                val viewModel: FinanceDetailsViewModel = koinViewModel(
-//                                    parameters = { parametersOf(key.financeId, currencyCode) }
-//                                )
-//
-//                                FinanceDetailsScreen(
-//                                    viewModel = viewModel,
-//                                    onSuccessfulAdd = {
-//                                        financeListBackStack.removeLastOrNull()
-//                                    },
-//                                    onBackNavigation = {
-//                                        financeListBackStack.removeLastOrNull()
-//                                    },
-//                                    modifier = Modifier.fillMaxSize()
-//                                )
-//                            }
-//                        }
-//
+            is MainNavigationBarKey.FinanceListTab -> {
+                NavDisplay(
+                    modifier = displayModifier,
+                    backStack = financeListBackStack,
+                    onBack = {
+                        financeListBackStack.removeLastOrNull()
+                    },
+                    transitionSpec = {
+                        fadeIn(animationSpec = tween(200)) togetherWith fadeOut(tween(200))
+                    },
+                    entryDecorators = entryDecorators
+                ) { key ->
+                    when (key) {
+                        is FinanceRootKey.FinanceListScreen -> {
+                            NavEntry(key = key) {
+                                val viewModel: FinanceListViewModel = koinViewModel(
+                                    parameters = {
+                                        parametersOf(
+                                            currencyCode,
+                                            key.filterConfiguration
+                                        )
+                                    }
+                                )
+
+                                FinanceListScreen(
+                                    viewModel = viewModel,
+                                    onFinanceClicked = {
+                                        financeListBackStack.add(
+                                            FinanceRootKey.FinanceDetailsScreen(it)
+                                        )
+                                    },
+                                    onAddFinanceClicked = {
+                                        financeListBackStack.add(
+                                            FinanceRootKey.FinanceDetailsScreen(null)
+                                        )
+                                    },
+                                    onFilterClicked = {
+                                        financeListBackStack.add(
+                                            FinanceRootKey.FinanceFilterScreen(
+                                                filterConfiguration = viewModel
+                                                    .state.value.filterConfiguration
+                                            )
+                                        )
+                                    },
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+                        }
+
+                        is FinanceRootKey.FinanceDetailsScreen -> {
+                            NavEntry(key = key) {
+                                val viewModel: FinanceDetailsViewModel = koinViewModel(
+                                    parameters = { parametersOf(key.financeId, currencyCode) }
+                                )
+
+                                FinanceDetailsScreen(
+                                    viewModel = viewModel,
+                                    onSuccessfulAdd = {
+                                        financeListBackStack.removeLastOrNull()
+                                    },
+                                    onBackNavigation = {
+                                        financeListBackStack.removeLastOrNull()
+                                    },
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+                        }
+
 //                        is FinanceRootKey.FinanceFilterScreen -> {
 //                            NavEntry(key = key) {
 //                                val viewModel: FinanceListFilterViewModel = koinViewModel(
@@ -264,12 +268,12 @@ fun MainNavigation(
 //                                )
 //                            }
 //                        }
-//
-//                        else -> throw IllegalArgumentException("Invalid NavKey: $key")
-//                    }
-//                }
-//            }
-//
+
+                        else -> throw IllegalArgumentException("Invalid NavKey: $key")
+                    }
+                }
+            }
+
 //            is MainNavigationBarKey.ChartTab -> {
 //                NavDisplay(
 //                    modifier = displayModifier,
