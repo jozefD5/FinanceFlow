@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.finance.domain.models.chart
+package com.jd.financeflow.features.charts.domain
 
 import androidx.compose.ui.graphics.Color
 

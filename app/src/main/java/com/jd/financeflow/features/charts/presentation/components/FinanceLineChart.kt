@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.jd.financeflow.features.charts.domain.LineChartData
 
 import ir.ehsannarmani.compose_charts.LineChart
 import ir.ehsannarmani.compose_charts.models.AnimationMode
@@ -30,8 +31,6 @@ import ir.ehsannarmani.compose_charts.models.LabelProperties
 import ir.ehsannarmani.compose_charts.models.LabelHelperProperties
 import ir.ehsannarmani.compose_charts.models.PopupProperties
 
-import com.jd.financeflow.features.finance.domain.models.chart.LineChartData
-
 
 /**
  * Finance linear charts for displaying different finance data such as income and expenses
@@ -42,7 +41,6 @@ import com.jd.financeflow.features.finance.domain.models.chart.LineChartData
  * @param currencyCode currency code, e.g. "EUR" for Euro
  * @param enableLabelHelperProperties or disable label helper properties
  */
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun FinanceLineChart(
     items: List<LineChartData>,

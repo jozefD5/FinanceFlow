@@ -32,8 +32,8 @@ import ir.ehsannarmani.compose_charts.models.Pie
 import ir.ehsannarmani.compose_charts.models.LabelHelperProperties
 
 import com.jd.financeflow.R
+import com.jd.financeflow.features.charts.domain.PieChartData
 import com.jd.financeflow.features.core.presentation.components.financeMappers.formatCurrency
-import com.jd.financeflow.features.finance.domain.models.chart.PieChartData
 import com.jd.financeflow.features.home.presentation.components.FinancialProportionBarData
 import com.jd.financeflow.features.home.presentation.components.LinearProgressWidgetList
 
