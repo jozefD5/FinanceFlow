@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.core.presentation.components
+package com.jd.financeflow.features.core.presentation.components.financeMappers
 
 import android.icu.text.DecimalFormat
 import android.icu.text.NumberFormat

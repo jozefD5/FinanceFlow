@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.finance.presentation.charts
+package com.jd.financeflow.features.charts.presentation.charts
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter

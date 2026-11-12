@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.finance.presentation.charts.components
+package com.jd.financeflow.features.charts.presentation.components
 
 import java.util.Locale
 

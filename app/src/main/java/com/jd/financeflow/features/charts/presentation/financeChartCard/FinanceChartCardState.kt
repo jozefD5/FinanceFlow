@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.finance.presentation.charts.financeChartCard
+package com.jd.financeflow.features.charts.presentation.financeChartCard
 
 import com.jd.financeflow.features.core.presentation.UiText
 

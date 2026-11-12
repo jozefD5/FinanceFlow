@@ -33,7 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 import com.jd.financeflow.R
-import com.jd.financeflow.features.core.presentation.components.formatCurrency
+import com.jd.financeflow.features.core.presentation.components.financeMappers.formatCurrency
 
 /**
  * Hero balance card showing total balance and income/expense chips.

@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.finance.presentation.charts
+package com.jd.financeflow.features.charts.presentation.charts
 
 /**
  * Actions that can be performed by the FinanceCharts screen

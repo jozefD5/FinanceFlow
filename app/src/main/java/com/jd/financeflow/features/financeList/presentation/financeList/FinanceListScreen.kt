@@ -52,7 +52,7 @@ import org.koin.androidx.compose.koinViewModel
 
 import com.jd.financeflow.R
 import com.jd.financeflow.features.core.presentation.components.ErrorDialog
-import com.jd.financeflow.features.core.presentation.components.formatCurrency
+import com.jd.financeflow.features.core.presentation.components.financeMappers.formatCurrency
 import com.jd.financeflow.features.core.domain.models.finance.ExpenseCategory
 import com.jd.financeflow.features.core.domain.models.finance.Finance
 import com.jd.financeflow.features.core.domain.models.finance.FinanceCategory

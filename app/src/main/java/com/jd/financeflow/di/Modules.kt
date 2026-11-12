@@ -1,5 +1,9 @@
 package com.jd.financeflow.di
 
+import com.jd.financeflow.features.charts.data.ChartsRepositoryDefault
+import com.jd.financeflow.features.charts.domain.ChartsRepository
+import com.jd.financeflow.features.charts.presentation.charts.ChartsViewModel
+import com.jd.financeflow.features.charts.presentation.financeChartCard.FinanceChartCardViewModel
 import org.koin.dsl.module
 import org.koin.android.ext.koin.androidApplication
 import org.koin.core.module.dsl.singleOf
@@ -10,6 +14,7 @@ import com.jd.financeflow.features.core.data.localDataSource.database.FinanceDat
 import com.jd.financeflow.features.core.data.localDataSource.database.FinanceFactory
 import com.jd.financeflow.features.core.domain.localDataSource.LocalFinanceDataSource
 import com.jd.financeflow.features.core.data.localDataSource.LocalFinanceDataSourceDefault
+import com.jd.financeflow.features.core.domain.models.finance.FinanceInterval
 
 import com.jd.financeflow.features.core.domain.models.financeFilter.FilterConfiguration
 
@@ -53,7 +58,13 @@ val appModule = module {
     // Finance details view
     // -------------------------------------------------------------------------------
     singleOf(::FinanceDetailsRepositoryDefault).bind<FinanceDetailsRepository>()
-    viewModel { FinanceDetailsViewModel(repository = get()) }
+    viewModel { (financeId: Int?, currencyCode: String) ->
+        FinanceDetailsViewModel(
+            repository = get(),
+            financeId = financeId,
+            currencyCode = currencyCode
+        )
+    }
     // -------------------------------------------------------------------------------
 
     // -------------------------------------------------------------------------------
@@ -76,45 +87,22 @@ val appModule = module {
     }
     // -------------------------------------------------------------------------------
 
+    // -------------------------------------------------------------------------------
+    // Finance list view
+    // -------------------------------------------------------------------------------
+    singleOf(::ChartsRepositoryDefault).bind<ChartsRepository>()
 
-//    single { LocalStorageDataSource(financeDao = get()) }
-//    singleOf(::FinanceRepositoryImpl).bind<FinanceRepository>()
+    viewModel { (currencyCode: String) ->
+        ChartsViewModel(currencyCode = currencyCode)
+    }
 
-//    viewModel { HomeViewModel(get()) }
-//
-//    viewModel { (financeId: Int?, currencyCode: String) ->
-//        FinanceDetailsViewModel(
-//            financeRepository = get(),
-//            financeId = financeId,
-//            currencyCode = currencyCode
-//        )
-//    }
-//
-//    viewModel { (currencyCode: String, configuration: FilterConfiguration?) ->
-//        FinanceListViewModel(
-//            repository = get(),
-//            currencyCode = currencyCode,
-//            filterConfiguration = configuration
-//        )
-//    }
-//
-//    viewModel { (currencyCode: String, configuration: FilterConfiguration?) ->
-//        FinanceListFilterViewModel(
-//            currencyCode = currencyCode,
-//            configuration = configuration
-//        )
-//    }
-//
-//    viewModel { (currencyCode: String) ->
-//        ChartsViewModel(currencyCode = currencyCode)
-//    }
-//
-//    viewModel { (startTimeMs: Long, interval: FinanceInterval, currencyCode: String) ->
-//        FinanceChartCardViewModel(
-//            repository = get(),
-//            startTimeMs = startTimeMs,
-//            interval = interval,
-//            currencyCode = currencyCode
-//        )
-//    }
+    viewModel { (startTimeMs: Long, interval: FinanceInterval, currencyCode: String) ->
+        FinanceChartCardViewModel(
+            repository = get(),
+            startTimeMs = startTimeMs,
+            interval = interval,
+            currencyCode = currencyCode
+        )
+    }
+    // -------------------------------------------------------------------------------
 }

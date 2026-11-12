@@ -10,7 +10,7 @@ import kotlinx.coroutines.withContext
 
 import com.jd.financeflow.features.core.domain.models.finance.Finance
 import com.jd.financeflow.features.core.domain.models.finance.FinanceInterval
-import com.jd.financeflow.features.finance.presentation.components.zonedDateTime
+import com.jd.financeflow.features.core.presentation.components.financeMappers.zonedDateTime
 
 
 /**

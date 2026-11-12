@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.CancellationException
+import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -163,21 +164,10 @@ class FinanceListViewModel(
                     }
                 }
 
-                // Apply price range filter logic here if needed, e.g. rounded values.
-                val updatedConfig = filterConfiguration?.copy(
-                    miniSetAmount = filterConfiguration.miniSetAmount?.let { amount ->
-                        val rawValue = amount.times(1.1)
-                        ceil(rawValue / 1000.0) * 1000.0
-                    },
-                    maxSetAmount = filterConfiguration.maxSetAmount?.let { amount ->
-                        val rawValue = amount.times(1.1)
-                        ceil(rawValue / 1000.0) * 1000.0
-                    }
-                )
-
-                // Start tasks in parallel on background threads
+                // Start tasks in parallel on background threads. The user selected amount range
+                // is used as-is, it must not be rescaled/rounded, otherwise items get dropped.
                 val filteredFinancesDeferred = async(Dispatchers.Default) {
-                    filterFinances(cachedAllFinances, updatedConfig)
+                    filterFinances(cachedAllFinances, filterConfiguration)
                 }
                 val balanceDeferred = async(Dispatchers.Default) {
                     calculateBalance(cachedAllFinances)
@@ -186,13 +176,17 @@ class FinanceListViewModel(
                 cachedFilteredFinances = filteredFinancesDeferred.await()
                 balance = balanceDeferred.await()
 
-                // Update max amount range
+                // Update amount range limits for the filter slider. Limits are derived from ALL
+                // finances (absolute values, so expenses count as positive) so they don't shrink
+                // after a filter is applied. Upper limit gets 10% headroom rounded up to 1000.
                 val currentConfig = state.value.filterConfiguration ?: FilterConfiguration()
+                val highestAmount = cachedAllFinances.maxOfOrNull { item -> abs(item.amount) } ?: 0.0
+                val roundedLimit = ceil(highestAmount * 1.1 / 1000.0) * 1000.0
+                val maxAmountLimit = maxOf(roundedLimit, currentConfig.maxSetAmount ?: 0.0)
                 _state.update {
                     it.copy(
                         filterConfiguration = currentConfig.copy(
-                            maxAmountLimit = cachedFilteredFinances.maxOfOrNull { item -> item.amount }
-                                ?: 0.0,
+                            maxAmountLimit = maxAmountLimit,
                             miniAmountLimit = 0.0
                         )
                     )
@@ -312,7 +306,7 @@ class FinanceListViewModel(
                 val amountCheck =
                     if (configuration?.enableAmountFilter == true && configuration.miniSetAmount != null && configuration.maxSetAmount != null
                     ) {
-                        item.amount in configuration.miniSetAmount..configuration.maxSetAmount
+                        abs(item.amount) in configuration.miniSetAmount..configuration.maxSetAmount
                     } else {
                         true
                     }

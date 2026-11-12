@@ -26,6 +26,8 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import com.jd.financeflow.features.charts.presentation.charts.ChartsScreen
+import com.jd.financeflow.features.charts.presentation.charts.ChartsViewModel
 
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -276,39 +278,35 @@ fun MainNavigation(
                 }
             }
 
-//            is MainNavigationBarKey.ChartTab -> {
-//                NavDisplay(
-//                    modifier = displayModifier,
-//                    backStack = chartsBackStack,
-//                    onBack = {
-//                        chartsBackStack.removeLastOrNull()
-//                    },
-//                    transitionSpec = {
-//                        fadeIn(animationSpec = tween(200)) togetherWith fadeOut(tween(200))
-//                    },
-//                    entryDecorators = entryDecorators
-//                ) { key ->
-//                    when (key) {
-//                        is ChartsRootKey.Charts -> {
-//                            NavEntry(key = key) {
-//                                val viewModel: ChartsViewModel = koinViewModel(
-//                                    parameters = { parametersOf(currencyCode) }
-//                                )
-//
-//                                ChartsScreen(
-//                                    viewModel = viewModel,
-//                                    modifier = Modifier.fillMaxSize()
-//                                )
-//                            }
-//                        }
-//
-//                        else -> throw IllegalArgumentException("Invalid NavKey: $key")
-//                    }
-//                }
-//            }
+            is MainNavigationBarKey.ChartTab -> {
+                NavDisplay(
+                    modifier = displayModifier,
+                    backStack = chartsBackStack,
+                    onBack = {
+                        chartsBackStack.removeLastOrNull()
+                    },
+                    transitionSpec = {
+                        fadeIn(animationSpec = tween(200)) togetherWith fadeOut(tween(200))
+                    },
+                    entryDecorators = entryDecorators
+                ) { key ->
+                    when (key) {
+                        is ChartsRootKey.Charts -> {
+                            NavEntry(key = key) {
+                                val viewModel: ChartsViewModel = koinViewModel(
+                                    parameters = { parametersOf(currencyCode) }
+                                )
 
-            else -> {
-                Text("Finances")
+                                ChartsScreen(
+                                    viewModel = viewModel,
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+                        }
+
+                        else -> throw IllegalArgumentException("Invalid NavKey: $key")
+                    }
+                }
             }
         }
     }

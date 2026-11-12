@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.finance.presentation.charts
+package com.jd.financeflow.features.charts.presentation.charts
 
 import androidx.compose.runtime.Stable
 

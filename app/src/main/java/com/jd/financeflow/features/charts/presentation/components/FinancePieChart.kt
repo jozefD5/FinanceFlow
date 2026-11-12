@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.finance.presentation.charts.components
+package com.jd.financeflow.features.charts.presentation.components
 
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -32,7 +32,7 @@ import ir.ehsannarmani.compose_charts.models.Pie
 import ir.ehsannarmani.compose_charts.models.LabelHelperProperties
 
 import com.jd.financeflow.R
-import com.jd.financeflow.features.core.presentation.components.formatCurrency
+import com.jd.financeflow.features.core.presentation.components.financeMappers.formatCurrency
 import com.jd.financeflow.features.finance.domain.models.chart.PieChartData
 import com.jd.financeflow.features.home.presentation.components.FinancialProportionBarData
 import com.jd.financeflow.features.home.presentation.components.LinearProgressWidgetList

@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.finance.presentation.charts
+package com.jd.financeflow.features.charts.presentation.charts
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -32,7 +32,7 @@ import org.koin.core.parameter.parametersOf
 
 import com.jd.financeflow.R
 import com.jd.financeflow.features.core.domain.models.finance.FinanceInterval
-import com.jd.financeflow.features.finance.presentation.charts.financeChartCard.FinanceChartCard
+import com.jd.financeflow.features.charts.presentation.financeChartCard.FinanceChartCard
 
 @Composable
 fun ChartsScreen(

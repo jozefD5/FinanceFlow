@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.core.presentation.components
+package com.jd.financeflow.features.home.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

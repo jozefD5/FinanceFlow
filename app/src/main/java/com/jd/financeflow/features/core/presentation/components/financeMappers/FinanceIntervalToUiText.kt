@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.finance.presentation.components
+package com.jd.financeflow.features.core.presentation.components.financeMappers
 
 import com.jd.financeflow.R
 import com.jd.financeflow.features.core.domain.models.finance.FinanceInterval

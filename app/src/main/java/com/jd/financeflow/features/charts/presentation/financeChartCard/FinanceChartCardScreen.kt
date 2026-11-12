@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.finance.presentation.charts.financeChartCard
+package com.jd.financeflow.features.charts.presentation.financeChartCard
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
@@ -33,12 +33,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.jd.financeflow.R
 import com.jd.financeflow.features.core.presentation.UiText
-import com.jd.financeflow.features.core.presentation.components.formatCurrency
+import com.jd.financeflow.features.core.presentation.components.financeMappers.formatCurrency
 import com.jd.financeflow.features.core.domain.models.finance.FinanceInterval
 import com.jd.financeflow.features.finance.domain.models.chart.LineChartData
 import com.jd.financeflow.features.finance.domain.models.chart.PieChartData
-import com.jd.financeflow.features.finance.presentation.charts.components.FinanceLineChart
-import com.jd.financeflow.features.finance.presentation.charts.components.FinancePieChart
+import com.jd.financeflow.features.charts.presentation.components.FinanceLineChart
+import com.jd.financeflow.features.charts.presentation.components.FinancePieChart
 
 private val monthlyLineLabels = listOf("1", "15", "31")
 private val annualLineLabels = listOf("1", "6", "12")
