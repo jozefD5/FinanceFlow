@@ -8,11 +8,11 @@ import kotlinx.serialization.json.jsonPrimitive
 
 import androidx.room.TypeConverter
 
-import com.jd.financeflow.features.core.domain.finance.ExpenseCategory
-import com.jd.financeflow.features.core.domain.finance.FinanceCategory
-import com.jd.financeflow.features.core.domain.finance.FinanceInterval
-import com.jd.financeflow.features.core.domain.finance.FinanceType
-import com.jd.financeflow.features.core.domain.finance.IncomeCategory
+import com.jd.financeflow.features.core.domain.models.finance.ExpenseCategory
+import com.jd.financeflow.features.core.domain.models.finance.FinanceCategory
+import com.jd.financeflow.features.core.domain.models.finance.FinanceInterval
+import com.jd.financeflow.features.core.domain.models.finance.FinanceType
+import com.jd.financeflow.features.core.domain.models.finance.IncomeCategory
 
 /**
  * Converts between [FinanceInterval] and its integer representation.

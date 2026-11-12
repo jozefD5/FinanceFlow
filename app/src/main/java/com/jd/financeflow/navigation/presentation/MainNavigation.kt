@@ -40,8 +40,10 @@ import com.jd.financeflow.features.home.presentation.HomeScreen
 
 import com.jd.financeflow.features.financeDetails.presentation.FinanceDetailsScreen
 import com.jd.financeflow.features.financeDetails.presentation.FinanceDetailsViewModel
-import com.jd.financeflow.features.financeList.presentation.FinanceListScreen
-import com.jd.financeflow.features.financeList.presentation.FinanceListViewModel
+import com.jd.financeflow.features.financeList.presentation.financeList.FinanceListScreen
+import com.jd.financeflow.features.financeList.presentation.financeList.FinanceListViewModel
+import com.jd.financeflow.features.financeList.presentation.financeFilter.FinanceListFilterScreen
+import com.jd.financeflow.features.financeList.presentation.financeFilter.FinanceListFilterViewModel
 
 
 /**
@@ -242,32 +244,32 @@ fun MainNavigation(
                             }
                         }
 
-//                        is FinanceRootKey.FinanceFilterScreen -> {
-//                            NavEntry(key = key) {
-//                                val viewModel: FinanceListFilterViewModel = koinViewModel(
-//                                    parameters = {
-//                                        parametersOf(
-//                                            currencyCode,
-//                                            key.filterConfiguration
-//                                        )
-//                                    }
-//                                )
-//
-//                                FinanceListFilterScreen(
-//                                    viewModel = viewModel,
-//                                    onApplyFilter = { config ->
-//                                        financeListBackStack.clear()
-//                                        financeListBackStack.add(
-//                                            FinanceRootKey.FinanceListScreen(config)
-//                                        )
-//                                    },
-//                                    onBackNavigation = {
-//                                        financeListBackStack.removeLastOrNull()
-//                                    },
-//                                    modifier = Modifier.fillMaxSize()
-//                                )
-//                            }
-//                        }
+                        is FinanceRootKey.FinanceFilterScreen -> {
+                            NavEntry(key = key) {
+                                val viewModel: FinanceListFilterViewModel = koinViewModel(
+                                    parameters = {
+                                        parametersOf(
+                                            currencyCode,
+                                            key.filterConfiguration
+                                        )
+                                    }
+                                )
+
+                                FinanceListFilterScreen(
+                                    viewModel = viewModel,
+                                    onApplyFilter = { config ->
+                                        financeListBackStack.clear()
+                                        financeListBackStack.add(
+                                            FinanceRootKey.FinanceListScreen(config)
+                                        )
+                                    },
+                                    onBackNavigation = {
+                                        financeListBackStack.removeLastOrNull()
+                                    },
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+                        }
 
                         else -> throw IllegalArgumentException("Invalid NavKey: $key")
                     }

@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.financeList.presentation
+package com.jd.financeflow.features.financeList.presentation.financeList
 
 import java.time.LocalDate
 
@@ -30,12 +30,12 @@ import androidx.lifecycle.viewModelScope
 import com.jd.financeflow.features.core.domain.result.DataError
 import com.jd.financeflow.features.core.domain.result.Result
 import com.jd.financeflow.features.core.presentation.toUiText
-import com.jd.financeflow.features.core.domain.finance.ExpenseCategory
-import com.jd.financeflow.features.finance.domain.models.FilterConfiguration
-import com.jd.financeflow.features.core.domain.finance.Finance
-import com.jd.financeflow.features.core.domain.finance.FinanceCategory
-import com.jd.financeflow.features.core.domain.finance.FinanceType
-import com.jd.financeflow.features.core.domain.finance.IncomeCategory
+import com.jd.financeflow.features.core.domain.models.finance.ExpenseCategory
+import com.jd.financeflow.features.core.domain.models.financeFilter.FilterConfiguration
+import com.jd.financeflow.features.core.domain.models.finance.Finance
+import com.jd.financeflow.features.core.domain.models.finance.FinanceCategory
+import com.jd.financeflow.features.core.domain.models.finance.FinanceType
+import com.jd.financeflow.features.core.domain.models.finance.IncomeCategory
 import com.jd.financeflow.features.core.presentation.financeCashFlowHelpers.annualCashFlow
 import com.jd.financeflow.features.financeList.domain.FinanceListRepository
 

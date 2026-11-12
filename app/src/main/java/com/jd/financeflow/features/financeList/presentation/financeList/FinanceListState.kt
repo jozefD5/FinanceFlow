@@ -1,10 +1,10 @@
-package com.jd.financeflow.features.financeList.presentation
+package com.jd.financeflow.features.financeList.presentation.financeList
 
 import androidx.compose.runtime.Stable
 
 import com.jd.financeflow.features.core.presentation.UiText
-import com.jd.financeflow.features.finance.domain.models.FilterConfiguration
-import com.jd.financeflow.features.core.domain.finance.Finance
+import com.jd.financeflow.features.core.domain.models.financeFilter.FilterConfiguration
+import com.jd.financeflow.features.core.domain.models.finance.Finance
 
 @Stable
 data class FinanceListState(

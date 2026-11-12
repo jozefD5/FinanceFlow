@@ -8,8 +8,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 
-import com.jd.financeflow.features.core.domain.finance.Finance
-import com.jd.financeflow.features.core.domain.finance.FinanceInterval
+import com.jd.financeflow.features.core.domain.models.finance.Finance
+import com.jd.financeflow.features.core.domain.models.finance.FinanceInterval
 import com.jd.financeflow.features.finance.presentation.components.zonedDateTime
 
 

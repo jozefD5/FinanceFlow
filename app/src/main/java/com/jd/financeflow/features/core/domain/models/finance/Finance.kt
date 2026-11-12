@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.core.domain.finance
+package com.jd.financeflow.features.core.domain.models.finance
 
 import java.util.UUID
 

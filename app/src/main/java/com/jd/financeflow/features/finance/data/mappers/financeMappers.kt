@@ -1,7 +1,7 @@
 package com.jd.financeflow.features.finance.data.mappers
 
 import com.jd.financeflow.features.core.data.localDataSource.database.FinanceEntity
-import com.jd.financeflow.features.core.domain.finance.Finance
+import com.jd.financeflow.features.core.domain.models.finance.Finance
 
 /**
  * Convert Finance to FinanceEntity

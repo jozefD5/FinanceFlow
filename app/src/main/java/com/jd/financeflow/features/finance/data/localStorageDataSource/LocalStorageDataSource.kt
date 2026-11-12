@@ -5,7 +5,7 @@ import com.jd.financeflow.features.core.domain.result.Result
 import com.jd.financeflow.features.core.data.localDataSource.database.FinanceDao
 import com.jd.financeflow.features.finance.data.mappers.toEntity
 import com.jd.financeflow.features.finance.data.mappers.toFinance
-import com.jd.financeflow.features.core.domain.finance.Finance
+import com.jd.financeflow.features.core.domain.models.finance.Finance
 
 /**
  * A data source for local storage operations related to [Finance] objects.

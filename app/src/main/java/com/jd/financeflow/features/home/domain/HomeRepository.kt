@@ -3,7 +3,7 @@ package com.jd.financeflow.features.home.domain
 import com.jd.financeflow.features.core.domain.result.DataError
 import com.jd.financeflow.features.core.domain.result.DataError.Local
 import com.jd.financeflow.features.core.domain.result.Result
-import com.jd.financeflow.features.core.domain.finance.Finance
+import com.jd.financeflow.features.core.domain.models.finance.Finance
 
 /**
  * Repository interface for managing home screen data and financial transactions.

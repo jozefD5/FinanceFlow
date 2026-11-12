@@ -17,7 +17,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
 import com.jd.financeflow.features.core.domain.result.Result
-import com.jd.financeflow.features.core.domain.finance.FinanceType
+import com.jd.financeflow.features.core.domain.models.finance.FinanceType
 import com.jd.financeflow.features.core.presentation.toUiText
 import com.jd.financeflow.features.core.presentation.financeCashFlowHelpers.annualCashFlow
 import com.jd.financeflow.features.home.domain.HomeRepository

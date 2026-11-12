@@ -12,7 +12,7 @@ import com.jd.financeflow.features.core.domain.localDataSource.LocalFinanceDataS
 
 import com.jd.financeflow.features.finance.data.mappers.toEntity
 import com.jd.financeflow.features.finance.data.mappers.toFinance
-import com.jd.financeflow.features.core.domain.finance.Finance
+import com.jd.financeflow.features.core.domain.models.finance.Finance
 
 private const val TAG = "LocalFinanceDataSourceDefault"
 

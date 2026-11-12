@@ -4,8 +4,8 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
-import com.jd.financeflow.features.core.domain.finance.Finance
-import com.jd.financeflow.features.core.domain.finance.FinanceInterval
+import com.jd.financeflow.features.core.domain.models.finance.Finance
+import com.jd.financeflow.features.core.domain.models.finance.FinanceInterval
 
 /**
  * Get zoned date time from finance item

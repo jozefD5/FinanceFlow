@@ -19,11 +19,11 @@ import androidx.compose.ui.unit.dp
 
 import com.jd.financeflow.features.core.presentation.components.CircleInitialAvatar
 import com.jd.financeflow.features.core.presentation.components.formatCurrency
-import com.jd.financeflow.features.core.domain.finance.Finance
-import com.jd.financeflow.features.core.domain.finance.ExpenseCategory
-import com.jd.financeflow.features.core.domain.finance.FinanceCategory
-import com.jd.financeflow.features.core.domain.finance.FinanceInterval
-import com.jd.financeflow.features.core.domain.finance.IncomeCategory
+import com.jd.financeflow.features.core.domain.models.finance.Finance
+import com.jd.financeflow.features.core.domain.models.finance.ExpenseCategory
+import com.jd.financeflow.features.core.domain.models.finance.FinanceCategory
+import com.jd.financeflow.features.core.domain.models.finance.FinanceInterval
+import com.jd.financeflow.features.core.domain.models.finance.IncomeCategory
 
 /**
  * Displays a finance item with the given information as list item.

@@ -11,7 +11,7 @@ import com.jd.financeflow.features.core.data.localDataSource.database.FinanceFac
 import com.jd.financeflow.features.core.domain.localDataSource.LocalFinanceDataSource
 import com.jd.financeflow.features.core.data.localDataSource.LocalFinanceDataSourceDefault
 
-import com.jd.financeflow.features.finance.domain.models.FilterConfiguration
+import com.jd.financeflow.features.core.domain.models.financeFilter.FilterConfiguration
 
 import com.jd.financeflow.features.home.data.HomeRepositoryDefault
 import com.jd.financeflow.features.home.domain.HomeRepository
@@ -23,7 +23,8 @@ import com.jd.financeflow.features.financeDetails.presentation.FinanceDetailsVie
 
 import com.jd.financeflow.features.financeList.data.FinanceListRepositoryDefault
 import com.jd.financeflow.features.financeList.domain.FinanceListRepository
-import com.jd.financeflow.features.financeList.presentation.FinanceListViewModel
+import com.jd.financeflow.features.financeList.presentation.financeList.FinanceListViewModel
+import com.jd.financeflow.features.financeList.presentation.financeFilter.FinanceListFilterViewModel
 
 /**
  * Koin module for the FinanceFlow application.
@@ -64,6 +65,13 @@ val appModule = module {
             repository = get(),
             currencyCode = currencyCode,
             filterConfiguration = configuration
+        )
+    }
+
+    viewModel { (currencyCode: String, configuration: FilterConfiguration?) ->
+        FinanceListFilterViewModel(
+            currencyCode = currencyCode,
+            configuration = configuration
         )
     }
     // -------------------------------------------------------------------------------

@@ -55,14 +55,14 @@ import org.koin.androidx.compose.koinViewModel
 
 import com.jd.financeflow.R
 import com.jd.financeflow.features.core.domain.result.DataError
-import com.jd.financeflow.features.core.domain.finance.FinanceCategory
-import com.jd.financeflow.features.core.domain.finance.FinanceInterval
+import com.jd.financeflow.features.core.domain.models.finance.FinanceCategory
+import com.jd.financeflow.features.core.domain.models.finance.FinanceInterval
 import com.jd.financeflow.features.core.presentation.components.LargeDropdownMenu
 import com.jd.financeflow.features.finance.presentation.components.toUiText
 import com.jd.financeflow.features.core.presentation.toUiText
-import com.jd.financeflow.features.core.domain.finance.ExpenseCategory
-import com.jd.financeflow.features.core.domain.finance.IncomeCategory
-import com.jd.financeflow.features.core.domain.finance.FinanceType
+import com.jd.financeflow.features.core.domain.models.finance.ExpenseCategory
+import com.jd.financeflow.features.core.domain.models.finance.IncomeCategory
+import com.jd.financeflow.features.core.domain.models.finance.FinanceType
 import com.jd.financeflow.features.financeDetails.presentation.components.DataPickerField
 
 /**

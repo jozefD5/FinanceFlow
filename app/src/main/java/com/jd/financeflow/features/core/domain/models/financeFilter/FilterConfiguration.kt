@@ -1,7 +1,8 @@
-package com.jd.financeflow.features.finance.domain.models
+package com.jd.financeflow.features.core.domain.models.financeFilter
 
-import com.jd.financeflow.features.core.domain.finance.FinanceType
 import kotlinx.serialization.Serializable
+
+import com.jd.financeflow.features.core.domain.models.finance.FinanceType
 
 /**
  * Represents the configuration for filtering finance transactions.

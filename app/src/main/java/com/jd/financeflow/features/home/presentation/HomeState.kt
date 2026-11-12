@@ -3,7 +3,7 @@ package com.jd.financeflow.features.home.presentation
 import androidx.compose.runtime.Stable
 
 import com.jd.financeflow.features.core.presentation.UiText
-import com.jd.financeflow.features.core.domain.finance.Finance
+import com.jd.financeflow.features.core.domain.models.finance.Finance
 
 /**
  * Represents the UI state of the home screen.

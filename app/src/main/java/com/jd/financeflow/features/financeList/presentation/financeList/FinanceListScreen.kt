@@ -1,4 +1,4 @@
-package com.jd.financeflow.features.financeList.presentation
+package com.jd.financeflow.features.financeList.presentation.financeList
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
@@ -53,11 +53,11 @@ import org.koin.androidx.compose.koinViewModel
 import com.jd.financeflow.R
 import com.jd.financeflow.features.core.presentation.components.ErrorDialog
 import com.jd.financeflow.features.core.presentation.components.formatCurrency
-import com.jd.financeflow.features.core.domain.finance.ExpenseCategory
-import com.jd.financeflow.features.core.domain.finance.Finance
-import com.jd.financeflow.features.core.domain.finance.FinanceCategory
-import com.jd.financeflow.features.core.domain.finance.FinanceInterval
-import com.jd.financeflow.features.core.domain.finance.IncomeCategory
+import com.jd.financeflow.features.core.domain.models.finance.ExpenseCategory
+import com.jd.financeflow.features.core.domain.models.finance.Finance
+import com.jd.financeflow.features.core.domain.models.finance.FinanceCategory
+import com.jd.financeflow.features.core.domain.models.finance.FinanceInterval
+import com.jd.financeflow.features.core.domain.models.finance.IncomeCategory
 import com.jd.financeflow.features.financeList.presentation.components.FinanceList
 
 @OptIn(ExperimentalMaterial3Api::class)

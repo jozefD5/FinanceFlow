@@ -1,6 +1,6 @@
 package com.jd.financeflow.features.financeDetails.domain
 
-import com.jd.financeflow.features.core.domain.finance.Finance
+import com.jd.financeflow.features.core.domain.models.finance.Finance
 import com.jd.financeflow.features.core.domain.result.DataError
 import com.jd.financeflow.features.core.domain.result.DataError.Local
 import com.jd.financeflow.features.core.domain.result.EmptyResult

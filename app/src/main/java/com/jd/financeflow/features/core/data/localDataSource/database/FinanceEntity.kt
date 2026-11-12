@@ -3,8 +3,8 @@ package com.jd.financeflow.features.core.data.localDataSource.database
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-import com.jd.financeflow.features.core.domain.finance.FinanceCategory
-import com.jd.financeflow.features.core.domain.finance.FinanceInterval
+import com.jd.financeflow.features.core.domain.models.finance.FinanceCategory
+import com.jd.financeflow.features.core.domain.models.finance.FinanceInterval
 
 /**
  * Represents a financial transaction entity in the database.

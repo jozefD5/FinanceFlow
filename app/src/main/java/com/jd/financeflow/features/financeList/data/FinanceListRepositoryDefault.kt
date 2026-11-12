@@ -5,7 +5,7 @@ import kotlinx.coroutines.CancellationException
 import com.jd.financeflow.features.core.domain.localDataSource.LocalFinanceDataSource
 import com.jd.financeflow.features.core.domain.result.DataError
 import com.jd.financeflow.features.core.domain.result.Result
-import com.jd.financeflow.features.core.domain.finance.Finance
+import com.jd.financeflow.features.core.domain.models.finance.Finance
 import com.jd.financeflow.features.core.domain.result.EmptyResult
 
 import com.jd.financeflow.features.financeList.domain.FinanceListRepository
