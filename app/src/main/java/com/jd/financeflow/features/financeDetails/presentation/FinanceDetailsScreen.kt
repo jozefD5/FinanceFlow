@@ -26,8 +26,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -36,6 +34,7 @@ import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -113,7 +112,6 @@ fun FinanceDetailsScreen(
  * @param focusManager Focus manager used to move focus between fields on IME "next" action.
  * @param scrollState Scroll state of the form content.
  */
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun FinanceDetailsView(
     state: FinanceDetailsState,
@@ -146,9 +144,7 @@ fun FinanceDetailsView(
             windowInsets = WindowInsets(0, 0, 0, 0)
         )
 
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
+        Column(modifier = Modifier.fillMaxSize()) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier
@@ -270,6 +266,33 @@ fun FinanceDetailsView(
                         shape = MaterialTheme.shapes.medium,
                         modifier = Modifier.fillMaxWidth(),
                     )
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(stringResource(R.string.add_finance_label_enable_end_date))
+                        Switch(
+                            checked = state.enableEndDate,
+                            onCheckedChange = { onAction(FinanceDetailsActions.OnToggleEnableEndDate) }
+                        )
+                    }
+
+                    AnimatedVisibility(state.enableEndDate) {
+                        DataPickerField(
+                            value = state.endDate,
+                            onValueChange = { selectedDate ->
+                                if (selectedDate != null) {
+                                    onAction(FinanceDetailsActions.OnUpdateStartDate(selectedDate))
+                                }
+                            },
+                            label = stringResource(R.string.add_finance_title_end_date),
+                            placeholder = stringResource(R.string.add_finance_title_start_date_placeholder),
+                            shape = MaterialTheme.shapes.medium,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
 
                     LargeDropdownMenu(
                         label = stringResource(R.string.add_finance_title_interval),

@@ -79,7 +79,11 @@ class FinanceDetailsViewModel(
 
             is FinanceDetailsActions.OnUpdateAmount -> validateAmount(action.amount)
 
-            is FinanceDetailsActions.OnUpdateStartDate -> _state.update { it.copy(startDate = action.startDate) }
+            is FinanceDetailsActions.OnUpdateStartDate -> _state.update { it.copy(startDate = action.date) }
+
+            is FinanceDetailsActions.OnUpdateEndDate -> _state.update { it.copy(endDate = action.date) }
+
+            is FinanceDetailsActions.OnToggleEnableEndDate -> _state.update { it.copy(enableEndDate = !it.enableEndDate) }
 
             is FinanceDetailsActions.OnUpdateFinanceInterval -> _state.update {
                 it.copy(

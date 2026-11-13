@@ -42,9 +42,21 @@ sealed interface FinanceDetailsActions {
     /**
      * Action to update the transaction start date.
      *
-     * @property startDate the new start date in epoch milliseconds
+     * @property date the new start date in epoch milliseconds
      */
-    data class OnUpdateStartDate(val startDate: Long) : FinanceDetailsActions
+    data class OnUpdateStartDate(val date: Long) : FinanceDetailsActions
+
+    /**
+     * Action to update the transaction end date.
+     *
+     * @property date the new start date in epoch milliseconds
+     */
+    data class OnUpdateEndDate(val date: Long) : FinanceDetailsActions
+
+    /**
+     * Toggle enable/disable option to set finance interval end date
+     */
+    data object OnToggleEnableEndDate : FinanceDetailsActions
 
     /**
      * Action to update the recurrence interval of the transaction.

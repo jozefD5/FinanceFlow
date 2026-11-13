@@ -32,11 +32,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.jd.financeflow.R
+import com.jd.financeflow.features.charts.domain.LineChartData
+import com.jd.financeflow.features.charts.domain.PieChartData
 import com.jd.financeflow.features.core.presentation.UiText
 import com.jd.financeflow.features.core.presentation.components.financeMappers.formatCurrency
 import com.jd.financeflow.features.core.domain.models.finance.FinanceInterval
-import com.jd.financeflow.features.finance.domain.models.chart.LineChartData
-import com.jd.financeflow.features.finance.domain.models.chart.PieChartData
 import com.jd.financeflow.features.charts.presentation.components.FinanceLineChart
 import com.jd.financeflow.features.charts.presentation.components.FinancePieChart
 
