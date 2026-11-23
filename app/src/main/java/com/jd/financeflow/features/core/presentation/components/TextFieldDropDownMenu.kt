@@ -21,7 +21,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -57,7 +56,6 @@ import com.jd.financeflow.ui.theme.FinanceFlowTheme
  * @param selectedItemToString Function to convert the selected item to a string.
  * @param drawItem Composable to draw each item.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <T> LargeDropdownMenu(
     items: List<T>,
@@ -143,7 +141,8 @@ fun <T> LargeDropdownMenu(
                     val listState = rememberLazyListState()
                     if (selectedIndex > -1) {
                         LaunchedEffect("ScrollToSelected") {
-                            val scrollIndex = if (notSetLabel != null) selectedIndex + 1 else selectedIndex
+                            val scrollIndex =
+                                if (notSetLabel != null) selectedIndex + 1 else selectedIndex
                             if (scrollIndex < items.size + (if (notSetLabel != null) 1 else 0)) {
                                 listState.scrollToItem(index = scrollIndex)
                             }

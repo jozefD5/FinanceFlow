@@ -54,8 +54,10 @@
     <string name="add_finance_title_amount">Amount</string>
     <string name="add_finance_title_interval">Interval</string>
     <string name="add_finance_title_category">Category</string>
-    <string name="add_finance_title_start_date">Date</string>
+    <string name="add_finance_title_start_date">Start date</string>
+    <string name="add_finance_title_end_date">End date</string>
     <string name="add_finance_title_start_date_placeholder">Select date</string>
+    <string name="add_finance_label_enable_end_date">Enable end date</string>
 
     <string name="finance_interval_one_time">One-time</string>
     <string name="finance_interval_daily">Daily"</string>

@@ -1,52 +1,76 @@
 package com.jd.financeflow.di
 
-import org.koin.dsl.bind
-import org.koin.core.module.dsl.singleOf
+import com.jd.financeflow.features.charts.data.ChartsRepositoryDefault
+import com.jd.financeflow.features.charts.domain.ChartsRepository
+import com.jd.financeflow.features.charts.presentation.charts.ChartsViewModel
+import com.jd.financeflow.features.charts.presentation.financeChartCard.FinanceChartCardViewModel
 import org.koin.dsl.module
-import org.koin.core.module.dsl.viewModel
 import org.koin.android.ext.koin.androidApplication
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
+import org.koin.core.module.dsl.viewModel
 
-import com.jd.financeflow.features.finance.data.database.FinanceDatabase
-import com.jd.financeflow.features.finance.data.database.FinanceFactory
-import com.jd.financeflow.features.finance.data.localStorageDataSource.LocalStorageDataSource
-import com.jd.financeflow.features.finance.data.repository.FinanceRepositoryImpl
-import com.jd.financeflow.features.finance.domain.FinanceRepository
-import com.jd.financeflow.features.finance.domain.models.FilterConfiguration
-import com.jd.financeflow.features.finance.domain.models.FinanceInterval
-import com.jd.financeflow.features.finance.presentation.charts.ChartsViewModel
-import com.jd.financeflow.features.finance.presentation.charts.financeChartCard.FinanceChartCardViewModel
-import com.jd.financeflow.features.finance.presentation.financeDetails.FinanceDetailsViewModel
-import com.jd.financeflow.features.finance.presentation.financeList.FinanceListViewModel
-import com.jd.financeflow.features.finance.presentation.financeListFilter.FinanceListFilterViewModel
-import com.jd.financeflow.features.finance.presentation.home.HomeViewModel
+import com.jd.financeflow.features.core.data.localDataSource.database.FinanceDatabase
+import com.jd.financeflow.features.core.data.localDataSource.database.FinanceFactory
+import com.jd.financeflow.features.core.domain.localDataSource.LocalFinanceDataSource
+import com.jd.financeflow.features.core.data.localDataSource.LocalFinanceDataSourceDefault
+import com.jd.financeflow.features.core.domain.models.finance.FinanceInterval
+
+import com.jd.financeflow.features.core.domain.models.financeFilter.FilterConfiguration
+
+import com.jd.financeflow.features.home.data.HomeRepositoryDefault
+import com.jd.financeflow.features.home.domain.HomeRepository
+import com.jd.financeflow.features.home.presentation.HomeViewModel
+
+import com.jd.financeflow.features.financeDetails.data.FinanceDetailsRepositoryDefault
+import com.jd.financeflow.features.financeDetails.domain.FinanceDetailsRepository
+import com.jd.financeflow.features.financeDetails.presentation.FinanceDetailsViewModel
+
+import com.jd.financeflow.features.financeList.data.FinanceListRepositoryDefault
+import com.jd.financeflow.features.financeList.domain.FinanceListRepository
+import com.jd.financeflow.features.financeList.presentation.financeList.FinanceListViewModel
+import com.jd.financeflow.features.financeList.presentation.financeFilter.FinanceListFilterViewModel
 
 /**
  * Koin module for the FinanceFlow application.
  * This module provides dependencies for the FinanceFlow application.
  */
 val appModule = module {
+    // -------------------------------------------------------------------------------
+    // Finance local database
+    // -------------------------------------------------------------------------------
     //Creates a [FinanceDatabase] instance using the provided [FinanceFactory].
-    single {
-        FinanceFactory(androidApplication()).create().build()
-    }
+    single { FinanceFactory(androidApplication()).create().build() }
+
     // Provides a [FinanceDao] instance using the provided [FinanceDatabase].
-    single {
-        get<FinanceDatabase>().financeDao()
-    }
+    single { get<FinanceDatabase>().financeDao() }
+    singleOf(::LocalFinanceDataSourceDefault).bind<LocalFinanceDataSource>()
+    // -------------------------------------------------------------------------------
 
-    single { LocalStorageDataSource(financeDao = get()) }
-    singleOf(::FinanceRepositoryImpl).bind<FinanceRepository>()
+    // -------------------------------------------------------------------------------
+    // Home view
+    // -------------------------------------------------------------------------------
+    singleOf(::HomeRepositoryDefault).bind<HomeRepository>()
+    viewModel { HomeViewModel(repository = get()) }
+    // -------------------------------------------------------------------------------
 
-    viewModel { HomeViewModel(get()) }
-
+    // -------------------------------------------------------------------------------
+    // Finance details view
+    // -------------------------------------------------------------------------------
+    singleOf(::FinanceDetailsRepositoryDefault).bind<FinanceDetailsRepository>()
     viewModel { (financeId: Int?, currencyCode: String) ->
         FinanceDetailsViewModel(
-            financeRepository = get(),
+            repository = get(),
             financeId = financeId,
             currencyCode = currencyCode
         )
     }
+    // -------------------------------------------------------------------------------
 
+    // -------------------------------------------------------------------------------
+    // Finance list view
+    // -------------------------------------------------------------------------------
+    singleOf(::FinanceListRepositoryDefault).bind<FinanceListRepository>()
     viewModel { (currencyCode: String, configuration: FilterConfiguration?) ->
         FinanceListViewModel(
             repository = get(),
@@ -61,6 +85,12 @@ val appModule = module {
             configuration = configuration
         )
     }
+    // -------------------------------------------------------------------------------
+
+    // -------------------------------------------------------------------------------
+    // Finance list view
+    // -------------------------------------------------------------------------------
+    singleOf(::ChartsRepositoryDefault).bind<ChartsRepository>()
 
     viewModel { (currencyCode: String) ->
         ChartsViewModel(currencyCode = currencyCode)
@@ -74,4 +104,5 @@ val appModule = module {
             currencyCode = currencyCode
         )
     }
+    // -------------------------------------------------------------------------------
 }
